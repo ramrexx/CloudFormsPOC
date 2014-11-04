@@ -7,6 +7,6 @@ About Red Hat CloudForms
 ========================
 Red Hat CloudForms Management Engine provides the following:
 
-Automate: IT Process, Task and Event, Provisioning, and Workload Management and Orchestration.
-Integrate: Systems Management, Tools and Processes, Event Consoles, Configuration Management Database (CMDB), Role-based Administration (RBA), and Web Services.
+Automating: IT Process, Task and Event, Provisioning, Workload Management and Orchestration.
+Integration: Systems Management, Tools and Processes, Event Consoles, Configuration Management Database (CMDB), Role-based Administration (RBA), and Web Services. More information can be found at: https://access.redhat.com/documentation/en-US/CloudForms/
 
