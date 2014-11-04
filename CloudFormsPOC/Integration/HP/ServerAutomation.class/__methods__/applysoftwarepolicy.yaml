@@ -1,0 +1,12 @@
+---
+object_type: method
+version: 1.0
+object:
+  attributes:
+    name: applySoftwarePolicy
+    display_name: Apply Software Policy Method
+    description: 
+    scope: instance
+    language: ruby
+    location: inline
+  inputs: []

@@ -1,0 +1,12 @@
+---
+object_type: method
+version: 1.0
+object:
+  attributes:
+    name: listLoadBalancers
+    display_name: List Load Balancers
+    description: 
+    scope: instance
+    language: ruby
+    location: inline
+  inputs: []

@@ -1,0 +1,12 @@
+---
+object_type: method
+version: 1.0
+object:
+  attributes:
+    name: volumeStatus
+    display_name: Volume Status
+    description: 
+    scope: instance
+    language: ruby
+    location: inline
+  inputs: []

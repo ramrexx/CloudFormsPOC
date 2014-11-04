@@ -1,0 +1,18 @@
+---
+object_type: instance
+version: 1.0
+object:
+  attributes:
+    display_name: 
+    name: F5_Pools_GetList
+    inherits: 
+    description: 
+  fields:
+  - servername:
+      value: 10.11.164.105
+  - username:
+      value: admin
+  - password:
+      value: v1:{N+eSIDwjCJS4xkOjAqKnog==}
+  - method1:
+      value: F5_Pools_GetList

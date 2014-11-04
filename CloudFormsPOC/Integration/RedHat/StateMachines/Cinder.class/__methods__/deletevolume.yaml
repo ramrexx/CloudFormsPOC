@@ -1,0 +1,12 @@
+---
+object_type: method
+version: 1.0
+object:
+  attributes:
+    name: deleteVolume
+    display_name: Delete Volume
+    description: 
+    scope: instance
+    language: ruby
+    location: inline
+  inputs: []
