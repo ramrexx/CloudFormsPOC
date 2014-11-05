@@ -1,0 +1,18 @@
+---
+object_type: instance
+version: 1.0
+object:
+  attributes:
+    display_name: 
+    name: RunProgramInGuest_Windows
+    inherits: 
+    description: 
+  fields:
+  - guest_username:
+      value: .\\Administrator
+  - guest_password:
+      value: v1:{N+eSIDwjCJS4xkOjAqKnog==}
+  - guest_program:
+      value: c:\\temp\\runonce.bat
+  - execute:
+      value: RunProgramInGuest_Windows

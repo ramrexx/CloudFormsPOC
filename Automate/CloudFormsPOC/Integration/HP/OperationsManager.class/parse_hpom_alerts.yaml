@@ -1,0 +1,12 @@
+---
+object_type: instance
+version: 1.0
+object:
+  attributes:
+    display_name: 
+    name: Parse_HPOM_Alerts
+    inherits: 
+    description: 
+  fields:
+  - execute:
+      value: Parse_HPOM_Alerts

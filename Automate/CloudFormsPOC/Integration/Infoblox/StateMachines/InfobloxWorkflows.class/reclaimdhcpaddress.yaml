@@ -1,0 +1,24 @@
+---
+object_type: instance
+version: 1.0
+object:
+  attributes:
+    display_name: 
+    name: ReclaimDHCPAddress
+    inherits: 
+    description: 
+  fields:
+  - servername:
+      value: 10.3.76.120
+  - password:
+      value: v1:{nOBBuc+o3Iz8aukZeCuM3g==}
+  - step1:
+      on_error: ErrorHandler
+  - step2:
+      on_entry: ReclaimDHCPAddress
+      on_error: ErrorHandler
+  - step3:
+      on_error: ErrorHandler
+  - step4:
+      on_entry: RestartGridServices
+      on_error: ErrorHandler

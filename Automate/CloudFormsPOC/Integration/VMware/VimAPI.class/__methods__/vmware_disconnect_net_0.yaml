@@ -1,0 +1,12 @@
+---
+object_type: method
+version: 1.0
+object:
+  attributes:
+    name: VMWare_Disconnect_Net_0
+    display_name: 
+    description: 
+    scope: instance
+    language: ruby
+    location: inline
+  inputs: []

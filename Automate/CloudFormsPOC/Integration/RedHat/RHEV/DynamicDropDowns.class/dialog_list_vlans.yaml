@@ -1,0 +1,12 @@
+---
+object_type: instance
+version: 1.0
+object:
+  attributes:
+    display_name: 
+    name: Dialog_List_VLANS
+    inherits: 
+    description: 
+  fields:
+  - method1:
+      value: Dialog_List_VLANS
