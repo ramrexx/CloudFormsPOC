@@ -1,0 +1,32 @@
+---
+- MiqAlert:
+    guid: 59174666-cfed-11e2-a54c-000c2980bea6
+    description: ! 'Flex_Processing: CPU % Used > 50 '
+    options:
+      :notifications:
+        :delay_next_evaluation: 600
+        :email:
+          :from: ''
+          :to:
+          - kmorey@redhat.com
+        :evm_event: {}
+        :automate:
+          :event_name: Flex_Processing
+    db: Vm
+    expression:
+      :eval_method: realtime_performance
+      :mode: !binary |-
+        aW50ZXJuYWw=
+      :options:
+        :perf_column: v_pct_cpu_used_delta_summation
+        :operator: !binary |-
+          Pg==
+        :value_threshold: '50'
+        :trend_direction: !binary |-
+          bm9uZQ==
+        :trend_steepness: 
+        :debug_trace: !binary |-
+          ZmFsc2U=
+        :rt_time_threshold: 60
+    responds_to_events: vm_perf_complete
+    enabled: true
