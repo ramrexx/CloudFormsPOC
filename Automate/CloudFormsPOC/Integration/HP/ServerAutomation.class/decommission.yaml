@@ -1,0 +1,12 @@
+---
+object_type: instance
+version: 1.0
+object:
+  attributes:
+    display_name: Decommission VM from HPSA and Remove
+    name: Decommission
+    inherits: 
+    description: 
+  fields:
+  - execute:
+      value: decommission

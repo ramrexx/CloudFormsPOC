@@ -1,0 +1,18 @@
+---
+object_type: instance
+version: 1.0
+object:
+  attributes:
+    display_name: 
+    name: BlueCat_AcquireIPAddress
+    inherits: 
+    description: 
+  fields:
+  - servername:
+      value: proteus.example.com
+  - username:
+      value: api_user
+  - password:
+      value: v1:{o3WJPVTn5+vX6FFWAd1Auw==}
+  - method1:
+      value: BlueCat_AcquireIPAddress

@@ -1,0 +1,12 @@
+---
+object_type: instance
+version: 1.0
+object:
+  attributes:
+    display_name: 
+    name: Chef_Dialog_CookBookList
+    inherits: 
+    description: 
+  fields:
+  - method1:
+      value: Chef_Dialog_CookBookList

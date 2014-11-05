@@ -1,0 +1,12 @@
+---
+object_type: instance
+version: 1.0
+object:
+  attributes:
+    display_name: 
+    name: OpenStack_CatalogItemInitialization_ClusterBestFit
+    inherits: 
+    description: 
+  fields:
+  - execute:
+      value: OpenStack_CatalogItemInitialization_ClusterBestFit

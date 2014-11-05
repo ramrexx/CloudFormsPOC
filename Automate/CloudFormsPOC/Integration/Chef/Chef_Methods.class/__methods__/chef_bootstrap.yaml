@@ -1,0 +1,12 @@
+---
+object_type: method
+version: 1.0
+object:
+  attributes:
+    name: Chef_Bootstrap
+    display_name: Chef Bootstrap
+    description: 
+    scope: instance
+    language: ruby
+    location: inline
+  inputs: []

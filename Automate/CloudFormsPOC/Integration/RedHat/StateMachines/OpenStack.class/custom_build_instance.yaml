@@ -1,0 +1,20 @@
+---
+object_type: instance
+version: 1.0
+object:
+  attributes:
+    display_name: 
+    name: custom_build_instance
+    inherits: 
+    description: 
+  fields:
+  - step2:
+      value: /Integration/RedHat/OpenStack/Cinder/createVolume
+  - step3:
+      value: /Integration/RedHat/OpenStack/Cinder/check_createVolume
+  - step4:
+      value: /Integration/RedHat/OpenStack/Nova/createInstance
+  - step5:
+      value: /Integration/RedHat/OpenStack/Nova/check_createInstance
+  - step6:
+      value: /Integration/RedHat/StateMachines/Methods/post_createInstance

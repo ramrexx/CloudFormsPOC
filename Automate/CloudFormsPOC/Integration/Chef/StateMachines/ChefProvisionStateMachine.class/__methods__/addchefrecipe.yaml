@@ -1,0 +1,12 @@
+---
+object_type: method
+version: 1.0
+object:
+  attributes:
+    name: AddChefRecipe
+    display_name: Add Chef Recipe
+    description: 
+    scope: instance
+    language: ruby
+    location: inline
+  inputs: []

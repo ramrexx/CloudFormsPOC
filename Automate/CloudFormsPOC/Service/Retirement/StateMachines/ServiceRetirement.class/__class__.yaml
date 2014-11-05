@@ -1,0 +1,159 @@
+---
+object_type: class
+version: 1.0
+object:
+  attributes:
+    description: 
+    display_name: 
+    name: ServiceRetirement
+    type: 
+    inherits: 
+    visibility: 
+    owner: 
+  schema:
+  - field:
+      aetype: state
+      name: pre1
+      display_name: 
+      datatype: string
+      priority: 1
+      owner: 
+      default_value: 
+      substitute: true
+      message: create
+      visibility: 
+      collect: 
+      scope: 
+      description: 
+      condition: 
+      on_entry: update_service_retirement_status(status => 'Processing Pre1')
+      on_exit: update_service_retirement_status(status => 'Processed Pre1')
+      on_error: update_service_retirement_status(status => 'Error Processing Pre1')
+      max_retries: '3'
+      max_time: 
+  - field:
+      aetype: state
+      name: pre2
+      display_name: 
+      datatype: string
+      priority: 2
+      owner: 
+      default_value: 
+      substitute: true
+      message: create
+      visibility: 
+      collect: 
+      scope: 
+      description: 
+      condition: 
+      on_entry: update_service_retirement_status(status => 'Processing Pre2')
+      on_exit: update_service_retirement_status(status => 'Processed Pre2')
+      on_error: update_service_retirement_status(status => 'Error Processing Pre2')
+      max_retries: '3'
+      max_time: 
+  - field:
+      aetype: state
+      name: retireservicevms
+      display_name: 
+      datatype: string
+      priority: 3
+      owner: 
+      default_value: 
+      substitute: true
+      message: create
+      visibility: 
+      collect: 
+      scope: 
+      description: 
+      condition: 
+      on_entry: update_service_retirement_status(status => 'Retiring Service VMs')
+      on_exit: update_service_retirement_status(status => 'Retired Service VMs')
+      on_error: update_service_retirement_status(status => 'Error Retiring Service
+        VMs')
+      max_retries: '3'
+      max_time: 
+  - field:
+      aetype: state
+      name: checkservicevmretirement
+      display_name: 
+      datatype: string
+      priority: 4
+      owner: 
+      default_value: 
+      substitute: true
+      message: create
+      visibility: 
+      collect: 
+      scope: 
+      description: 
+      condition: 
+      on_entry: update_service_retirement_status(status => 'Checking Service VM retirement')
+      on_exit: update_service_retirement_status(status => 'Checked Service VM retirement')
+      on_error: update_service_retirement_status(status => 'Error Checking Service
+        VM retirement')
+      max_retries: '3'
+      max_time: 
+  - field:
+      aetype: state
+      name: markserviceasretired
+      display_name: 
+      datatype: string
+      priority: 5
+      owner: 
+      default_value: 
+      substitute: true
+      message: create
+      visibility: 
+      collect: 
+      scope: 
+      description: 
+      condition: 
+      on_entry: update_service_retirement_status(status => 'Marking Service as retired')
+      on_exit: update_service_retirement_status(status => 'Marked Service as retired')
+      on_error: update_service_retirement_status(status => 'Error Marking Service
+        as retired')
+      max_retries: '3'
+      max_time: 
+  - field:
+      aetype: state
+      name: deleteservicefromVMDB
+      display_name: 
+      datatype: string
+      priority: 6
+      owner: 
+      default_value: 
+      substitute: true
+      message: create
+      visibility: 
+      collect: 
+      scope: 
+      description: 
+      condition: 
+      on_entry: update_service_retirement_status(status => 'Deleting Retired Service
+        from VMDB')
+      on_exit: update_service_retirement_status(status => 'Deleted Retired Service
+        from VMDB')
+      on_error: update_service_retirement_status(status => 'Error Deleting Retired
+        Service from VMDB')
+      max_retries: '3'
+      max_time: 
+  - field:
+      aetype: state
+      name: Finished
+      display_name: 
+      datatype: string
+      priority: 7
+      owner: 
+      default_value: 
+      substitute: true
+      message: create
+      visibility: 
+      collect: 
+      scope: 
+      description: 
+      condition: 
+      on_entry: 
+      on_exit: 
+      on_error: 
+      max_retries: '100'
+      max_time: 
