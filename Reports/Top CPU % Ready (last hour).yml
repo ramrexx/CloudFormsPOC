@@ -1,0 +1,139 @@
+---
+- MiqWidget:
+    guid: 90523b9e-5940-11e4-9e0e-00505693ad6a
+    description: Top CPU % Ready (last hour)
+    title: Top CPU % Ready (last hour)
+    content_type: report
+    options:
+      :row_count: 5
+      :col_order:
+      - resource_name
+      - v_pct_cpu_ready_delta_summation
+      - host.name
+    visibility:
+      :roles:
+      - _ALL_
+    user_id: 
+    resource_id: 360000000000223
+    resource_type: MiqReport
+    enabled: true
+    read_only: false
+    MiqReportContent:
+    - MiqReport:
+        title: Top CPU % Ready (last hour)
+        rpt_group: Custom
+        rpt_type: Custom
+        priority: 160
+        db: VmPerformance
+        cols:
+        - resource_name
+        - v_pct_cpu_ready_delta_summation
+        - timestamp
+        include:
+          host:
+            columns:
+            - name
+        col_order:
+        - resource_name
+        - v_pct_cpu_ready_delta_summation
+        - host.name
+        - timestamp
+        headers:
+        - VM Name
+        - CPU - % Ready
+        - ESX Host
+        - Activity Sample - Timestamp  (Day/Time)
+        conditions: !ruby/object:MiqExpression
+          exp:
+            and:
+            - IS:
+                field: VmPerformance-timestamp
+                value: Last Hour
+            - ! '>':
+                value: '0'
+                field: VmPerformance-v_pct_cpu_ready_delta_summation
+          context_type: 
+        order: Descending
+        sortby:
+        - v_pct_cpu_ready_delta_summation
+        group: 
+        graph: 
+        dims: 
+        filename: 
+        file_mtime: 
+        categories: 
+        timeline: 
+        template_type: report
+        where_clause: 
+        db_options:
+          :calc_avgs_by: active_data
+          :interval: hourly
+          :end_offset: 0
+          :start_offset: 86400
+        generate_cols: 
+        generate_rows: 
+        col_formats:
+        - 
+        - 
+        - 
+        - 
+        tz: Central Time (US & Canada)
+        time_profile_id: 
+        display_filter: 
+        col_options:
+          cpu_usage_rate_average__avg:
+            :style:
+            - :class: :miq_rpt_red_bg
+              :value: '90'
+              :operator: ! '>='
+            - :class: :miq_rpt_yellow_bg
+              :value: '75'
+              :operator: ! '>='
+          v_pct_cpu_ready_delta_summation:
+            :style:
+            - :class: :miq_rpt_red_bg
+              :value: '10'
+              :operator: ! '>='
+            - :class: :miq_rpt_yellow_bg
+              :value: '5'
+              :operator: ! '>='
+        rpt_options:
+          :queue_timeout: 
+          :pdf:
+            :page_size: US-Letter
+        miq_group_id: 360000000000001
+        user_id: 360000000000001
+        menu_name: Top CPU % Ready (last hour)
+    MiqSchedule:
+      name: Top CPU % Ready (last hour)
+      description: Top CPU % Ready (last hour)
+      sched_action:
+        :method: generate_widget
+      filter: !ruby/object:MiqExpression
+        exp:
+          =:
+            field: MiqWidget.id
+            value: ''
+        context_type: 
+        col_details:
+          MiqWidget.id:
+            :data_type: 
+            :virtual_reflection: true
+            :virtual_column: true
+            :excluded_by_preprocess_options: false
+            :tag: false
+            :include:
+              :id: {}
+        pexp: 
+        ruby: <value ref=miqwidget, type=string>/virtual/id</value> == ''
+      towhat: MiqWidget
+      run_at:
+        :start_time: 2014-10-21 04:05:00.000000000 Z
+        :tz: Eastern Time (US & Canada)
+        :interval:
+          :unit: hourly
+          :value: '1'
+      enabled: true
+      userid: system
+      prod_default: system
+      adhoc: 
