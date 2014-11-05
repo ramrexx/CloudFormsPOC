@@ -1,12 +1,22 @@
 Welcome to the CloudFormsPOC Project
 ====================================
-The purpose of this project is to provide proven automated work-flows as well as sample integrations that CloudForms
-consumers can leverage.
+More information can be found at: https://access.redhat.com/documentation/en-US/CloudForms/
 
-About Red Hat CloudForms
+
+Automate
 ========================
-Red Hat CloudForms Management Engine provides the following:
+Contains proven workflow orchestration examples for:
+  - IT Process automation
+  - Task/Event processing
+  - Provisioning
+  - Retirement
+  - Workload management
+  - Systems Management
+  - 3rd party integrations (CMDB, Incident, load-balancers, etc...)
 
-Automating: IT Process, Task and Event, Provisioning, Workload Management and Orchestration.
-Integration: Systems Management, Tools and Processes, Event Consoles, Configuration Management Database (CMDB), Role-based Administration (RBA), and Web Services. More information can be found at: https://access.redhat.com/documentation/en-US/CloudForms/
+
+ServiceDialogs
+==============
+Contains sample dialogs to help get you started.
+
 
