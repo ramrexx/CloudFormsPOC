@@ -20,3 +20,15 @@ ServiceDialogs
 Contains sample dialogs to help get you started.
 
 
+Control
+=======
+Contains sample control policies/profiles
+
+
+Alert
+=====
+Contains sample alerts
+
+Reports
+=======
+Contains sample reports and widgets
