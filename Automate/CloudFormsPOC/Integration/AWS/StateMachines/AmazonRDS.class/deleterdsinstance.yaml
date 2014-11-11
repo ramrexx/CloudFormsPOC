@@ -10,3 +10,5 @@ object:
   fields:
   - lifecycle:
       value: /Integration/AWS/RDS/DeleteRDSInstance
+  - status:
+      value: /Integration/AWS/RDS/RDSInstanceStatus

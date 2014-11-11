@@ -12,75 +12,15 @@ object:
     owner: 
   schema:
   - field:
-      aetype: attribute
-      name: to_email_address
-      display_name: 
-      datatype: string
-      priority: 1
-      owner: 
-      default_value: cloudforms@example.com
-      substitute: true
-      message: ! '*'
-      visibility: 
-      collect: 
-      scope: 
-      description: 
-      condition: 
-      on_entry: 
-      on_exit: 
-      on_error: 
-      max_retries: 
-      max_time: 
-  - field:
-      aetype: attribute
-      name: from_email_address
-      display_name: 
-      datatype: string
-      priority: 2
-      owner: 
-      default_value: cloudforms@example.com
-      substitute: true
-      message: ! '*'
-      visibility: 
-      collect: 
-      scope: 
-      description: 
-      condition: 
-      on_entry: 
-      on_exit: 
-      on_error: 
-      max_retries: 
-      max_time: 
-  - field:
-      aetype: attribute
-      name: signature
-      display_name: 
-      datatype: string
-      priority: 3
-      owner: 
-      default_value: Cloud Infrastructure Team
-      substitute: true
-      message: ! '*'
-      visibility: 
-      collect: 
-      scope: 
-      description: 
-      condition: 
-      on_entry: 
-      on_exit: 
-      on_error: 
-      max_retries: 
-      max_time: 
-  - field:
       aetype: state
       name: Step1
       display_name: ''
       datatype: string
-      priority: 4
+      priority: 1
       owner: 
       default_value: 
       substitute: true
-      message: ! '*'
+      message: create
       visibility: 
       collect: 
       scope: 
@@ -96,11 +36,11 @@ object:
       name: Step2
       display_name: ''
       datatype: string
-      priority: 5
+      priority: 2
       owner: 
       default_value: 
       substitute: true
-      message: ! '*'
+      message: create
       visibility: 
       collect: 
       scope: 
@@ -116,11 +56,11 @@ object:
       name: Step3
       display_name: ''
       datatype: string
-      priority: 6
+      priority: 3
       owner: 
       default_value: 
       substitute: true
-      message: ! '*'
+      message: create
       visibility: 
       collect: 
       scope: 
@@ -136,11 +76,11 @@ object:
       name: Step4
       display_name: ''
       datatype: string
-      priority: 7
+      priority: 4
       owner: 
       default_value: 
       substitute: true
-      message: ! '*'
+      message: create
       visibility: 
       collect: 
       scope: 
@@ -149,5 +89,25 @@ object:
       on_entry: ''
       on_exit: ''
       on_error: ''
+      max_retries: '25'
+      max_time: 
+  - field:
+      aetype: state
+      name: step5
+      display_name: 
+      datatype: string
+      priority: 5
+      owner: 
+      default_value: 
+      substitute: true
+      message: create
+      visibility: 
+      collect: 
+      scope: 
+      description: 
+      condition: 
+      on_entry: 
+      on_exit: 
+      on_error: 
       max_retries: '25'
       max_time: 

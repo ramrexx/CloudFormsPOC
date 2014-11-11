@@ -73,7 +73,7 @@ vm_guid = service_template_provision_task.get_option(:vm_guid)
 vm = $evm.vmdb('vm').find_by_guid(vm_guid)
 raise "VM not found" if vm.nil?
 
-$evm.log(:info, "Found VM: #{vm.name}", true)
+log(:info, "Found VM: #{vm.name}", true)
 
 user = $evm.vmdb('user').find_by_id($evm.root['user_id'])
 group = user.current_group
@@ -96,6 +96,6 @@ vm.add_to_service(service)
 log(:info, "Service: #{service.name} vms: #{service.vms.count}")
 
 # unless service.nil?
-#   $evm.log(:info, "Removing Service: #{service.name} Id: #{service.id} from CFME database")
+#   log(:info, "Removing Service: #{service.name} Id: #{service.id} from CFME database", true)
 #   service.remove_from_vmdb
 # end

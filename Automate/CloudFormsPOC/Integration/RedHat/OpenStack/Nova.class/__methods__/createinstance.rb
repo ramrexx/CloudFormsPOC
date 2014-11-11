@@ -20,8 +20,8 @@ def get_tenant
 end
 
 # basic retry logic
-def retry_method(retry_time=1.minute)
-  log(:info, "Sleeping for #{retry_time} seconds")
+def retry_method(retry_time, msg)
+  log(:info, "#{msg} - Waiting #{retry_time} seconds}", true)
   $evm.root['ae_result'] = 'retry'
   $evm.root['ae_retry_interval'] = retry_time
   exit MIQ_OK

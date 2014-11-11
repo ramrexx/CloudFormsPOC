@@ -1,0 +1,14 @@
+---
+object_type: instance
+version: 1.0
+object:
+  attributes:
+    display_name: 
+    name: vmware_RunProgramInGuest
+    inherits: 
+    description: 
+  fields:
+  - rel2:
+      value: /Integration/VMware/VIX/RunProgramInGuest_Linux
+  - rel3:
+      value: /Integration/VMware/VIX/RunProgramInGuest_Windows

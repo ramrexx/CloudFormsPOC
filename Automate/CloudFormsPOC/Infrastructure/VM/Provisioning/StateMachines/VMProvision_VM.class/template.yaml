@@ -11,7 +11,7 @@ object:
   - AcquireMACAddress:
       value: ! '#/Infrastructure/VM/Provisioning/StateMachines/Methods/GenerateMACAddress#${/#miq_provision.source.vendor}'
   - PreProvision:
-      value: /Integration/VMware/RBVMOMI/create_folder
+      value: ! '/Integration/VMware/vCenter/Create_vCenter_Folder '
   - Provision:
       value: /Infrastructure/VM/Provisioning/StateMachines/Methods/Provision
   - CheckProvisioned:

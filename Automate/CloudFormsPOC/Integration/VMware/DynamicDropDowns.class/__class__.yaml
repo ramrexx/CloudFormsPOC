@@ -153,10 +153,30 @@ object:
       max_time: 
   - field:
       aetype: attribute
-      name: sort_order
+      name: default_value
       display_name: 
       datatype: string
       priority: 8
+      owner: 
+      default_value: 
+      substitute: true
+      message: create
+      visibility: 
+      collect: 
+      scope: 
+      description: 
+      condition: 
+      on_entry: 
+      on_exit: 
+      on_error: 
+      max_retries: 
+      max_time: 
+  - field:
+      aetype: attribute
+      name: sort_order
+      display_name: 
+      datatype: string
+      priority: 9
       owner: 
       default_value: ascending
       substitute: true
@@ -176,7 +196,7 @@ object:
       name: method1
       display_name: 
       datatype: string
-      priority: 9
+      priority: 10
       owner: 
       default_value: 
       substitute: true
@@ -196,7 +216,7 @@ object:
       name: method2
       display_name: 
       datatype: string
-      priority: 10
+      priority: 11
       owner: 
       default_value: 
       substitute: true

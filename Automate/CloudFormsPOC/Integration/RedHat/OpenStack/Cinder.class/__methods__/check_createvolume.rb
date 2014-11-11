@@ -20,8 +20,8 @@ def get_tenant
 end
 
 # basic retry logic
-def retry_method(retry_time=1.minute)
-  log(:info, "Sleeping for #{retry_time} seconds", true)
+def retry_method(retry_time, msg)
+  log(:info, "#{msg} - Waiting #{retry_time} seconds}", true)
   $evm.root['ae_result'] = 'retry'
   $evm.root['ae_retry_interval'] = retry_time
   exit MIQ_OK
@@ -63,6 +63,6 @@ volume_id = service_template_provision_task.get_option(:volume_id)
 details = conn.get_volume_details(volume_id).body['volume']
 
 status = details['status']
-log(:info, "Current Status is #{status}", true)
+log(:info, "Volume Status is #{status}", true)
 
-retry_method(10.seconds) unless status == "available"
+retry_method(10.seconds, "Volume Status: #{status}") unless status == "available"

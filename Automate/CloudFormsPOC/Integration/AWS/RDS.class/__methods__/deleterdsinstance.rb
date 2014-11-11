@@ -32,6 +32,8 @@ begin
 
   log(:info, "Begin Automate Method")
 
+  require 'aws-sdk'
+
   # Will this work?
   service = $evm.root['service']
   raise "Unable to find service in $evm.root['service']" if service.nil?
@@ -45,9 +47,15 @@ begin
 
   raise "Did not find rds_db_instance_identifier attribute, can't delete" if service.custom_get("rds_db_instance_identifier").blank?
 
-  delete_status = client.delete_db_instance({
-    :db_instance_identifier => service.custom_get("rds_db_instance_identifier")
-    })
+  begin
+    delete_status = client.delete_db_instance({
+      :db_instance_identifier => service.custom_get("rds_db_instance_identifier"),
+      :skip_final_snapshot => true
+      })
+  rescue AWS::RDS::Errors::DBInstanceNotFound => dberr
+    log_err(dberr)
+    log(:info, "Database is already gone, moving forward in the state machine")
+  end
 
   log(:info, "Delete Issued: #{delete_status.inspect}")
 

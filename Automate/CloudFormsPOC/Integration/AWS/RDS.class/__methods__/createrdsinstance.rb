@@ -55,12 +55,20 @@ begin
   # Get the Relevant RDS Options from the available
   # Service Template Provisioning Task Options
   def get_rds_options_hash()
-    options_regex = /^:rds_(.*)/
+    options_regex = /^rds_(.*)/
     options_hash = {}
     @task.options.each {|key, value|
-      options_hash[key] = value if options_regex =~ key
+      if options_regex =~ key
+        newkey = "#{key}"
+        newkey.sub! "rds_", ""
+        integer_regex = /^\d+$/
+        options_hash[:"#{newkey}"] = value
+        options_hash[:"#{newkey}"] = value.to_i if integer_regex =~ value
+        log(:info, "Set :#{newkey} => #{value}")
+      end
     }
     log(:info, "Returning Options Hash: #{options_hash.inspect}")
+    return options_hash
   end
 
   # BEGIN MAIN #
@@ -73,18 +81,18 @@ begin
   @task = $evm.root['service_template_provision_task']
   if @task
     # List Service Task Attributes
-    @task.attributes.sort.each { |k, v| log(:info, "#{@method} - Task:<#{service_template_provision_task}> Attributes - #{k}: #{v}")}
+    @task.attributes.sort.each { |k, v| log(:info, "#{@method} - Task:<#{@task}> Attributes - #{k}: #{v}")}
 
     # Get destination service object
-    @service = service_template_provision_task.destination
-    log(:info,"#{@method} - Detected Service:<#{service.name}> Id:<#{service.id}>")
+    @service = @task.destination
+    log(:info,"Detected Service:<#{@service.name}> Id:<#{@service.id}>")
   end
 
   require 'aws-sdk'
 
   # get the AWS Management System Object
   aws_mgt = get_mgt_system
-  log(:info, "AWS Mgt System is #{aws.inspect}")
+  log(:info, "AWS Mgt System is #{aws_mgt.inspect}")
 
 
   # Get an RDS Client Object via the AWS SDK

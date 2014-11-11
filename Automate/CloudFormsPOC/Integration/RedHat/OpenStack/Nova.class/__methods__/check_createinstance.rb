@@ -21,7 +21,7 @@ end
 
 # basic retry logic
 def retry_method(retry_time, msg)
-  $evm.log(:info, "#{msg} - Waiting #{retry_time} seconds}", true)
+  log(:info, "#{msg} - Waiting #{retry_time} seconds}", true)
   $evm.root['ae_result'] = 'retry'
   $evm.root['ae_retry_interval'] = retry_time
   exit MIQ_OK
@@ -74,7 +74,7 @@ vm = $evm.vmdb('vm').all.detect {|v| v.ems_ref == server_id }
 
 if vm.nil?
   openstack.refresh
-  retry_method(1.minute, "Instance not found in CloudForms")
+  retry_method(30.seconds, "Instance not found in CloudForms")
 end
 log(:info, "Found VM: #{vm.name} guid: #{vm.guid}", true)
 service_template_provision_task.set_option(:vm_guid, vm.guid)

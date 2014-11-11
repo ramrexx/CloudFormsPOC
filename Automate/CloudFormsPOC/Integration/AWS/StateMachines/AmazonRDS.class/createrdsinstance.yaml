@@ -8,5 +8,9 @@ object:
     inherits: 
     description: 
   fields:
+  - initialize:
+      value: /Integration/AWS/RDS/RDSCatalogItemInitialization
   - lifecycle:
       value: /Integration/AWS/RDS/CreateRDSInstance
+  - status:
+      value: /Integration/AWS/RDS/RDSInstanceStatus
