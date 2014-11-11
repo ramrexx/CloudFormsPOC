@@ -1,7 +1,7 @@
 ---
 - description: 
   buttons: submit,cancel
-  label: VMware - Add a Disk
+  label: VMware - AddDisk_to_VM
   dialog_tabs:
   - description: 
     display: edit
@@ -17,7 +17,7 @@
       display_method_options: 
       position: 0
       dialog_fields:
-      - name: add_disk1
+      - name: size
         description: 
         type: DialogFieldDropDownList
         data_type: string
@@ -38,9 +38,9 @@
         values_method: 
         values_method_options: {}
         options:
-          :sort_by: :description
+          :sort_by: :value
           :sort_order: :ascending
-        label: Additional Disk *
+        label: Size *
         position: 0
         validator_type: 
         validator_rule: 

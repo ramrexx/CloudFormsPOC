@@ -1,0 +1,87 @@
+---
+- description: 
+  buttons: submit,cancel
+  label: VMware - AddRAM_to_VM
+  dialog_tabs:
+  - description: 
+    display: edit
+    label: AddRAM_to_VM
+    display_method: 
+    display_method_options: 
+    position: 0
+    dialog_groups:
+    - description: 
+      display: edit
+      label: RAM Information
+      display_method: 
+      display_method_options: 
+      position: 0
+      dialog_fields:
+      - name: vm_memory
+        description: 
+        type: DialogFieldDropDownList
+        data_type: string
+        notes: 
+        notes_display: 
+        display: edit
+        display_method: 
+        display_method_options: {}
+        required: true
+        required_method: 
+        required_method_options: {}
+        default_value: '0'
+        values:
+        - - '1024'
+          - 1 GB
+        - - '2048'
+          - 2 GB
+        - - '4096'
+          - 4 GB
+        - - '0'
+          - <choose>
+        - - '512'
+          - 512 MB
+        values_method: 
+        values_method_options: {}
+        options:
+          :sort_by: :description
+          :sort_order: :ascending
+        label: Set Amount of Memory
+        position: 0
+        validator_type: 
+        validator_rule: 
+        reconfigurable: 
+      - name: ram
+        description: 
+        type: DialogFieldDropDownList
+        data_type: string
+        notes: 
+        notes_display: 
+        display: edit
+        display_method: 
+        display_method_options: {}
+        required: true
+        required_method: 
+        required_method_options: {}
+        default_value: '0'
+        values:
+        - - '1024'
+          - 1 GB
+        - - '2048'
+          - 2 GB
+        - - '4096'
+          - 4 GB
+        - - '0'
+          - <choose>
+        - - '512'
+          - 512 MB
+        values_method: 
+        values_method_options: {}
+        options:
+          :sort_by: :description
+          :sort_order: :ascending
+        label: Add Memory
+        position: 1
+        validator_type: 
+        validator_rule: 
+        reconfigurable: 

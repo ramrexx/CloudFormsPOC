@@ -1,0 +1,66 @@
+---
+- description: 
+  buttons: submit,cancel
+  label: VMware - ResizeDisk
+  dialog_tabs:
+  - description: 
+    display: edit
+    label: Resize a Disk on this VM
+    display_method: 
+    display_method_options: 
+    position: 0
+    dialog_groups:
+    - description: 
+      display: edit
+      label: Disk Information
+      display_method: 
+      display_method_options: 
+      position: 0
+      dialog_fields:
+      - name: disk_number
+        description: 
+        type: DialogFieldDynamicList
+        data_type: 
+        notes: 
+        notes_display: 
+        display: edit
+        display_method: 
+        display_method_options: {}
+        required: false
+        required_method: 
+        required_method_options: {}
+        default_value: 
+        values: 
+        values_method: 
+        values_method_options: {}
+        options:
+          :load_values_on_init: false
+          :show_refresh_button: true
+        label: Select Disk Number *
+        position: 0
+        validator_type: 
+        validator_rule: 
+        reconfigurable: 
+      - name: size
+        description: 
+        type: DialogFieldTextBox
+        data_type: 
+        notes: 
+        notes_display: 
+        display: edit
+        display_method: 
+        display_method_options: {}
+        required: true
+        required_method: 
+        required_method_options: {}
+        default_value: '40'
+        values: 
+        values_method: 
+        values_method_options: {}
+        options:
+          :protected: false
+        label: Add Size in GB *
+        position: 1
+        validator_type: regex
+        validator_rule: ^(\d{2,3})
+        reconfigurable: 
