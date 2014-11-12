@@ -1,6 +1,6 @@
 # RenameVM.rb
 #
-# Description: This method is used to rename a VM in vCenter
+# Description: This method renames a VM in vCenter
 #
 
 require 'savon'
@@ -22,6 +22,42 @@ def logout(client)
   end
 end
 
+def call_vCenter(soap_action, body_hash, vm)
+  # get servername and credentials from vm.ext_management_system
+  servername = vm.ext_management_system.ipaddress
+  username = vm.ext_management_system.authentication_userid
+  password = vm.ext_management_system.authentication_password
+
+  client = Savon.client(
+    :wsdl => "https://#{servername}/sdk/vim.wsdl",
+    :endpoint => "https://#{servername}/sdk/",
+    :ssl_verify_mode => :none,
+    :ssl_version => :TLSv1,
+    :raise_errors => false,
+    :log_level => :info,
+    :log => false
+  )
+  #client.operations.sort.each { |operation| $evm.log(:info, "Savon Operation: #{operation}") }
+
+  # login and set cookie
+  login(client, username, password)
+
+  begin
+    result = client.call(soap_action) do
+      message( body_hash ).to_hash
+    end
+  rescue => soap_error
+    $evm.log(:error, "Error calling soap_action: #{soap_action} error: #{soap_error.class} #{soap_error} result: #{result.inspect rescue nil}")
+  end
+  $evm.log(:info, "result.success?: #{result.success?}")
+
+  # logout
+  logout(client)
+
+  $evm.log(:info, "response: #{result.body["#{soap_action}_response".to_sym]}")
+  return result.body["#{soap_action}_response".to_sym]
+end
+
 # Get vm object from root
 vm = $evm.root['vm']
 raise "VM object not found" if vm.nil?
@@ -35,32 +71,9 @@ vm_name = $evm.root['dialog_vm_name']
 $evm.log(:info,"Detected VM: #{vm.name} vendor: #{vm.vendor} provider: #{vm.ext_management_system.name} ems_ref: #{vm.ems_ref} new_name: #{vm_name}")
 raise "missing $evm.root['dialog_vm_name']" if vm_name.nil?
 
-# get servername and credentials from vm.ext_management_system
-servername = vm.ext_management_system.ipaddress
-username = vm.ext_management_system.authentication_userid
-password = vm.ext_management_system.authentication_password
-
-client = Savon.client(
-  :wsdl => "https://#{servername}/sdk/vim.wsdl",
-  :endpoint => "https://#{servername}/sdk/",
-  :ssl_verify_mode => :none,
-  :ssl_version => :TLSv1,
-  :raise_errors => false,
-  :log_level => :info,
-  :log => false
-)
-
-#client.operations.sort.each { |operation| $evm.log(:info, "Savon Operation: #{operation}") }
-
-# login and set cookie
-login(client, username, password)
+body_hash = { '_this' => vm.ems_ref, :attributes! => { 'type' => "VirtualMachine"}, "newName" => ["#{vm_name}"] }
 
 # perform Rename_Task
-rename_result = client.call(:rename_task) do
-  message({ '_this' => vm.ems_ref, :attributes! => { 'type' => "VirtualMachine"}, "newName" => ["#{vm_name}"] } )
-end
-#$evm.log(:warn, "rename_result: #{rename_result.inspect}")
-$evm.log(:warn, "rename_result: #{rename_result.success?}")
-
-# logout
-logout(client)
+response = call_vCenter(:rename_task, body_hash, vm)
+$evm.log(:info, "response: #{response.inspect}")
+#response: {:returnval=>"task-174", :@xmlns=>"urn:vim25"}
