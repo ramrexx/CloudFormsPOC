@@ -9,4 +9,4 @@ object:
     description: 
   fields:
   - rel1:
-      value: /Integration/ServiceNow/ServiceNow_CreateIncident
+      value: /Integration/ServiceNow/Incident/CreateIncident

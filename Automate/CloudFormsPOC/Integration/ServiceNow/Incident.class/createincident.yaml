@@ -9,10 +9,10 @@ object:
     description: 
   fields:
   - servername:
-      value: manageiqdemo.service-now.com
+      value: dev308.service-now.com
   - username:
-      value: admin
+      value: cf_eng
   - password:
-      value: v1:{ye5uRh6tSETlc5jyY7OVLQ==}
+      value: v2:{a3OALCXczdwM2OvY3NaqVw==}
   - method1:
       value: CreateIncident

@@ -1,0 +1,22 @@
+---
+object_type: instance
+version: 1.0
+object:
+  attributes:
+    display_name: 
+    name: NetScaler_BindServiceGroup
+    inherits: 
+    description: 
+  fields:
+  - username:
+      value: nsroot
+  - password:
+      value: v1:{2ugZrD9bJJg+abB/0Sy/8g==}
+  - wsdl_uri:
+      value: /var/www/miq/netscaler.wsdl
+  - servicegroupname:
+      value: svc-grp
+  - port:
+      value: '80'
+  - execute:
+      value: NetScaler_BindServiceGroup

@@ -4,9 +4,11 @@ version: 1.0
 object:
   attributes:
     display_name: 
-    name: vm_retire_extend
+    name: IPAM_Import
     inherits: 
     description: 
   fields:
-  - rel5:
-      value: /${/#ae_provider_category}/VM/Retirement/Email/vm_retire_extend
+  - import_file:
+      value: /var/www/miq/ipamdb.csv
+  - execute:
+      value: IPAM_Import

@@ -1,0 +1,12 @@
+---
+object_type: method
+version: 1.0
+object:
+  attributes:
+    name: ipamdb_csv
+    display_name: Sample
+    description: 
+    scope: instance
+    language: ruby
+    location: inline
+  inputs: []

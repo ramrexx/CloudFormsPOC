@@ -4,9 +4,9 @@ version: 1.0
 object:
   attributes:
     display_name: 
-    name: vm_retire_extend
+    name: IPAM_Release_from_MIQ
     inherits: 
     description: 
   fields:
-  - rel5:
-      value: /${/#ae_provider_category}/VM/Retirement/Email/vm_retire_extend
+  - execute:
+      value: IPAM_Release_from_MIQ

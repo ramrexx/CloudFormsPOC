@@ -1,0 +1,22 @@
+---
+object_type: instance
+version: 1.0
+object:
+  attributes:
+    display_name: 
+    name: sample-10.0.0.10
+    inherits: 
+    description: 
+  fields:
+  - vlan:
+      value: External
+  - hostname:
+      value: evm0000
+  - ipaddr:
+      value: 10.0.0.10
+  - submask:
+      value: 255.0.0.0
+  - gateway:
+      value: 10.0.0.1
+  - inuse:
+      value: 'true'

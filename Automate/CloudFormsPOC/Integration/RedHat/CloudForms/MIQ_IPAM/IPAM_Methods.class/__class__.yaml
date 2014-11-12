@@ -1,0 +1,133 @@
+---
+object_type: class
+version: 1.0
+object:
+  attributes:
+    description: 
+    display_name: 
+    name: IPAM_Methods
+    type: 
+    inherits: 
+    visibility: 
+    owner: 
+  schema:
+  - field:
+      aetype: attribute
+      name: path_to_db
+      display_name: 
+      datatype: string
+      priority: 1
+      owner: 
+      default_value: /Integration/MIQ_IPAM/IPAM_DB
+      substitute: true
+      message: create
+      visibility: 
+      collect: 
+      scope: 
+      description: 
+      condition: 
+      on_entry: 
+      on_exit: 
+      on_error: 
+      max_retries: 
+      max_time: 
+  - field:
+      aetype: attribute
+      name: import_file
+      display_name: 
+      datatype: string
+      priority: 2
+      owner: 
+      default_value: 
+      substitute: true
+      message: create
+      visibility: 
+      collect: 
+      scope: 
+      description: 
+      condition: 
+      on_entry: 
+      on_exit: 
+      on_error: 
+      max_retries: 
+      max_time: 
+  - field:
+      aetype: attribute
+      name: get_vlan
+      display_name: 
+      datatype: string
+      priority: 3
+      owner: 
+      default_value: 
+      substitute: true
+      message: create
+      visibility: 
+      collect: 
+      scope: 
+      description: 
+      condition: 
+      on_entry: 
+      on_exit: 
+      on_error: 
+      max_retries: 
+      max_time: 
+  - field:
+      aetype: attribute
+      name: get_hostname
+      display_name: 
+      datatype: string
+      priority: 4
+      owner: 
+      default_value: 
+      substitute: true
+      message: create
+      visibility: 
+      collect: 
+      scope: 
+      description: 
+      condition: 
+      on_entry: 
+      on_exit: 
+      on_error: 
+      max_retries: 
+      max_time: 
+  - field:
+      aetype: attribute
+      name: get_ipaddr
+      display_name: 
+      datatype: string
+      priority: 5
+      owner: 
+      default_value: 
+      substitute: true
+      message: create
+      visibility: 
+      collect: 
+      scope: 
+      description: 
+      condition: 
+      on_entry: 
+      on_exit: 
+      on_error: 
+      max_retries: 
+      max_time: 
+  - field:
+      aetype: method
+      name: execute
+      display_name: 
+      datatype: string
+      priority: 6
+      owner: 
+      default_value: 
+      substitute: true
+      message: create
+      visibility: 
+      collect: 
+      scope: 
+      description: 
+      condition: 
+      on_entry: 
+      on_exit: 
+      on_error: 
+      max_retries: 
+      max_time: 

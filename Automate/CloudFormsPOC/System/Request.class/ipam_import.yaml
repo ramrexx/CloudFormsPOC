@@ -9,4 +9,4 @@ object:
     description: 
   fields:
   - rel2:
-      value: /CompanyXYZ/Integration/MIQ_IPAM/IPAM_Methods/IPAM_Import
+      value: /Integration/RedHat/CloudForms/MIQ_IPAM/IPAM_Methods/IPAM_Import

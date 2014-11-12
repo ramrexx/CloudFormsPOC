@@ -29,7 +29,7 @@ begin
     AWS.config(
       :access_key_id => ext_management_system.authentication_userid,
       :secret_access_key => ext_management_system.authentication_password,
-      :region => ext_management_system.name
+      :region => ext_management_system.provider_region
     )
     return AWS::RDS.new()
   end
