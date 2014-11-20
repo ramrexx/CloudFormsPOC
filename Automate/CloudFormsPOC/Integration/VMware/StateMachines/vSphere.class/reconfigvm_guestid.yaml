@@ -4,9 +4,9 @@ version: 1.0
 object:
   attributes:
     display_name: 
-    name: vmware_RenameVM
+    name: ReconfigVM_GuestId
     inherits: 
     description: 
   fields:
-  - rel2:
-      value: /Integration/VMware/StateMachines/vSphere/RenameVM
+  - Step2:
+      value: /Integration/VMware/vCenter/ReconfigVM_GuestId

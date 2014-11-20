@@ -3,7 +3,7 @@ object_type: namespace
 version: 1.0
 object:
   attributes:
-    name: BMV
+    name: BMC
     description: 
     display_name: 
     system: 

@@ -4,9 +4,9 @@ version: 1.0
 object:
   attributes:
     display_name: 
-    name: ReconfigVM_Task_memoryHotAddEnabled
+    name: ReconfigVM_memoryHotAddEnabled
     inherits: 
     description: 
   fields:
   - method1:
-      value: ReconfigVM_Task_memoryHotAddEnabled
+      value: ReconfigVM_memoryHotAddEnabled

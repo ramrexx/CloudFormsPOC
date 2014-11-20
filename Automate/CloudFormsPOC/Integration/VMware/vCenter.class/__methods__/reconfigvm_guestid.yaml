@@ -3,7 +3,7 @@ object_type: method
 version: 1.0
 object:
   attributes:
-    name: RenameVM
+    name: ReconfigVM_GuestId
     display_name: 
     description: 
     scope: instance

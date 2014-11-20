@@ -4,9 +4,9 @@ version: 1.0
 object:
   attributes:
     display_name: 
-    name: RDS_Create
+    name: vmware_ReconfigVM_GuestId
     inherits: 
     description: 
   fields:
-  - on_entry:
-      value: InspectMe
+  - rel2:
+      value: /Integration/VMware/StateMachines/vSphere/ReconfigVM_GuestId

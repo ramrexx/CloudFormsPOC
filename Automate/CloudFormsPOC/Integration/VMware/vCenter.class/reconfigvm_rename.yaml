@@ -4,9 +4,9 @@ version: 1.0
 object:
   attributes:
     display_name: 
-    name: RenameVM
+    name: ReconfigVM_Rename
     inherits: 
     description: 
   fields:
   - method2:
-      value: RenameVM
+      value: ReconfigVM_Rename

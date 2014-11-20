@@ -8,7 +8,5 @@ object:
     inherits: 
     description: 
   fields:
-  - Step1:
-      on_error: ExecuteOnError
   - Step2:
       value: /Integration/VMware/vCenter/AddDisk_to_VM

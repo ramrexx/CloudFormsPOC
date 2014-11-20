@@ -4,9 +4,9 @@ version: 1.0
 object:
   attributes:
     display_name: 
-    name: NetApp_WFA_CreateStorage
+    name: ReconfigVM_Rename
     inherits: 
     description: 
   fields:
-  - method1:
-      value: NetApp_WFA_CreateStorage
+  - Step2:
+      value: /Integration/VMware/vCenter/ReconfigVM_Rename

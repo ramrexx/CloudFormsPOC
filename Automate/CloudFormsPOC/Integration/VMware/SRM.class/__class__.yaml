@@ -4,7 +4,7 @@ version: 1.0
 object:
   attributes:
     description: 
-    display_name:
+    display_name: 
     name: SRM
     type: 
     inherits: 
@@ -30,7 +30,7 @@ object:
       on_exit: 
       on_error: 
       max_retries: 
-      max_time:
+      max_time: 
   - field:
       aetype: attribute
       name: username

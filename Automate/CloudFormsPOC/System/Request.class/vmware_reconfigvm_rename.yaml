@@ -4,9 +4,9 @@ version: 1.0
 object:
   attributes:
     display_name: 
-    name: ReconfigVM_Task_guestID
+    name: vmware_ReconfigVM_Rename
     inherits: 
     description: 
   fields:
-  - method1:
-      value: ReconfigVM_Task_guestID
+  - rel2:
+      value: /Integration/VMware/StateMachines/vSphere/ReconfigVM_Rename

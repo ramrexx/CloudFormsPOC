@@ -4,9 +4,9 @@ version: 1.0
 object:
   attributes:
     display_name: 
-    name: ReconfigVM_Task_cpuHotAddEnabled
+    name: ReconfigVM_cpuHotAddEnabled
     inherits: 
     description: 
   fields:
   - method1:
-      value: ReconfigVM_Task_cpuHotAddEnabled
+      value: ReconfigVM_cpuHotAddEnabled

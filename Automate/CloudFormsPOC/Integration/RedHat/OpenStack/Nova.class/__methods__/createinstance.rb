@@ -79,7 +79,7 @@ unless flavor_id.nil?
 end
 
 ssh_key = $evm.root['dialog_ssh_key_id']
-network_id = $evm.root['dialog_network_id_id']
+network_id = $evm.root['dialog_network_id']
 
 launch_instance_hash = {}
 launch_instance_hash[:name] = instance_name unless instance_name.nil?
