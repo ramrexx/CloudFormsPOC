@@ -158,7 +158,7 @@ object:
       datatype: string
       priority: 8
       owner: 
-      default_value: /Cloud/VM/Provisioning/StateMachines/Methods/PreProvision#${/#miq_provision.source.vendor}
+      default_value: 
       substitute: true
       message: create
       visibility: 
@@ -173,10 +173,30 @@ object:
       max_time: 
   - field:
       aetype: state
-      name: Provision
+      name: PreProvision1
       display_name: 
       datatype: string
       priority: 9
+      owner: 
+      default_value: /Cloud/VM/Provisioning/StateMachines/Methods/PreProvision#${/#miq_provision.source.vendor}
+      substitute: true
+      message: create
+      visibility: 
+      collect: 
+      scope: 
+      description: 
+      condition: 
+      on_entry: update_provision_status(status => 'Applying PreProvision1 Customizations')
+      on_exit: update_provision_status(status => 'Applied PreProvision1 Customizations')
+      on_error: update_provision_status(status => 'Error Applying PreProvision1 Customizations')
+      max_retries: '100'
+      max_time: 
+  - field:
+      aetype: state
+      name: Provision
+      display_name: 
+      datatype: string
+      priority: 10
       owner: 
       default_value: /Cloud/VM/Provisioning/StateMachines/Methods/Provision
       substitute: true
@@ -196,7 +216,7 @@ object:
       name: CheckProvisioned
       display_name: 
       datatype: string
-      priority: 10
+      priority: 11
       owner: 
       default_value: /Cloud/VM/Provisioning/StateMachines/Methods/CheckProvisioned
       substitute: true
@@ -216,7 +236,7 @@ object:
       name: PostProvision
       display_name: 
       datatype: string
-      priority: 11
+      priority: 12
       owner: 
       default_value: /Cloud/VM/Provisioning/StateMachines/Methods/PostProvision#${/#miq_provision.source.vendor}
       substitute: true
@@ -233,10 +253,50 @@ object:
       max_time: 
   - field:
       aetype: state
+      name: PostProvision1
+      display_name: 
+      datatype: string
+      priority: 13
+      owner: 
+      default_value: 
+      substitute: true
+      message: create
+      visibility: 
+      collect: 
+      scope: 
+      description: 
+      condition: 
+      on_entry: update_provision_status(status => 'Applying PostProvision1 Customizations')
+      on_exit: update_provision_status(status => 'Applied PostProvision1 Customizations')
+      on_error: update_provision_status(status => 'Error Applying PostProvision1 Customizations')
+      max_retries: '100'
+      max_time: 
+  - field:
+      aetype: state
+      name: PostProvision2
+      display_name: 
+      datatype: string
+      priority: 14
+      owner: 
+      default_value: 
+      substitute: true
+      message: create
+      visibility: 
+      collect: 
+      scope: 
+      description: 
+      condition: 
+      on_entry: update_provision_status(status => 'Applying PostProvision2 Customizations')
+      on_exit: update_provision_status(status => 'Applied PostProvision2 Customizations')
+      on_error: update_provision_status(status => 'Error Applying PostProvision1 Customizations')
+      max_retries: '100'
+      max_time: 
+  - field:
+      aetype: state
       name: RegisterDHCP
       display_name: 
       datatype: string
-      priority: 12
+      priority: 15
       owner: 
       default_value: 
       substitute: true
@@ -256,7 +316,7 @@ object:
       name: ActivateCMDB
       display_name: 
       datatype: string
-      priority: 13
+      priority: 16
       owner: 
       default_value: 
       substitute: true
@@ -273,10 +333,30 @@ object:
       max_time: 
   - field:
       aetype: state
+      name: AddVMToService
+      display_name: 
+      datatype: string
+      priority: 17
+      owner: 
+      default_value: 
+      substitute: true
+      message: create
+      visibility: 
+      collect: 
+      scope: 
+      description: 
+      condition: 
+      on_entry: update_provision_status(status => 'Adding VM to Service')
+      on_exit: update_provision_status(status => 'Added VM to Service')
+      on_error: update_provision_status(status => 'Error Adding VM to Service')
+      max_retries: 
+      max_time: 
+  - field:
+      aetype: state
       name: EmailOwner
       display_name: 
       datatype: string
-      priority: 14
+      priority: 18
       owner: 
       default_value: /Cloud/VM/Provisioning/Email/MiqProvision_Complete?event=vm_provisioned
       substitute: true
@@ -296,7 +376,7 @@ object:
       name: Finished
       display_name: 
       datatype: string
-      priority: 16
+      priority: 19
       owner: 
       default_value: /System/CommonMethods/StateMachineMethods/vm_provision_finished
       substitute: true

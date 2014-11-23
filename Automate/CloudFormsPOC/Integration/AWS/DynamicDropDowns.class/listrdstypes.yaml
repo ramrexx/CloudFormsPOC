@@ -9,4 +9,4 @@ object:
     description: 
   fields:
   - method1:
-      value: listRDSTypes
+      value: ListRDSTypes

@@ -12,3 +12,5 @@ object:
       value: /Cloud/VM/Provisioning/StateMachines/Methods/Provision
   - CheckProvisioned:
       value: /Cloud/VM/Provisioning/StateMachines/Methods/CheckProvisioned
+  - AddVMToService:
+      value: /Cloud/VM/Provisioning/StateMachines/Methods/AddVMToService

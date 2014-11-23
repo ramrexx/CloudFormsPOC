@@ -17,7 +17,7 @@ begin
       :access_key_id => ext_management_system.authentication_userid,
       :secret_access_key => ext_management_system.authentication_password
     )
-    return AWS::EC2.new().regions[aws.hostname]
+    return AWS::EC2.new().regions[aws.provider_region]
   end
 
   log(:info, "Begin Automate Method")

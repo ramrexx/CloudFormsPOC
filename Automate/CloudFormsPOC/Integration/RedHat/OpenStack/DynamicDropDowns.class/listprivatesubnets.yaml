@@ -4,9 +4,9 @@ version: 1.0
 object:
   attributes:
     display_name: 
-    name: ListRDSVersions
+    name: ListPrivateSubnets
     inherits: 
     description: 
   fields:
-  - method1:
-      value: istRDSVersions
+  - execute:
+      value: ListPrivateSubnets

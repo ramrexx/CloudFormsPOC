@@ -94,6 +94,7 @@ launch_instance_hash[:block_device_mapping] = [
     :delete_on_termination => 1,
     :device_name => 'vda'
 }]
+log(:info, "Create server hash: #{launch_instance_hash.inspect}")
 
 server = conn.servers.create(launch_instance_hash)
 

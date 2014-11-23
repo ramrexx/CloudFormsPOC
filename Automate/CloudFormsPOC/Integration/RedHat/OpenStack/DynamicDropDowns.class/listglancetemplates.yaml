@@ -9,4 +9,4 @@ object:
     description: 
   fields:
   - execute:
-      value: listGlanceTemplates
+      value: ListGlanceTemplates

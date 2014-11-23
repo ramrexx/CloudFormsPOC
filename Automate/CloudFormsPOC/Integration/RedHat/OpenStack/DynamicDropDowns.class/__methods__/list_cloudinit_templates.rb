@@ -8,7 +8,7 @@ $evm.log(:info, "Got list #{list.inspect}")
 my_hash = {}
 for ct in list
   if ct.name.start_with?("CLOUDINIT-OPENSTACK")
-    my_hash[ct.description] = ct.id
+    my_hash[ct.id] = ct.description
     $evm.log(:info, "Pushed #{ct.name} onto the list")
   else
     $evm.log(:info, "Not pushing #{ct.name} onto the list")
@@ -16,10 +16,5 @@ for ct in list
 end
 
 my_hash[nil] = nil
-
-# $evm.object["sort_by"] = "description"
-# $evm.object["sort_order"] = "ascending"
-# $evm.object["data_type"] = "string"
-# $evm.object["required"] = "true"
 $evm.object['values'] = my_hash
 $evm.log(:info, "Dynamic drop down values: #{$evm.object['values']}")
