@@ -1,6 +1,6 @@
-# ReconfigVM_memoryHotAddEnabled.rb
+# vMotion.rb
 #
-# Description: This method changes a VM's memoryHotAddEnabled switch to true or false in vCenter
+# Description: This method vMotions a VM in vCenter
 #
 require 'savon'
 
@@ -8,7 +8,7 @@ def login(client, username, password)
   result = client.call(:login) do
     message( :_this => "SessionManager", :userName => username, :password => password )
   end
-  client.globals.headers({ "Cookie" => result.http.headers["Set-Cookie"] })
+  client.globals.headers( { "Cookie" => result.http.headers["Set-Cookie"] } )
 end
 
 def logout(client)
@@ -21,6 +21,8 @@ def logout(client)
   end
 end
 
+$evm.root.attributes.sort.each { |k, v| $evm.log(:info,"Root:<$evm.root> Attributes - #{k}: #{v}")}
+
 # Get vm object from root
 vm = $evm.root['vm']
 raise "VM object not found" if vm.nil?
@@ -28,9 +30,11 @@ raise "VM object not found" if vm.nil?
 # This method only works with VMware VMs currently
 raise "Invalid vendor:<#{vm.vendor}>" unless vm.vendor.downcase == 'vmware'
 
-$evm.root['dialog_memoryHotAddEnabled'].nil? ? (cpuHotAddEnabled = true) : (cpuHotAddEnabled = $evm.root['dialog_cpuHotAddEnabled'])
-
 $evm.log(:info,"Detected VM: #{vm.name} vendor: #{vm.vendor} provider: #{vm.ext_management_system.name} ems_ref: #{vm.ems_ref}")
+
+# get resource_pool.ems_ref from root
+resource_pool_ems_ref = $evm.root['dialog_resource_pool_ems_ref']
+datastore_ems_ref = $evm.root['dialog_datastore_ems_ref']
 
 # get servername and credentials from vm.ext_management_system
 servername = vm.ext_management_system.ipaddress
@@ -51,12 +55,17 @@ client = Savon.client(
 # login and set cookie
 login(client, username, password)
 
-reconfig_vm_task_result = client.call(:reconfig_vm_task) do
-  message( '_this' => vm.ems_ref, :attributes! => { 'type' => 'VirtualMachine' },
-    'spec' => { 'memoryHotAddEnabled' => true }, :attributes! => { 'type' => 'VirtualMachineConfigSpec' }  ).to_hash
-end
+body_hash={}
+body_hash['_this'] = vm.ems_ref
+body_hash[:attributes!] = { 'type' => 'VirtualMachine' }
+body_hash['spec'] = {}
+body_hash['spec']['datastore'] = datastore_ems_ref unless datastore_ems_ref.nil? && vm.storage.ems_ref == datastore_ems_ref
+body_hash['spec']['pool'] = resource_pool_ems_ref unless resource_pool_ems_ref.nil? && vm.resource_pool.ems_ref == resource_pool_ems_ref
+body_hash['spec'][:attributes!]   = {'type' =>  'VirtualMachineRelocateSpec'}
 
-#$evm.log(:warn, "reconfig_vm_task_result: #{reconfig_vm_task_result.inspect}")
-$evm.log(:info, "reconfig_vm_task_result success?: #{reconfig_vm_task_result.success?}")
+$evm.log(:info, "vMotioning vm: #{vm.name} using bodyhash: #{body_hash}")
+result = client.call(:relocate_vm_task, :message => body_hash)
+$evm.log(:warn, "result body: #{result.body[:relocate_vm_task_response].inspect}")
+$evm.log(:info, "result success?: #{result.success?}")
 
 logout(client)

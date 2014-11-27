@@ -32,7 +32,7 @@ raise "Invalid vendor:<#{vm.vendor}>" unless vm.vendor.downcase == 'vmware'
 $evm.log(:info,"Detected VM: #{vm.name} vendor: #{vm.vendor} provider: #{vm.ext_management_system.name} ems_ref: #{vm.ems_ref}")
 
 # get resource_pool.ems_ref from root
-resource_pool = $evm.root['dialog_resource_pool']
+  resource_pool = $evm.root['dialog_resource_pool_ems_ref']
 
 # get servername and credentials from vm.ext_management_system
 servername = vm.ext_management_system.ipaddress

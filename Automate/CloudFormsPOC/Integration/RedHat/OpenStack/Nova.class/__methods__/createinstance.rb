@@ -86,7 +86,7 @@ launch_instance_hash[:name] = instance_name unless instance_name.nil?
 launch_instance_hash[:flavor_ref] = flavor.ems_ref unless flavor.nil?
 launch_instance_hash[:user_data] = user_data unless user_data.nil?
 launch_instance_hash[:key_name] = ssh_key.name unless ssh_key.nil?
-launch_instance_hash[:network_id] = network_id unless network_id.nil?
+launch_instance_hash[:nics] = [ { 'net_id' => network_id } ] unless network_id.nil?
 launch_instance_hash[:block_device_mapping] = [
   {
     :volume_size => '',

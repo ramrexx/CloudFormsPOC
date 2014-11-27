@@ -15,7 +15,7 @@ num_disks = vm.num_hard_disks
 for disk_num in (1..num_disks)
   disk_size = "disk_#{disk_num}_size"
   if vm.respond_to?(disk_size)
-    disks_hash["disk#{disk_num}"] = disk_num unless vm.send(disk_size).to_i.zero?
+    disks_hash[disk_num] = "disk#{disk_num}" unless vm.send(disk_size).to_i.zero?
   end
 end
 
