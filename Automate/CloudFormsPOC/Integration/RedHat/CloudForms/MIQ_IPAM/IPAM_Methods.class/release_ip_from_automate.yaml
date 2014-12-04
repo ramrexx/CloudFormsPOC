@@ -4,9 +4,9 @@ version: 1.0
 object:
   attributes:
     display_name: 
-    name: IPAM_Release_from_MIQ
+    name: Release_IP_From_Automate
     inherits: 
     description: 
   fields:
   - execute:
-      value: IPAM_Release_from_MIQ
+      value: Release_IP_From_Automate

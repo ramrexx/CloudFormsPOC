@@ -18,7 +18,7 @@ object:
       datatype: string
       priority: 1
       owner: 
-      default_value: /Integration/MIQ_IPAM/IPAM_DB
+      default_value: /CloudFormsPOC/Integration/RedHat/CloudForms/MIQ_IPAM/IPAM_DB
       substitute: true
       message: create
       visibility: 

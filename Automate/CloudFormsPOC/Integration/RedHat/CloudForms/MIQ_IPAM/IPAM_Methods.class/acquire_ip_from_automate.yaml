@@ -4,7 +4,7 @@ version: 1.0
 object:
   attributes:
     display_name: 
-    name: IPAM_Acquire_from_MIQ
+    name: Acquire_IP_From_Automate
     inherits: 
     description: 
   fields:
@@ -15,4 +15,4 @@ object:
   - get_ipaddr:
       value: 'true'
   - execute:
-      value: IPAM_Acquire_from_MIQ
+      value: Acquire_IP_From_Automate

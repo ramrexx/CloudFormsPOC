@@ -3,7 +3,7 @@ object_type: method
 version: 1.0
 object:
   attributes:
-    name: IPAM_Acquire_from_MIQ
+    name: Acquire_IP_From_Automate
     display_name: 
     description: 
     scope: instance
