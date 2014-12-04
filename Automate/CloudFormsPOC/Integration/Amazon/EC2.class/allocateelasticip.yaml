@@ -4,9 +4,9 @@ version: 1.0
 object:
   attributes:
     display_name: 
-    name: amazon_PushCFMETags
+    name: AllocateElasticIP
     inherits: 
     description: 
   fields:
-  - rel2:
-      value: /Integration/AWS/EC2/PushCFMETags
+  - method1:
+      value: AllocateElasticIP

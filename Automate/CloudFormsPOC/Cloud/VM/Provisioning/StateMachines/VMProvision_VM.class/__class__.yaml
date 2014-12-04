@@ -158,7 +158,7 @@ object:
       datatype: string
       priority: 8
       owner: 
-      default_value: 
+      default_value: /Cloud/VM/Provisioning/StateMachines/Methods/PreProvision#${/#miq_provision.source.vendor}
       substitute: true
       message: create
       visibility: 
@@ -178,7 +178,7 @@ object:
       datatype: string
       priority: 9
       owner: 
-      default_value: /Cloud/VM/Provisioning/StateMachines/Methods/PreProvision#${/#miq_provision.source.vendor}
+      default_value: 
       substitute: true
       message: create
       visibility: 

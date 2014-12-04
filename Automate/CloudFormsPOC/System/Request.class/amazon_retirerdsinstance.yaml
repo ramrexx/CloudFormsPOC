@@ -4,9 +4,9 @@ version: 1.0
 object:
   attributes:
     display_name: 
-    name: AddAWSTags
+    name: amazon_RetireRDSInstance
     inherits: 
     description: 
   fields:
-  - method1:
-      value: addAWSTags
+  - rel1:
+      value: /Integration/Amazon/StateMachines/RDS/DeleteRDSInstance

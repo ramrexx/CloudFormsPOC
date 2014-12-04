@@ -4,9 +4,9 @@ version: 1.0
 object:
   attributes:
     display_name: 
-    name: Retire_RDS_Database
+    name: PushEC2Tags
     inherits: 
     description: 
   fields:
-  - rel1:
-      value: /Integration/AWS/StateMachines/AmazonRDS/DeleteRDSInstance
+  - method1:
+      value: PushEC2Tags

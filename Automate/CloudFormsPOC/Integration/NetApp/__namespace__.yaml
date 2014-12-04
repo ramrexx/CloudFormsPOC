@@ -3,7 +3,7 @@ object_type: namespace
 version: 1.0
 object:
   attributes:
-    name: AWS
+    name: NetApp
     description: 
     display_name: 
     system: 

@@ -4,9 +4,9 @@ version: 1.0
 object:
   attributes:
     display_name: 
-    name: PushCFMETags
+    name: SyncVMTags
     inherits: 
     description: 
   fields:
   - method1:
-      value: pushCFMETags
+      value: SyncVMTags

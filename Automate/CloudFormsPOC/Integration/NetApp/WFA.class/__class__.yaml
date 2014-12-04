@@ -3,9 +3,9 @@ object_type: class
 version: 1.0
 object:
   attributes:
-    description: Sample StateMachine Class
+    description: 
     display_name: 
-    name: SAMPLE-StateMachine
+    name: WFA
     type: 
     inherits: 
     visibility: 
@@ -32,8 +32,8 @@ object:
       max_retries: 
       max_time: 
   - field:
-      aetype: state
-      name: step1
+      aetype: attribute
+      name: servername
       display_name: 
       datatype: string
       priority: 2
@@ -52,8 +52,8 @@ object:
       max_retries: 
       max_time: 
   - field:
-      aetype: state
-      name: step2
+      aetype: attribute
+      name: username
       display_name: 
       datatype: string
       priority: 3
@@ -72,13 +72,13 @@ object:
       max_retries: 
       max_time: 
   - field:
-      aetype: state
-      name: step3
+      aetype: attribute
+      name: password
       display_name: 
-      datatype: string
+      datatype: password
       priority: 4
       owner: 
-      default_value: 
+      default_value: v1:{o3WJPVTn5+vX6FFWAd1Auw==}
       substitute: true
       message: create
       visibility: 
@@ -92,8 +92,8 @@ object:
       max_retries: 
       max_time: 
   - field:
-      aetype: state
-      name: step4
+      aetype: attribute
+      name: workflow_guid
       display_name: 
       datatype: string
       priority: 5
@@ -112,8 +112,8 @@ object:
       max_retries: 
       max_time: 
   - field:
-      aetype: state
-      name: step5
+      aetype: attribute
+      name: to_email_address
       display_name: 
       datatype: string
       priority: 6
@@ -132,11 +132,71 @@ object:
       max_retries: 
       max_time: 
   - field:
-      aetype: state
-      name: step6
+      aetype: attribute
+      name: from_email_address
       display_name: 
       datatype: string
       priority: 7
+      owner: 
+      default_value: 
+      substitute: true
+      message: create
+      visibility: 
+      collect: 
+      scope: 
+      description: 
+      condition: 
+      on_entry: 
+      on_exit: 
+      on_error: 
+      max_retries: 
+      max_time: 
+  - field:
+      aetype: attribute
+      name: signature
+      display_name: 
+      datatype: string
+      priority: 8
+      owner: 
+      default_value: 
+      substitute: true
+      message: create
+      visibility: 
+      collect: 
+      scope: 
+      description: 
+      condition: 
+      on_entry: 
+      on_exit: 
+      on_error: 
+      max_retries: 
+      max_time: 
+  - field:
+      aetype: method
+      name: method1
+      display_name: 
+      datatype: string
+      priority: 9
+      owner: 
+      default_value: 
+      substitute: true
+      message: create
+      visibility: 
+      collect: 
+      scope: 
+      description: 
+      condition: 
+      on_entry: 
+      on_exit: 
+      on_error: 
+      max_retries: 
+      max_time: 
+  - field:
+      aetype: method
+      name: method2
+      display_name: 
+      datatype: string
+      priority: 10
       owner: 
       default_value: 
       substitute: true

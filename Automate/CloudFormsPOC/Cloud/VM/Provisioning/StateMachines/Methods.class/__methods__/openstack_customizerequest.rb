@@ -1,6 +1,11 @@
+# openstack_CustomizeRequest.rb
 #
 # Description: This method is used to Customize the Openstack Provisioning Request
 #
+def log(level, msg, update_message=false)
+  $evm.log(level, "#{msg}")
+  $evm.root['miq_provision'].message = msg if $evm.root['miq_provision'] && update_message
+end
 
 # process_customization - mapping instance_types, key pairs, security groups and cloud-init templates
 def process_customization(mapping, prov, template, product, provider )
@@ -40,16 +45,24 @@ def process_customization(mapping, prov, template, product, provider )
 
     if prov.get_option(:customization_template_id).nil?
       customization_template_search_by_function       = "#{prov.type}_#{prov.get_tags[:function]}" rescue nil
+      customization_template_search_by_role           = "#{prov.type}_#{prov.get_tags[:role]}" rescue nil
       customization_template_search_by_template_name  = template.name
       customization_template_search_by_ws_values      = ws_values[:customization_template] rescue nil
       log(:info, "prov.eligible_customization_templates: #{prov.eligible_customization_templates.inspect}")
       customization_template = nil
 
       unless customization_template_search_by_function.nil?
-        # Search for customization templates enabled for Cloud-Init that equal MiqProvisionOpenstack_prov.get_tags[:function]
+        # Search for customization templates enabled for Cloud-Init that equal MiqProvisionAmazon_prov.get_tags[:function]
         if customization_template.blank?
           log(:info, "Searching for customization templates (Cloud-Init) enabled that are named: #{customization_template_search_by_function}")
           customization_template = prov.eligible_customization_templates.detect { |ct| ct.name.casecmp(customization_template_search_by_function)==0 }
+        end
+      end
+      unless customization_template_search_by_role.nil?
+        # Search for customization templates enabled for Cloud-Init that equal MiqProvisionAmazon_prov.get_tags[:function]
+        if customization_template.blank?
+          log(:info, "Searching for customization templates (Cloud-Init) enabled that are named: #{customization_template_search_by_role}")
+          customization_template = prov.eligible_customization_templates.detect { |ct| ct.name.casecmp(customization_template_search_by_role)==0 }
         end
       end
       unless customization_template_search_by_template_name.nil?
@@ -96,5 +109,8 @@ provider = template.ext_management_system
 product  = template.operating_system['product_name'].downcase rescue nil
 log(:info, "Template: #{template.name} Provider: #{provider.name} Vendor: #{template.vendor} Product: #{product}")
 
-mapping = 0
+mapping = 1
 process_customization(mapping, prov, template, product, provider)
+
+# Log all of the provisioning options to the automation.log
+prov.options.each { |k,v| log(:info, "Provisioning Option Key: #{k.inspect} Value: #{v.inspect}") }

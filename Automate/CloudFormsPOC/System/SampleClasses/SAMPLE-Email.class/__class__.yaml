@@ -3,9 +3,9 @@ object_type: class
 version: 1.0
 object:
   attributes:
-    description: 
+    description: Sample Email Class
     display_name: 
-    name: SAMPLE-Methods
+    name: SAMPLE-Email
     type: 
     inherits: 
     visibility: 

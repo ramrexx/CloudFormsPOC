@@ -9,8 +9,8 @@ object:
     description: 
   fields:
   - initialize:
-      value: /Integration/AWS/RDS/RDSCatalogItemInitialization
+      value: /Integration/Amazon/RDS/RDSCatalogItemInitialization
   - lifecycle:
-      value: /Integration/AWS/RDS/CreateRDSInstance
+      value: /Integration/Amazon/RDS/CreateRDSInstance
   - status:
-      value: /Integration/AWS/RDS/RDSInstanceStatus
+      value: /Integration/Amazon/RDS/RDSInstanceStatus

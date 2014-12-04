@@ -4,9 +4,9 @@ version: 1.0
 object:
   attributes:
     display_name: 
-    name: ElasticIP
+    name: amazon_SyncVMTags
     inherits: 
     description: 
   fields:
-  - method1:
-      value: allocateElasticIP
+  - rel2:
+      value: /Integration/Amazon/EC2/SyncVMTags

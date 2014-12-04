@@ -3,24 +3,24 @@ object_type: class
 version: 1.0
 object:
   attributes:
-    description: Amazon Relational Database Service State Machines
+    description: Sample Integration Class
     display_name: 
-    name: AmazonRDS
+    name: SAMPLE-Integration
     type: 
     inherits: 
     visibility: 
     owner: 
   schema:
   - field:
-      aetype: state
-      name: initialize
+      aetype: assertion
+      name: eval
       display_name: 
       datatype: string
       priority: 1
       owner: 
       default_value: 
       substitute: true
-      message: create
+      message: ! '*'
       visibility: 
       collect: 
       scope: 
@@ -32,8 +32,8 @@ object:
       max_retries: 
       max_time: 
   - field:
-      aetype: state
-      name: lifecycle
+      aetype: attribute
+      name: servername
       display_name: 
       datatype: string
       priority: 2
@@ -52,8 +52,8 @@ object:
       max_retries: 
       max_time: 
   - field:
-      aetype: state
-      name: status
+      aetype: attribute
+      name: username
       display_name: 
       datatype: string
       priority: 3
@@ -72,10 +72,10 @@ object:
       max_retries: 
       max_time: 
   - field:
-      aetype: state
-      name: post
+      aetype: attribute
+      name: password
       display_name: 
-      datatype: string
+      datatype: password
       priority: 4
       owner: 
       default_value: 
@@ -92,11 +92,31 @@ object:
       max_retries: 
       max_time: 
   - field:
-      aetype: state
-      name: notify
+      aetype: method
+      name: method1
       display_name: 
       datatype: string
       priority: 5
+      owner: 
+      default_value: 
+      substitute: true
+      message: create
+      visibility: 
+      collect: 
+      scope: 
+      description: 
+      condition: 
+      on_entry: 
+      on_exit: 
+      on_error: 
+      max_retries: 
+      max_time: 
+  - field:
+      aetype: method
+      name: method2
+      display_name: 
+      datatype: string
+      priority: 6
       owner: 
       default_value: 
       substitute: true

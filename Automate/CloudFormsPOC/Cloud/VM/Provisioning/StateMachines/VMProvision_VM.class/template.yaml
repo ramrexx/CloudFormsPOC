@@ -12,5 +12,7 @@ object:
       value: /Cloud/VM/Provisioning/StateMachines/Methods/Provision
   - CheckProvisioned:
       value: /Cloud/VM/Provisioning/StateMachines/Methods/CheckProvisioned
+  - PostProvision2:
+      value: /Integration/Amazon/EC2/SyncVMTags
   - AddVMToService:
       value: /Cloud/VM/Provisioning/StateMachines/Methods/AddVMToService

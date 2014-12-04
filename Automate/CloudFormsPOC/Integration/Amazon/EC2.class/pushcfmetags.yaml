@@ -4,9 +4,9 @@ version: 1.0
 object:
   attributes:
     display_name: 
-    name: amazon_AddAWSTags
+    name: PushCFMETags
     inherits: 
     description: 
   fields:
-  - rel2:
-      value: /Integration/AWS/EC2/AddAWSTags
+  - method1:
+      value: PushCFMETags

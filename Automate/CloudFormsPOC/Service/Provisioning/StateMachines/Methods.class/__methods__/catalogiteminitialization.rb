@@ -233,7 +233,8 @@ service_retirement(service, dialogs_tags_hash, dialogs_options_hash)
 
 matching_options_hash = {}
 matching_tags_hash = {}
-
+log(:info, "dialogs_tags_hash: #{dialogs_tags_hash.inspect}")
+log(:info, "dialogs_options_hash: #{dialogs_options_hash.inspect}")
 # merge build 0 hash
 dialogs_options_hash.each do |build, options|
   unless dialogs_options_hash[0].nil?
@@ -241,12 +242,18 @@ dialogs_options_hash.each do |build, options|
   else
     matching_options_hash = dialogs_options_hash[build] || {}
   end
+end
+log(:info, "matching_options_hash: #{matching_options_hash.inspect}")
+
+dialogs_tags_hash.each do |build, options|
   unless dialogs_tags_hash[0].nil?
+    log(:info, "KKKK - dialogs_tags_hash: #{dialogs_tags_hash[build].inspect}")
     matching_tags_hash = dialogs_tags_hash[0].merge(dialogs_tags_hash[build] || {})
   else
     matching_tags_hash = dialogs_tags_hash[build] || {}
   end
 end
+log(:info, "matching_tags_hash: #{matching_tags_hash.inspect}")
 
 $evm.root['service_template_provision_task'].miq_request_tasks.each do |t|
   # Child Service

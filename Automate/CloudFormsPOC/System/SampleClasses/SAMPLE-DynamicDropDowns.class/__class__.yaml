@@ -3,7 +3,7 @@ object_type: class
 version: 1.0
 object:
   attributes:
-    description: 
+    description: Sample Dynamic Drop Down Class
     display_name: 
     name: SAMPLE-DynamicDropDowns
     type: 
