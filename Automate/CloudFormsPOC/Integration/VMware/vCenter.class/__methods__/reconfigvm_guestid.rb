@@ -2,6 +2,8 @@
 #
 # Description: This method changes a VM's guestID to RHEL7 x86_64 in vCenter
 #
+# Reference: http://pubs.vmware.com/vsphere-55/index.jsp#com.vmware.wssdk.apiref.doc/vim.vm.GuestOsDescriptor.GuestOsIdentifier.html
+# 
 require 'savon'
 
 def login(client, username, password)

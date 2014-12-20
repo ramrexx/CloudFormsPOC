@@ -5,16 +5,16 @@ object:
   attributes:
     description: 
     display_name: 
-    name: vSphere
+    name: Satellite6
     type: 
     inherits: 
     visibility: 
     owner: 
   schema:
   - field:
-      aetype: state
-      name: Step1
-      display_name: ''
+      aetype: attribute
+      name: satellite
+      display_name: 
       datatype: string
       priority: 1
       owner: 
@@ -26,15 +26,15 @@ object:
       scope: 
       description: 
       condition: 
-      on_entry: ''
-      on_exit: ''
-      on_error: ''
-      max_retries: '25'
+      on_entry: 
+      on_exit: 
+      on_error: 
+      max_retries: 
       max_time: 
   - field:
-      aetype: state
-      name: Step2
-      display_name: ''
+      aetype: attribute
+      name: username
+      display_name: 
       datatype: string
       priority: 2
       owner: 
@@ -46,16 +46,16 @@ object:
       scope: 
       description: 
       condition: 
-      on_entry: ''
-      on_exit: ''
-      on_error: ''
-      max_retries: '25'
+      on_entry: 
+      on_exit: 
+      on_error: 
+      max_retries: 
       max_time: 
   - field:
-      aetype: state
-      name: Step3
-      display_name: ''
-      datatype: string
+      aetype: attribute
+      name: password
+      display_name: 
+      datatype: password
       priority: 3
       owner: 
       default_value: 
@@ -66,15 +66,15 @@ object:
       scope: 
       description: 
       condition: 
-      on_entry: ''
-      on_exit: ''
-      on_error: ''
-      max_retries: '25'
+      on_entry: 
+      on_exit: 
+      on_error: 
+      max_retries: 
       max_time: 
   - field:
-      aetype: state
-      name: Step4
-      display_name: ''
+      aetype: attribute
+      name: domain
+      display_name: 
       datatype: string
       priority: 4
       owner: 
@@ -86,14 +86,14 @@ object:
       scope: 
       description: 
       condition: 
-      on_entry: ''
-      on_exit: ''
-      on_error: ''
-      max_retries: '25'
+      on_entry: 
+      on_exit: 
+      on_error: 
+      max_retries: 
       max_time: 
   - field:
-      aetype: state
-      name: step5
+      aetype: method
+      name: method1
       display_name: 
       datatype: string
       priority: 5
@@ -109,11 +109,11 @@ object:
       on_entry: 
       on_exit: 
       on_error: 
-      max_retries: '25'
+      max_retries: 
       max_time: 
   - field:
-      aetype: state
-      name: step6
+      aetype: method
+      name: method2
       display_name: 
       datatype: string
       priority: 6
@@ -129,5 +129,5 @@ object:
       on_entry: 
       on_exit: 
       on_error: 
-      max_retries: '25'
+      max_retries: 
       max_time: 

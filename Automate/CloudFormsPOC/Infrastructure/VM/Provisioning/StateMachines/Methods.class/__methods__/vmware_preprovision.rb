@@ -1,3 +1,4 @@
+# vmware_PreProvision.rb
 #
 # Description: This default method is used to apply PreProvision customizations for VMware
 #
@@ -13,6 +14,7 @@ def process_customization(prov)
   set_folder        = true
   set_resource_pool = false
   set_notes         = true
+  add_disk          = true
 
   # Get information from the template platform
   template = prov.vm_template
@@ -60,6 +62,36 @@ def process_customization(prov)
       log(:info, "Placing VM in folder: <#{prov.options[:placement_folder_name].inspect}>")
     end
     log(:info, "Processing set_folder...Complete", true)
+  end
+
+  # add_disk - look in ws_values and prov.options for add_disk? parameters
+  if add_disk
+    log(:info, "Processing add_disk...", true)
+    ws_disks = []
+    if prov.options.has_key?(:ws_values)
+      ws_values = prov.options[:ws_values]
+      # :ws_values=>{:add_disk1 => '20', :add_disk2=>'50'}
+      ws_values.each {|k,v| ws_disks[$1.to_i] = v.to_i if k.to_s =~ /add_disk(\d*)/}
+      ws_disks.compact!
+    end
+    if ws_disks.blank?
+      # prov.options=>{:add_disk1 => '20', :add_disk2=>'50'}
+      prov.options.each {|k,v| ws_disks[$1.to_i] = v.to_i if k.to_s =~ /add_disk(\d*)/}
+      ws_disks.compact!
+    end
+
+    unless ws_disks.blank?
+      new_disks = []
+      scsi_start_idx = 2
+
+      ws_disks.each_with_index do |size_in_gb, idx|
+        next if size_in_gb.zero?
+        new_disks << {:bus=>0, :pos=>scsi_start_idx + idx, :sizeInMB=> size_in_gb.gigabytes / 1.megabyte}
+      end
+      prov.set_option(:disk_scsi, new_disks) unless new_disks.blank?
+      log(:info, "Provisioning object <:disk_scsi> updated with <#{prov.get_option(:disk_scsi)}>")
+    end
+    log(:info, "Processing add_disk...Complete", true)
   end
 
   if set_resource_pool

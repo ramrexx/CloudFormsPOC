@@ -21,6 +21,8 @@ def logout(client)
   end
 end
 
+$evm.root.attributes.sort.each { |k, v| $evm.log(:info,"Root:<$evm.root> Attributes - #{k}: #{v}")}
+
 # Get vm object from root
 vm = $evm.root['vm']
 raise "VM object not found" if vm.nil?
@@ -28,7 +30,11 @@ raise "VM object not found" if vm.nil?
 # This method only works with VMware VMs currently
 raise "Invalid vendor:<#{vm.vendor}>" unless vm.vendor.downcase == 'vmware'
 
-$evm.root['dialog_memoryHotAddEnabled'].nil? ? (cpuHotAddEnabled = true) : (cpuHotAddEnabled = $evm.root['dialog_cpuHotAddEnabled'])
+if $evm.root['dialog_memoryhotaddenabled'].blank? || $evm.root['dialog_memoryhotaddenabled'] =~ (/(false|f|no|n|0)$/i)
+  memoryHotAddEnabled = false
+else
+  memoryHotAddEnabled = true
+end
 
 $evm.log(:info,"Detected VM: #{vm.name} vendor: #{vm.vendor} provider: #{vm.ext_management_system.name} ems_ref: #{vm.ems_ref}")
 
@@ -53,7 +59,7 @@ login(client, username, password)
 
 reconfig_vm_task_result = client.call(:reconfig_vm_task) do
   message( '_this' => vm.ems_ref, :attributes! => { 'type' => 'VirtualMachine' },
-    'spec' => { 'memoryHotAddEnabled' => true }, :attributes! => { 'type' => 'VirtualMachineConfigSpec' }  ).to_hash
+    'spec' => { 'memoryHotAddEnabled' => memoryHotAddEnabled }, :attributes! => { 'type' => 'VirtualMachineConfigSpec' }  ).to_hash
 end
 
 #$evm.log(:warn, "reconfig_vm_task_result: #{reconfig_vm_task_result.inspect}")

@@ -1,6 +1,6 @@
-# ReconfigVM_cpuHotAddEnabled.rb
+# Check_ReconfigVM_memoryHotAddEnabled.rb
 #
-# Description: This method changes a VM's cpuHotAddEnabled switch to true or false in vCenter
+# Description: This method checks to ensure that the VM's memoryHotAddEnabled has been set
 #
 require 'savon'
 
@@ -21,6 +21,35 @@ def logout(client)
   end
 end
 
+def retry_method(retry_time, msg)
+  $evm.log('info', "#{msg} - Waiting #{retry_time} seconds}")
+  $evm.root['ae_result'] = 'retry'
+  $evm.root['ae_retry_interval'] = retry_time
+  exit MIQ_OK
+end
+
+def get_vm_config_hash(client, vm)
+  body_hash = {
+    :_this  =>     "propertyCollector",
+    :specSet   => {
+      :propSet => {
+        :type => "VirtualMachine",
+        :pathSet => "config",
+      },
+      :objectSet => {
+        :obj => vm.ems_ref,
+        :skip => false,
+        :attributes! => {  :obj =>  { 'type' => 'VirtualMachine' } }
+      },
+    },
+    :options => {},
+    :attributes! => {  :_this =>  { 'type' => 'PropertyCollector' } }
+  }
+  vm_config_result = client.call(:retrieve_properties_ex, message: body_hash).to_hash
+  vm_config_hash = vm_config_result[:retrieve_properties_ex_response][:returnval][:objects][:prop_set][:val]
+  return vm_config_hash
+end
+
 $evm.root.attributes.sort.each { |k, v| $evm.log(:info,"Root:<$evm.root> Attributes - #{k}: #{v}")}
 
 # Get vm object from root
@@ -30,10 +59,10 @@ raise "VM object not found" if vm.nil?
 # This method only works with VMware VMs currently
 raise "Invalid vendor:<#{vm.vendor}>" unless vm.vendor.downcase == 'vmware'
 
-if $evm.root['dialog_cpuhotaddenabled'].blank? || $evm.root['dialog_cpuhotaddenabled'] =~ (/(false|f|no|n|0)$/i)
-  cpuHotAddEnabled = false
+if $evm.root['dialog_memoryhotaddenabled'].blank? || $evm.root['dialog_memoryhotaddenabled'] =~ (/(false|f|no|n|0)$/i)
+  memoryHotAddEnabled = false
 else
-  cpuHotAddEnabled = true
+  memoryHotAddEnabled = true
 end
 
 $evm.log(:info,"Detected VM: #{vm.name} vendor: #{vm.vendor} provider: #{vm.ext_management_system.name} ems_ref: #{vm.ems_ref}")
@@ -56,12 +85,8 @@ client = Savon.client(
 
 # login and set cookie
 login(client, username, password)
-
-reconfig_vm_task_result = client.call(:reconfig_vm_task) do
-  message( '_this' => vm.ems_ref, :attributes! => { 'type' => 'VirtualMachine' },
-    'spec' => { 'cpuHotAddEnabled' => cpuHotAddEnabled }, :attributes! => { 'type' => 'VirtualMachineConfigSpec' }  ).to_hash
-end
-#$evm.log(:warn, "reconfig_vm_task_result: #{reconfig_vm_task_result.inspect}")
-$evm.log(:info, "reconfig_vm_task_result success?: #{reconfig_vm_task_result.success?}")
-
+vm_config_result = get_vm_config_hash(client, vm)
 logout(client)
+
+$evm.log('info', "vm_config_result memoryHotAddEnabled: #{vm_config_result[:memory_hot_add_enabled].inspect}")
+retry_method(15.seconds, "VM: #{vm.name} memoryHotAddEnabled: #{vm_config_result[:memory_hot_add_enabled]} not changed") unless memoryHotAddEnabled == vm_config_result[:memory_hot_add_enabled]

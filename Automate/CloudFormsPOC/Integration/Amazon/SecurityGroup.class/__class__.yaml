@@ -5,16 +5,16 @@ object:
   attributes:
     description: 
     display_name: 
-    name: vSphere
+    name: SecurityGroup
     type: 
     inherits: 
     visibility: 
     owner: 
   schema:
   - field:
-      aetype: state
-      name: Step1
-      display_name: ''
+      aetype: attribute
+      name: tcp_ports
+      display_name: 
       datatype: string
       priority: 1
       owner: 
@@ -26,15 +26,15 @@ object:
       scope: 
       description: 
       condition: 
-      on_entry: ''
-      on_exit: ''
-      on_error: ''
-      max_retries: '25'
+      on_entry: 
+      on_exit: 
+      on_error: 
+      max_retries: 
       max_time: 
   - field:
-      aetype: state
-      name: Step2
-      display_name: ''
+      aetype: attribute
+      name: tcp_source_cidr
+      display_name: 
       datatype: string
       priority: 2
       owner: 
@@ -46,15 +46,15 @@ object:
       scope: 
       description: 
       condition: 
-      on_entry: ''
-      on_exit: ''
-      on_error: ''
-      max_retries: '25'
+      on_entry: 
+      on_exit: 
+      on_error: 
+      max_retries: 
       max_time: 
   - field:
-      aetype: state
-      name: Step3
-      display_name: ''
+      aetype: attribute
+      name: udp_ports
+      display_name: 
       datatype: string
       priority: 3
       owner: 
@@ -66,15 +66,15 @@ object:
       scope: 
       description: 
       condition: 
-      on_entry: ''
-      on_exit: ''
-      on_error: ''
-      max_retries: '25'
+      on_entry: 
+      on_exit: 
+      on_error: 
+      max_retries: 
       max_time: 
   - field:
-      aetype: state
-      name: Step4
-      display_name: ''
+      aetype: attribute
+      name: udp_source_cidr
+      display_name: 
       datatype: string
       priority: 4
       owner: 
@@ -86,14 +86,14 @@ object:
       scope: 
       description: 
       condition: 
-      on_entry: ''
-      on_exit: ''
-      on_error: ''
-      max_retries: '25'
+      on_entry: 
+      on_exit: 
+      on_error: 
+      max_retries: 
       max_time: 
   - field:
-      aetype: state
-      name: step5
+      aetype: method
+      name: execute
       display_name: 
       datatype: string
       priority: 5
@@ -109,25 +109,5 @@ object:
       on_entry: 
       on_exit: 
       on_error: 
-      max_retries: '25'
-      max_time: 
-  - field:
-      aetype: state
-      name: step6
-      display_name: 
-      datatype: string
-      priority: 6
-      owner: 
-      default_value: 
-      substitute: true
-      message: create
-      visibility: 
-      collect: 
-      scope: 
-      description: 
-      condition: 
-      on_entry: 
-      on_exit: 
-      on_error: 
-      max_retries: '25'
+      max_retries: 
       max_time: 

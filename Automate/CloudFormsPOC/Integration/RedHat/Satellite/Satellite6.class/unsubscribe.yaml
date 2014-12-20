@@ -1,0 +1,20 @@
+---
+object_type: instance
+version: 1.0
+object:
+  attributes:
+    display_name: 
+    name: unsubscribe
+    inherits: 
+    description: 
+  fields:
+  - satellite:
+      value: satellite.example.com
+  - username:
+      value: admin
+  - password:
+      value: v2:{S7SjvoAtfCEoaUhFHjlEig==}
+  - domain:
+      value: example.com
+  - method1:
+      value: unsubscribe

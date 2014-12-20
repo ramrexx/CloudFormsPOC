@@ -5,15 +5,15 @@ object:
   attributes:
     description: 
     display_name: 
-    name: EC2
+    name: PublicAMI
     type: 
     inherits: 
     visibility: 
     owner: 
   schema:
   - field:
-      aetype: attribute
-      name: action
+      aetype: state
+      name: step1
       display_name: 
       datatype: string
       priority: 1
@@ -32,8 +32,8 @@ object:
       max_retries: 
       max_time: 
   - field:
-      aetype: attribute
-      name: us_east_1
+      aetype: relationship
+      name: step1_rel
       display_name: 
       datatype: string
       priority: 2
@@ -52,8 +52,8 @@ object:
       max_retries: 
       max_time: 
   - field:
-      aetype: attribute
-      name: us_west_1
+      aetype: state
+      name: step2
       display_name: 
       datatype: string
       priority: 3
@@ -72,15 +72,15 @@ object:
       max_retries: 
       max_time: 
   - field:
-      aetype: assertion
-      name: eval
+      aetype: relationship
+      name: step2_rel
       display_name: 
       datatype: string
       priority: 4
       owner: 
       default_value: 
       substitute: true
-      message: ! '*'
+      message: create
       visibility: 
       collect: 
       scope: 
@@ -92,8 +92,8 @@ object:
       max_retries: 
       max_time: 
   - field:
-      aetype: attribute
-      name: to_email_address
+      aetype: state
+      name: step3
       display_name: 
       datatype: string
       priority: 5
@@ -112,8 +112,8 @@ object:
       max_retries: 
       max_time: 
   - field:
-      aetype: attribute
-      name: from_email_address
+      aetype: relationship
+      name: step3_rel
       display_name: 
       datatype: string
       priority: 6
@@ -132,8 +132,8 @@ object:
       max_retries: 
       max_time: 
   - field:
-      aetype: attribute
-      name: signature
+      aetype: state
+      name: step4
       display_name: 
       datatype: string
       priority: 7
@@ -152,9 +152,9 @@ object:
       max_retries: 
       max_time: 
   - field:
-      aetype: method
-      name: method1
-      display_name: ''
+      aetype: relationship
+      name: step4_rel
+      display_name: 
       datatype: string
       priority: 8
       owner: 
@@ -168,13 +168,13 @@ object:
       condition: 
       on_entry: 
       on_exit: 
-      on_error: ''
-      max_retries: ''
+      on_error: 
+      max_retries: 
       max_time: 
   - field:
-      aetype: method
-      name: method2
-      display_name: ''
+      aetype: state
+      name: step5
+      display_name: 
       datatype: string
       priority: 9
       owner: 
@@ -188,6 +188,66 @@ object:
       condition: 
       on_entry: 
       on_exit: 
-      on_error: ''
-      max_retries: ''
+      on_error: 
+      max_retries: 
+      max_time: 
+  - field:
+      aetype: relationship
+      name: step5_rel
+      display_name: 
+      datatype: string
+      priority: 10
+      owner: 
+      default_value: 
+      substitute: true
+      message: create
+      visibility: 
+      collect: 
+      scope: 
+      description: 
+      condition: 
+      on_entry: 
+      on_exit: 
+      on_error: 
+      max_retries: 
+      max_time: 
+  - field:
+      aetype: state
+      name: step6
+      display_name: 
+      datatype: string
+      priority: 11
+      owner: 
+      default_value: 
+      substitute: true
+      message: create
+      visibility: 
+      collect: 
+      scope: 
+      description: 
+      condition: 
+      on_entry: 
+      on_exit: 
+      on_error: 
+      max_retries: 
+      max_time: 
+  - field:
+      aetype: relationship
+      name: step6_
+      display_name: 
+      datatype: string
+      priority: 12
+      owner: 
+      default_value: 
+      substitute: true
+      message: create
+      visibility: 
+      collect: 
+      scope: 
+      description: 
+      condition: 
+      on_entry: 
+      on_exit: 
+      on_error: 
+      max_retries: 
       max_time: 
