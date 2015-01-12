@@ -4,9 +4,9 @@ version: 1.0
 object:
   attributes:
     display_name: 
-    name: ResizeDisk
+    name: Allocate_Floating_IP
     inherits: 
     description: 
   fields:
-  - Step2:
-      value: /Integration/VMware/vCenter/ResizeDisk
+  - rel1:
+      value: /Integration/RedHat/OpenStack/Nova/AllocateFloatingIP

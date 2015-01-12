@@ -4,9 +4,9 @@ version: 1.0
 object:
   attributes:
     display_name: 
-    name: ResizeDisk
+    name: Retire_Floating_IP
     inherits: 
     description: 
   fields:
-  - method1:
-      value: ResizeDisk
+  - rel1:
+      value: /Integration/RedHat/OpenStack/Nova/RetireFloatingIP

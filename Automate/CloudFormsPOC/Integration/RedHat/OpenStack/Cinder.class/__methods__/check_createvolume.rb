@@ -33,6 +33,12 @@ service_template_provision_task = $evm.root['service_template_provision_task']
 service = service_template_provision_task.destination
 log(:info, "Detected Service:<#{service.name}> Id:<#{service.id}> Tasks:<#{service_template_provision_task.miq_request_tasks.count}>")
 
+boot_from_volume = $evm.root['dialog_boot_from_volume']
+if boot_from_volume =~ (/(false|f|no|n|0)$/i)
+  log(:warn, "boot_from_volume: #{boot_from_volume}. Skipping method.")
+  exit MIQ_STOP
+end
+
 mid = $evm.root['dialog_mid']
 raise "Management System ID is nil" if mid.blank?
 openstack = nil

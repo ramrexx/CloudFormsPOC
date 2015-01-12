@@ -33,6 +33,8 @@ service_template_provision_task = $evm.root['service_template_provision_task']
 service = service_template_provision_task.destination
 log(:info, "Detected Service:<#{service.name}> Id:<#{service.id}> Tasks:<#{service_template_provision_task.miq_request_tasks.count}>")
 
+service_template_provision_task.options.each { |k,v| log(:info, "Service Provisioning Option Key: #{k.inspect} Value: #{v.inspect}") }
+
 
 instance_name = $evm.root['dialog_instance_name']
 
@@ -63,6 +65,8 @@ conn = Fog::Compute.new({
 log(:info, "Successfully connected to Nova Service at #{openstack.name}", true)
 
 volume_id = service_template_provision_task.get_option(:volume_id)
+image_ref = $evm.root['dialog_imageref']
+boot_from_volume = $evm.root['dialog_boot_from_volume']
 
 ct_id = $evm.root['dialog_ct_id']
 unless ct_id.nil?
@@ -87,13 +91,17 @@ launch_instance_hash[:flavor_ref] = flavor.ems_ref unless flavor.nil?
 launch_instance_hash[:user_data] = user_data unless user_data.nil?
 launch_instance_hash[:key_name] = ssh_key.name unless ssh_key.nil?
 launch_instance_hash[:nics] = [ { 'net_id' => network_id } ] unless network_id.nil?
-launch_instance_hash[:block_device_mapping] = [
-  {
-    :volume_size => '',
-    :volume_id => volume_id,
-    :delete_on_termination => 1,
-    :device_name => 'vda'
-}]
+unless boot_from_volume =~ (/(false|f|no|n|0)$/i) && volume_id.nil?
+  launch_instance_hash[:block_device_mapping] = [
+    {
+      :volume_size => '',
+      :volume_id => volume_id,
+      :delete_on_termination => 1,
+      :device_name => 'vda'
+  }]
+else
+  launch_instance_hash[:image_ref] = image_ref unless image_ref.nil?
+end
 log(:info, "Create server hash: #{launch_instance_hash.inspect}")
 
 server = conn.servers.create(launch_instance_hash)
