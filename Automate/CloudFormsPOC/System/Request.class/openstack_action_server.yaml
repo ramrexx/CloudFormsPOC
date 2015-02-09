@@ -1,0 +1,12 @@
+---
+object_type: instance
+version: 1.0
+object:
+  attributes:
+    display_name: 
+    name: openstack_action_server
+    inherits: 
+    description: 
+  fields:
+  - rel1:
+      value: /Integration/RedHat/OpenStack/Nova/action_server
