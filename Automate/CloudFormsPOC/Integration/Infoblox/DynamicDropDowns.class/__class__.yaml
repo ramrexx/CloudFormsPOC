@@ -33,10 +33,90 @@ object:
       max_time: 
   - field:
       aetype: attribute
-      name: required
+      name: servername
       display_name: 
       datatype: string
       priority: 2
+      owner: 
+      default_value: 
+      substitute: true
+      message: create
+      visibility: 
+      collect: 
+      scope: 
+      description: 
+      condition: 
+      on_entry: 
+      on_exit: 
+      on_error: 
+      max_retries: 
+      max_time: 
+  - field:
+      aetype: attribute
+      name: username
+      display_name: 
+      datatype: string
+      priority: 3
+      owner: 
+      default_value: 
+      substitute: true
+      message: create
+      visibility: 
+      collect: 
+      scope: 
+      description: 
+      condition: 
+      on_entry: 
+      on_exit: 
+      on_error: 
+      max_retries: 
+      max_time: 
+  - field:
+      aetype: attribute
+      name: password
+      display_name: 
+      datatype: password
+      priority: 4
+      owner: 
+      default_value: 
+      substitute: true
+      message: create
+      visibility: 
+      collect: 
+      scope: 
+      description: 
+      condition: 
+      on_entry: 
+      on_exit: 
+      on_error: 
+      max_retries: 
+      max_time: 
+  - field:
+      aetype: attribute
+      name: api_version
+      display_name: 
+      datatype: string
+      priority: 5
+      owner: 
+      default_value: 
+      substitute: true
+      message: create
+      visibility: 
+      collect: 
+      scope: 
+      description: 
+      condition: 
+      on_entry: 
+      on_exit: 
+      on_error: 
+      max_retries: 
+      max_time: 
+  - field:
+      aetype: attribute
+      name: required
+      display_name: 
+      datatype: string
+      priority: 6
       owner: 
       default_value: 'true'
       substitute: true
@@ -56,7 +136,7 @@ object:
       name: sort_by
       display_name: 
       datatype: string
-      priority: 3
+      priority: 7
       owner: 
       default_value: description
       substitute: true
@@ -76,7 +156,7 @@ object:
       name: data_type
       display_name: 
       datatype: string
-      priority: 4
+      priority: 8
       owner: 
       default_value: string
       substitute: true
@@ -96,7 +176,7 @@ object:
       name: sort_order
       display_name: 
       datatype: string
-      priority: 5
+      priority: 9
       owner: 
       default_value: ascending
       substitute: true
@@ -116,7 +196,7 @@ object:
       name: method1
       display_name: 
       datatype: string
-      priority: 6
+      priority: 10
       owner: 
       default_value: 
       substitute: true
@@ -136,7 +216,7 @@ object:
       name: method2
       display_name: 
       datatype: string
-      priority: 7
+      priority: 11
       owner: 
       default_value: 
       substitute: true

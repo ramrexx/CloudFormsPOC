@@ -126,6 +126,7 @@ end
 # process_redhat - mapping cloud-init templates
 def process_redhat(mapping, prov, template, product, provider)
   log(:info, "Processing process_redhat...", true)
+  ws_values = prov.options.fetch(:ws_values, nil)
   case mapping
   when 0
     # No mapping

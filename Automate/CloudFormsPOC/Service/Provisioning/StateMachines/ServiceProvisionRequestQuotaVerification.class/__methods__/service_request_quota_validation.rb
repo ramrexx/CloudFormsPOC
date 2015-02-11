@@ -259,7 +259,7 @@ if quota_hash[:quota_exceeded]
   quota_message += "(#{quota_hash[:owner_ram_quota_exceeded]}}) " unless quota_hash[:owner_ram_quota_exceeded].blank?
   $evm.log(:info, "Inspecting quota_message: #{quota_message}")
 
-  miq_request.set_message(truncate(quota_message, length: 250))
+  miq_request.set_message(quota_message[0..250])
   $evm.root['ae_result'] = 'error'
   $evm.object['reason'] = quota_message
 end

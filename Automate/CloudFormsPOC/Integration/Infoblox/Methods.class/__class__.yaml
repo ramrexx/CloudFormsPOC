@@ -73,7 +73,7 @@ object:
       max_time: 
   - field:
       aetype: attribute
-      name: to_email_address
+      name: api_version
       display_name: 
       datatype: string
       priority: 4
@@ -93,50 +93,10 @@ object:
       max_time: 
   - field:
       aetype: attribute
-      name: from_email_address
-      display_name: 
-      datatype: string
-      priority: 5
-      owner: 
-      default_value: 
-      substitute: true
-      message: create
-      visibility: 
-      collect: 
-      scope: 
-      description: 
-      condition: 
-      on_entry: 
-      on_exit: 
-      on_error: 
-      max_retries: 
-      max_time: 
-  - field:
-      aetype: attribute
-      name: signature
-      display_name: 
-      datatype: string
-      priority: 6
-      owner: 
-      default_value: 
-      substitute: true
-      message: create
-      visibility: 
-      collect: 
-      scope: 
-      description: 
-      condition: 
-      on_entry: 
-      on_exit: 
-      on_error: 
-      max_retries: 
-      max_time: 
-  - field:
-      aetype: attribute
       name: dns_domain
       display_name: 
       datatype: string
-      priority: 7
+      priority: 5
       owner: 
       default_value: example.com
       substitute: true
@@ -156,7 +116,7 @@ object:
       name: view
       display_name: 
       datatype: string
-      priority: 8
+      priority: 6
       owner: 
       default_value: default
       substitute: true
@@ -172,8 +132,48 @@ object:
       max_retries: 
       max_time: 
   - field:
-      aetype: method
-      name: method1
+      aetype: attribute
+      name: to_email_address
+      display_name: 
+      datatype: string
+      priority: 7
+      owner: 
+      default_value: 
+      substitute: true
+      message: create
+      visibility: 
+      collect: 
+      scope: 
+      description: 
+      condition: 
+      on_entry: 
+      on_exit: 
+      on_error: 
+      max_retries: 
+      max_time: 
+  - field:
+      aetype: attribute
+      name: from_email_address
+      display_name: 
+      datatype: string
+      priority: 8
+      owner: 
+      default_value: 
+      substitute: true
+      message: create
+      visibility: 
+      collect: 
+      scope: 
+      description: 
+      condition: 
+      on_entry: 
+      on_exit: 
+      on_error: 
+      max_retries: 
+      max_time: 
+  - field:
+      aetype: attribute
+      name: signature
       display_name: 
       datatype: string
       priority: 9
@@ -193,10 +193,30 @@ object:
       max_time: 
   - field:
       aetype: method
-      name: method2
+      name: method1
       display_name: 
       datatype: string
       priority: 10
+      owner: 
+      default_value: 
+      substitute: true
+      message: create
+      visibility: 
+      collect: 
+      scope: 
+      description: 
+      condition: 
+      on_entry: 
+      on_exit: 
+      on_error: 
+      max_retries: 
+      max_time: 
+  - field:
+      aetype: method
+      name: method2
+      display_name: 
+      datatype: string
+      priority: 11
       owner: 
       default_value: 
       substitute: true

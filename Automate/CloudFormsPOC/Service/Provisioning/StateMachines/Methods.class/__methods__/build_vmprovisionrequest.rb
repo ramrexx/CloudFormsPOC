@@ -147,7 +147,7 @@ begin
       user = $evm.vmdb('user').find_by_userid(matching_options_hash[:userid]) if user.nil?
     end
     unless $evm.root['user_id'].nil?
-      user = $evm.vmdb('user').find_by_userid($evm.root['user_id']) if user.nil?
+      user = $evm.vmdb('user').find_by_id($evm.root['user_id']) if user.nil?
     end
     if user.nil?
       user = $evm.vmdb('user').find_by_userid('admin')
@@ -394,7 +394,7 @@ begin
     @valid_provisioning_templateFields = valid_templateFields
 
     valid_vmFields  = [:vm_name, :number_of_sockets, :cores_per_socket, :vm_memory, :number_of_vms, :provision_type, :vlan, :retirement, :retirement_warn]
-    valid_vmFields += [:linked_clone, :vm_prefix, :network_adapters, :placement_auto, :vm_description, :vm_auto_start]
+    valid_vmFields += [:linked_clone, :vm_prefix, :network_adapters, :placement_auto, :vm_description, :vm_auto_start, :placement_cluster_name]
     valid_vmFields += [:floating_ip_address, :placement_availability_zone, :guest_access_key_pair, :security_groups, :cloud_network, :cloud_subnet, :instance_type]
     @valid_provisioning_vmFields = valid_vmFields
 
@@ -431,7 +431,7 @@ begin
     args << tags_hash.collect { |k, v| "#{k.to_s}=#{v}" }.join('|')
 
     # arg6 = WS Values | put all remaining dialog_options in ws_values hash for later use in the state machine
-    args << options_hash.collect { |k, v| "#{k.to_s}=#{v}" }.join('|')
+    args << options_hash.collect { |k, v| "#{k.to_s}=#{v}" }.join('|') + tags_hash.collect { |k, v| "#{k.to_s}=#{v}" }.join('|')
 
     # arg7 = emsCustomAttributes
     args << nil
