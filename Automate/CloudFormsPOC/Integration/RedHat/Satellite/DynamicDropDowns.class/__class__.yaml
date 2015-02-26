@@ -5,22 +5,22 @@ object:
   attributes:
     description: 
     display_name: 
-    name: Satellite6
+    name: DynamicDropDowns
     type: 
     inherits: 
     visibility: 
     owner: 
   schema:
   - field:
-      aetype: attribute
-      name: passwordems
+      aetype: assertion
+      name: eval
       display_name: 
-      datatype: password
+      datatype: string
       priority: 1
       owner: 
-      default_value: v2:{YXT4WLH8qZTblwkV+q7+7g==}
+      default_value: 
       substitute: true
-      message: create
+      message: ! '*'
       visibility: 
       collect: 
       scope: 
@@ -33,7 +33,7 @@ object:
       max_time: 
   - field:
       aetype: attribute
-      name: satellite
+      name: servername
       display_name: 
       datatype: string
       priority: 2
@@ -93,10 +93,70 @@ object:
       max_time: 
   - field:
       aetype: attribute
-      name: domain
+      name: required
       display_name: 
       datatype: string
       priority: 5
+      owner: 
+      default_value: 'true'
+      substitute: true
+      message: create
+      visibility: 
+      collect: 
+      scope: 
+      description: ! 'true / false (Default: true)'
+      condition: 
+      on_entry: 
+      on_exit: 
+      on_error: 
+      max_retries: 
+      max_time: 
+  - field:
+      aetype: attribute
+      name: sort_by
+      display_name: 
+      datatype: string
+      priority: 6
+      owner: 
+      default_value: description
+      substitute: true
+      message: create
+      visibility: 
+      collect: 
+      scope: 
+      description: ! 'description / value / none (Default: description)'
+      condition: 
+      on_entry: 
+      on_exit: 
+      on_error: 
+      max_retries: 
+      max_time: 
+  - field:
+      aetype: attribute
+      name: data_type
+      display_name: 
+      datatype: string
+      priority: 7
+      owner: 
+      default_value: string
+      substitute: true
+      message: create
+      visibility: 
+      collect: 
+      scope: 
+      description: ! 'string / integer (Default: string)'
+      condition: 
+      on_entry: 
+      on_exit: 
+      on_error: 
+      max_retries: 
+      max_time: 
+  - field:
+      aetype: attribute
+      name: default_value
+      display_name: 
+      datatype: string
+      priority: 8
       owner: 
       default_value: 
       substitute: true
@@ -112,11 +172,31 @@ object:
       max_retries: 
       max_time: 
   - field:
+      aetype: attribute
+      name: sort_order
+      display_name: 
+      datatype: string
+      priority: 9
+      owner: 
+      default_value: ascending
+      substitute: true
+      message: create
+      visibility: 
+      collect: 
+      scope: 
+      description: ! 'ascending / descending (Default: ascending)'
+      condition: 
+      on_entry: 
+      on_exit: 
+      on_error: 
+      max_retries: 
+      max_time: 
+  - field:
       aetype: method
       name: method1
       display_name: 
       datatype: string
-      priority: 6
+      priority: 10
       owner: 
       default_value: 
       substitute: true
@@ -136,7 +216,7 @@ object:
       name: method2
       display_name: 
       datatype: string
-      priority: 7
+      priority: 11
       owner: 
       default_value: 
       substitute: true
