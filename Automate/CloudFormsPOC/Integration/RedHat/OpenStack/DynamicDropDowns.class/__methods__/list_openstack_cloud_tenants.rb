@@ -1,13 +1,13 @@
-# list_openstack_flavors.rb
+# list_openstack_cloud_tenants.rb
 #
 # Author: Kevin Morey <kmorey@redhat.com>
 # License: GPL v3
 #
-# Description: List OpenStack Template ids in OpenStack
+# Description: List Cloud Tenant ids by provider
 #
 begin
   def log(level, msg, update_message=false)
-    $evm.log(level, "#{msg}")
+    $evm.log(level,"#{msg}")
   end
 
   def dump_root()
@@ -47,7 +47,7 @@ begin
     end
 
     # set to true to default to the admin tenant
-    use_default = true
+    use_default = false
     unless tenant
       tenant = $evm.vmdb(:cloud_tenant).find_by_name('admin') if use_default
       log(:info, "Found tenant: #{tenant.name} via default method") if tenant && use_default
@@ -61,44 +61,43 @@ begin
   log(:info, "CloudForms Automate Method Started", true)
   dump_root()
 
-  dialog_hash = {}
-
-  # see if provider is already set in root
   provider = get_provider()
 
-  unless provider
-    tenant_category = $evm.object['tenant_category'] || 'tenant'
-    tenant = get_tenant(tenant_category)
-    if tenant.respond_to?('ems_id')
-      # get provider from cloud_tenant
-      provider = $evm.vmdb(:ems_openstack).find_by_id(tenant.ems_id)
-    end
-  end
+  dialog_hash = {}
 
   if provider
-    provider.flavors.each do |fl|
-      log(:info, "Looking at flavor: #{fl.name} id: #{fl.id} cpus: #{fl.cpus} memory: #{fl.memory} ems_ref: #{fl.ems_ref}")
-      next unless fl.ext_management_system || fl.enabled
-      dialog_hash[fl.id] = "#{fl.name} on #{fl.ext_management_system.name}"
+    # only list tenants from the provider object
+    provider.cloud_tenants.each do |ct|
+      log(:info, "Looking at tenant: #{ct.name} ems_ref: #{ct.ems_ref}")
+      dialog_hash[ct.id] = "#{ct.name} on #{provider.name}"
     end
   else
-    # no provider or tenant so list everything
-    $evm.vmdb(:flavor_openstack).all.each do |fl|
-      log(:info, "Looking at flavor: #{fl.name} id: #{fl.id} cpus: #{fl.cpus} memory: #{fl.memory} ems_ref: #{fl.ems_ref}")
-      next unless fl.ext_management_system || fl.enabled
-      dialog_hash[fl.id] = "#{fl.name} on #{fl.ext_management_system.name}"
+    tenant_category = $evm.object['tenant_category'] || 'tenant'
+    tenant = get_tenant(tenant_category)
+
+    $evm.vmdb(:cloud_tenant).all.each do |ct|
+      log(:info, "Looking at tenant: #{ct.name} id: #{ct.id} ems_ref: #{ct.ems_ref}")
+      next unless ct.ext_management_system
+      if tenant.respond_to?('name')
+        # if a tenant is found use the name to filter the cloud_tenants
+        if ct.name == "#{tenant.name}"
+          dialog_hash[ct.id] = "#{ct.name} in #{ct.ext_management_system.name}"
+        end
+      else
+        # if no tenant is found build a list of all cloud_tenants
+        dialog_hash[ct.id] = "#{ct.name} in #{ct.ext_management_system.name}"
+      end
     end
   end
 
   if dialog_hash.blank?
-    log(:info, "No Flavors found")
-    dialog_hash[nil] = "< No Flavors found, Contact Administrator >"
+    log(:info, "User has no access to tenants")
+    dialog_hash[nil] = "< No Tenant Access, Contact Administrator >"
   else
-    #$evm.object['default_value'] = dialog_hash.first
-    dialog_hash[nil] = '< choose a flavor >'
+      dialog_hash[nil] = '< choose a tenant >'
   end
 
-  $evm.object["values"]     = dialog_hash
+  $evm.object['values'] = dialog_hash
   log(:info, "$evm.object['values']: #{$evm.object['values'].inspect}")
 
   ###############

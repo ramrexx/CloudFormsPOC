@@ -92,11 +92,31 @@ object:
       max_retries: 
       max_time: 
   - field:
+      aetype: attribute
+      name: tenant_category
+      display_name: 
+      datatype: string
+      priority: 5
+      owner: 
+      default_value: tenant
+      substitute: true
+      message: create
+      visibility: 
+      collect: 
+      scope: 
+      description: tag category to search group
+      condition: 
+      on_entry: 
+      on_exit: 
+      on_error: 
+      max_retries: 
+      max_time: 
+  - field:
       aetype: method
       name: execute
       display_name: 
       datatype: string
-      priority: 5
+      priority: 6
       owner: 
       default_value: 
       substitute: true

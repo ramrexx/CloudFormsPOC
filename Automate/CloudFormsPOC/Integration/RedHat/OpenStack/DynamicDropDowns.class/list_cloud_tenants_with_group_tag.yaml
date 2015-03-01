@@ -4,11 +4,11 @@ version: 1.0
 object:
   attributes:
     display_name: 
-    name: List_OpenStack_Flavors
+    name: List_Cloud_Tenants_with_Group_Tag
     inherits: 
     description: 
   fields:
-  - sort_by:
-      value: value
+  - tenant_category:
+      value: tenant
   - execute:
-      value: list_openstack_flavors
+      value: list_cloud_tenants

@@ -5,12 +5,12 @@ begin
     $evm.log(level, "#{@method}: #{msg}")
   end
 
-  list = $evm.vmdb(:customization_template_sysprep).all
+  list = $evm.vmdb(:customization_template).all
   log(:info, "Got list #{list.inspect}")
   my_hash = {}
   for ct in list
     if ct.name.start_with?("HEAT-")
-      my_hash[ct.description] = ct.id
+      my_hash[ct.id] = ct.description
       log(:info, "Pushed #{ct.name} onto the list")
     else
       log(:info, "Not pushing #{ct.name} onto the list")

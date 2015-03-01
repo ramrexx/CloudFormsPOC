@@ -4,11 +4,9 @@ version: 1.0
 object:
   attributes:
     display_name: 
-    name: List_OpenStack_Flavors
+    name: List_OpenStack_Cloud_Tenants
     inherits: 
     description: 
   fields:
-  - sort_by:
-      value: value
   - execute:
-      value: list_openstack_flavors
+      value: list_openstack_cloud_tenants

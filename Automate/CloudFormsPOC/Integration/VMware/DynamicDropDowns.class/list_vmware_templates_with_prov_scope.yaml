@@ -4,11 +4,9 @@ version: 1.0
 object:
   attributes:
     display_name: 
-    name: List_OpenStack_Flavors
+    name: List_VMware_Templates_With_Prov_Scope
     inherits: 
     description: 
   fields:
-  - sort_by:
-      value: value
-  - execute:
-      value: list_openstack_flavors
+  - method1:
+      value: list_vmware_templates_with_prov_scope

@@ -4,11 +4,9 @@ version: 1.0
 object:
   attributes:
     display_name: 
-    name: List_OpenStack_Flavors
+    name: Retire_Stack
     inherits: 
     description: 
   fields:
-  - sort_by:
-      value: value
-  - execute:
-      value: list_openstack_flavors
+  - rel1:
+      value: /Integration/RedHat/StateMachines/OpenStack/RetireStack

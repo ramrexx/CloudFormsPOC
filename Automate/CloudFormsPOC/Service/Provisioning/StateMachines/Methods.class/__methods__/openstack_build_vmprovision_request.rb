@@ -1,4 +1,4 @@
-# Build_VMProvisionRequest.rb
+# openstack_build_vmprovision_request.rb
 #
 # Author: Kevin Morey <kmorey@redhat.com>
 # License: GPL v3
@@ -37,7 +37,7 @@ begin
         build = $1.to_i
         tag_category = $2.to_sym
         tag_value = v.downcase
-        log(:info, "build: #{build} - Adding tag: {#{tag_category.inspect} => #{tag_value.inspect}} to dialogs_tags_hash)")
+        log(:info, "Build: #{build} - Adding tag: {#{tag_category.inspect} => #{tag_value.inspect}} to dialogs_tags_hash)")
         (dialogs_tags_hash[build] ||={})[tag_category] = tag_value
       elsif dialog_options_regex =~ k
         build = $1.to_i
@@ -49,7 +49,7 @@ begin
         option_value = v
       end
       next if option_key.blank?
-      log(:info, "build: #{build} - Adding option: {#{option_key.inspect} => #{option_value.inspect}} to dialogs_options_hash)")
+      log(:info, "Build: #{build} - Adding option: {#{option_key.inspect} => #{option_value.inspect}} to dialogs_options_hash)")
       (dialogs_options_hash[build]||={})[option_key] = option_value
     end
     log(:info, "Inspecting dialogs_tags_hash: #{dialogs_tags_hash.inspect}")
@@ -130,102 +130,66 @@ begin
     log(:info, "Processing service_remove...Complete", true)
   end
 
-  # get requester information and allow a userid for provisioning on behalf of
+  # get requester and tenant information and allow a userid for provisioning on behalf of
   def get_requester(build, matching_options_hash, matching_tags_hash)
     log(:info, "Processing get_requester...", true)
-    @user   = $evm.vmdb('user').find_by_id(matching_options_hash[:evm_owner_id])
-    @user ||= $evm.vmdb('user').find_by_userid(matching_options_hash[:userid])
+    @user   = $evm.vmdb('user').find_by_id(matching_options_hash[:evm_owner_id]) || $evm.vmdb('user').find_by_userid(matching_options_hash[:userid])
     @user ||= $evm.vmdb('user').find_by_id($evm.root['user_id'])
-    matching_options_hash[:user_name]        = /^[^@]*/.match(@user.userid)
+    matching_options_hash[:user_name]        = /^[^@]*/.match(@user.userid).to_s
     matching_options_hash[:owner_first_name] = @user.first_name ? @user.first_name : 'Cloud'
     matching_options_hash[:owner_last_name]  = @user.last_name ? @user.last_name : 'Admin'
     matching_options_hash[:owner_email]      = @user.email ? @user.email : $evm.object['to_email_address']
-    log(:info, "Build: #{build} User: #{@user.userid} id: #{@user.id} email: #{@user.email}")
+    log(:info, "Build: #{build} - User: #{@user.userid} id: #{@user.id} email: #{@user.email}")
+    # Stuff the current group information
+    matching_options_hash[:group_id] = @user.current_group.id
+    matching_options_hash[:group_name] = @user.current_group.description
+    log(:info, "Build: #{build} - Group: #{@user.current_group.description} id: #{@user.current_group.id}")
     log(:info, "Processing get_requester...Complete", true)
   end
 
-  def get_cloud_tenant(build, matching_options_hash, matching_tags_hash)
-    log(:info, "Processing get_cloud_tenant...", true)
-    provider = @template.ext_management_system
-    case provider.type
-    when 'EmsOpenstack'
-      # Search for a Cloud Tenant by guid, id, then name defaulting to 'admin'
-      cloud_tenant_search_by_guid = $evm.root['dialog_cloud_tenant_guid'] || matching_options_hash[:cloud_tenant_guid]
-      cloud_tenant_search_by_id   = $evm.root['dialog_cloud_tenant_id'] || matching_options_hash[:cloud_tenant_id]
-      @tenant   = $evm.vmdb(:cloud_tenant).find_by_guid(cloud_tenant_search_by_guid)
-      @tenant ||= $evm.vmdb(:cloud_tenant).find_by_id(cloud_tenant_search_by_id)
-      if @tenant.blank?
-        category = :tenant
-        log(:info, "Build: #{build} - User: #{@user.name} Group: #{@user.current_group.description} Tags: #{@user.current_group.tags.inspect}")
-        cloud_tenant_search_by_name = @user.current_group.tags(category).first rescue 'admin'
-        #raise "missing tenant_name tag on group: #{group.description}" if tenant_name.blank?
-        log(:info, "Build: #{build} - User: #{@user.name} Group: #{@user.current_group.description} tenant_name: #{cloud_tenant_search_by_name}")
-        @tenant = provider.cloud_tenants.detect {|ct| ct.name == "#{cloud_tenant_search_by_name}" } if provider
-        matching_tags_hash[:tenant] = @tenant.name
-        @service.tag_assign("#{category.to_s}/#{@tenant.name}") if @tenant
-      end
+  def get_tenant(build, matching_options_hash, matching_tags_hash)
+    log(:info, "Processing get_tenant...", true)
+    tenant_category = $evm.object['tenant_category'] || 'tenant'
+
+    cloud_tenant_search_criteria  = matching_options_hash[:cloud_tenant]
+    @tenant = $evm.vmdb(:cloud_tenant).find_by_id(cloud_tenant_search_criteria) || $evm.vmdb(:cloud_tenant).all.detect{ |ct| ct.ems_ref == cloud_tenant_search_criteria }
+    unless @tenant.blank?
+      tenant_name = @tenant.name
+      matching_options_hash[:cloud_tenant] = @tenant.id
     end
-    log(:info, "Build: #{build} - Tenant: #{@tenant.name} guid: #{@tenant.guid} id: #{@tenant.id}") unless @tenant.blank?
-    log(:info, "Processing get_cloud_tenant...Complete", true)
+    unless tenant_name
+      tenant_name = @user.current_group.tags(tenant_category).first rescue nil
+    end
+    if tenant_name
+      matching_tags_hash[tenant_category] = tenant_name
+      @service.tag_assign("#{tenant_category}/#{tenant_name}")
+      log(:info, "Build: #{build} - Tenant: #{tenant_name}")
+    end
+    # raise "missing tenant_name tag on group: #{group.description}" if tenant_name.blank?
+    log(:info, "Processing get_tenant...Complete", true)
   end
 
   # get template based on incoming dialog_options
   def get_template(build, matching_options_hash, matching_tags_hash)
     log(:info, "Processing get_template...", true)
-    template_search_by_guid = matching_options_hash[:guid]
-    template_search_by_name = matching_options_hash[:template]
-    template_search_by_product = matching_options_hash[:os]
-    templates = []
+    template_search_by_criteria = matching_options_hash[:guid] || matching_options_hash[:template] || matching_options_hash[:name] || matching_options_hash[:os]
+    @template = $evm.vmdb(:template_openstack).find_by_guid(template_search_by_criteria) || $evm.vmdb(:template_openstack).find_by_id(template_search_by_criteria)
+    @template ||= $evm.vmdb(:template_openstack).find_by_name(template_search_by_criteria)
 
-    if template_search_by_guid && templates.blank?
-      # Search for templates tagged with 'prov_scope' => 'all' & match the guid from option_?_guid
-      log(:info, "Searching for templates tagged with 'prov_scope' => 'all' that match guid: #{template_search_by_guid}")
-      templates = $evm.vmdb('miq_template').all.select do |t|
-        t.ext_management_system && t.tagged_with?('prov_scope', 'all') && t.guid == template_search_by_guid
-      end.sort { |t1, t2| t1.ext_management_system.vms.count <=> t2.ext_management_system.vms.count }
-    end
-    if template_search_by_name && templates.blank?
-      # Search for templates that tagged with 'prov_scope' => 'all' & match the name from option_?_template || option_?_name - then load balance them across different providers based on vm count
-      log(:info, "Searching for templates tagged with 'prov_scope' => 'all' that are named: #{template_search_by_name}")
-      templates = $evm.vmdb('miq_template').all.select do |t|
-        t.ext_management_system && t.tagged_with?('prov_scope', 'all') && t.name == template_search_by_name
-      end.sort { |t1, t2| t1.ext_management_system.vms.count <=> t2.ext_management_system.vms.count }
-    end
-    if template_search_by_product && templates.blank?
+    unless @template
       # Search for templates tagged with 'prov_scope' => 'all' & product_name include option_?_os (I.e. 'windows', red hat') - then load balance them across different providers based on vm count
-      log(:info, "Searching for templates tagged with 'prov_scope' => 'all' that inlcude product: #{template_search_by_product}")
-      templates = $evm.vmdb('miq_template').all.select do |t|
-        t.ext_management_system && t.tagged_with?('prov_scope', 'all') && t.operating_system[:product_name].downcase.include?(template_search_by_product)
+      log(:info, "Searching for templates tagged with 'prov_scope'=>'all' that inlcude product: #{template_search_by_criteria}")
+      templates_array = $evm.vmdb(:template_openstack).all.select do |t|
+        t.ext_management_system && t.tagged_with?('prov_scope', 'all') && t.operating_system[:product_name].downcase.include?(template_search_by_criteria) rescue next
       end.sort { |t1, t2| t1.ext_management_system.vms.count <=> t2.ext_management_system.vms.count }
+      # get the first template in the list
+      @template = templates_array.first unless templates_array.blank?
     end
-    raise "No templates found" if templates.blank?
-
-    # get the first template in the list
-    @template = templates.first
-    log(:info, "Build: #{build} template: #{@template.name} product: #{@template.operating_system[:product_name].downcase rescue 'unknown'} guid: #{@template.guid} on provider: #{@template.ext_management_system.name}")
+    raise "No template found" if @template.blank?
+    log(:info, "Build: #{build} - template: #{@template.name} product: #{@template.operating_system[:product_name].downcase rescue 'unknown'} guid: #{@template.guid} on provider: #{@template.ext_management_system.name}")
     matching_options_hash[:name] = @template.name
     matching_options_hash[:guid] = @template.guid
     log(:info, "Processing get_template...Complete", true)
-  end
-
-  # use this to determine the provision_type.
-  def get_provision_type(build, matching_options_hash, matching_tags_hash)
-    log(:info, "Processing get_provision_type...", true)
-    provider = @template.ext_management_system
-    case provider.type
-    when 'EmsVmware'
-      # Valid types for vmware:  vmware, pxe, netapp_rcu
-      if matching_options_hash[:provision_type].blank?
-        matching_options_hash[:provision_type] = 'vmware'
-      end
-    when 'EmsRedhat'
-      # Valid types for rhev: iso, pxe, native_clone
-      if matching_options_hash[:provision_type].blank?
-        matching_options_hash[:provision_type] = 'native_clone'
-      end
-    end
-    log(:info, "Build: #{build} provision_type: #{matching_options_hash[:provision_type]}") unless matching_options_hash[:provision_type].nil?
-    log(:info, "Processing get_provision_type...Complete", true)
   end
 
   # use this to name the vm or set it to changeme to run through the vm_name automate method
@@ -244,7 +208,7 @@ begin
         matching_options_hash[:vm_name] = new_vm_name
       end
     end
-    log(:info, "Build: #{build} VM Name: #{matching_options_hash[:vm_name]}")
+    log(:info, "Build: #{build} - VM Name: #{matching_options_hash[:vm_name]}")
     log(:info, "Processing get_vm_name...Complete", true)
   end
 
@@ -253,56 +217,64 @@ begin
     log(:info, "Processing get_network...", true)
     provider = @template.ext_management_system
 
-    case provider.type
-    when 'EmsVmware'
-      if matching_options_hash[:vlan].blank?
-        case matching_tags_hash[:environment]
-        when 'dev', 'test';
-          # if dev/test
-          #matching_options_hash[:vlan] = 'VM Network'
-        when 'stage', 'prod';
-          # if stage/prod
-          #matching_options_hash[:vlan] = 'dvs_General - 10.1.45.0/24'
-        else
-          # Set a default vlan here
-          #matching_options_hash[:vlan] = 'VM Network'
-        end
-        log(:info, "Build: #{build} vlan: #{matching_options_hash[:vlan]}") unless matching_options_hash[:vlan].blank?
-      end
-    when 'EmsRedhat'
-      if matching_options_hash[:vlan].blank?
-        matching_options_hash[:vlan] = 'rhevm'
-      end
-      log(:info, "Build: #{build} vlan: #{matching_options_hash[:vlan]}") unless matching_options_hash[:vlan].blank?
-    when 'EmsAmazon'
-    when 'EmsOpenstack'
-      if matching_options_hash[:guest_access_key_pair].blank?
-        key_pair = provider.key_pairs.first
-      else
-        key_pair = provider.key_pairs.detect { |kp| kp.name == matching_options_hash[:guest_access_key_pair] }
-      end
-      matching_options_hash[:guest_access_key_pair] = key_pair.id unless key_pair.blank?
-      log(:info, "Build: #{build} guest_access_key_pair: #{matching_options_hash[:guest_access_key_pair]}") unless matching_options_hash[:guest_access_key_pair].blank?
-
-      if matching_options_hash[:security_groups].blank?
-        security_group = provider.security_groups.select { |sg| sg.tagged_with?('prov_scope', 'all') }.first rescue nil
-      else
-        security_group = provider.security_groups.select { |sg| sg.name == matching_options_hash[:security_groups] }
-      end
-      matching_options_hash[:security_groups] = security_group.name unless security_group.blank?
-      log(:info, "Build: #{build} security_groups: #{matching_options_hash[:security_groups]}") unless matching_options_hash[:security_groups].blank?
-
-      if matching_options_hash[:cloud_network].blank?
-        cloud_network = provider.cloud_networks.first
-      else
-        cloud_network = provider.cloud_networks.detect { |cn| cn.name == matching_options_hash[:cloud_network] } rescue nil
-      end
-      matching_options_hash[:cloud_network] = cloud_network.id unless cloud_network.blank?
-      log(:info, "Build: #{build} cloud_network: #{matching_options_hash[:cloud_network]}") unless matching_options_hash[:cloud_network].blank?
+    availability_zone_search = matching_options_hash[:placement_availability_zone] || matching_options_hash[:availability_zone]
+    if availability_zone_search.blank?
+      availability_zone   = provider.availability_zones.first
     else
-      log(:warn, "Invalid prodiver.type: #{provider.type}")
+      availability_zone   = $evm.vmdb(:availability_zone).find_by_id(availability_zone_search) || provider.availability_zones.detect { |az| az.name == availability_zone_search }
     end
+    matching_options_hash[:placement_availability_zone] = availability_zone.id unless availability_zone.blank?
+    log(:info, "Build: #{build} - placement_availability_zone: #{matching_options_hash[:placement_availability_zone]}") unless availability_zone.blank?
+
+    if matching_options_hash[:cloud_network].blank?
+      if @tenant
+        cloud_network = @tenant.cloud_networks.first
+      end
+    else
+      cloud_network   = $evm.vmdb(:cloud_network).find_by_id(matching_options_hash[:cloud_network]) || provider.cloud_networks.detect {|cn| cn.name == matching_options_hash[:cloud_network] }
+    end
+    matching_options_hash[:cloud_network] = cloud_network.id unless cloud_network.blank?
+    log(:info, "Build: #{build} - cloud_network: #{matching_options_hash[:cloud_network]}") unless cloud_network.blank?
+
+    if matching_options_hash[:security_groups].blank?
+      if @tenant
+        security_group = @tenant.security_groups.first
+      end
+    else
+      security_group   = $evm.vmdb(:security_group).find_by_id(matching_options_hash[:security_groups]) || provider.security_groups.detect { |sg| sg.name == matching_options_hash[:security_groups] }
+    end
+    matching_options_hash[:security_groups] = security_group.name unless security_group.blank?
+    log(:info, "Build: #{build} - security_groups: #{matching_options_hash[:security_groups]}") unless security_group.blank?
+
+    key_pair_search = matching_options_hash[:guest_access_key_pair] || matching_options_hash[:key_pair]
+    if key_pair_search.blank?
+      if @tenant
+        # waiting on BZ1196301 for now use provider # key_pair = @tenant.key_pairs.first
+        key_pair = provider.key_pairs.first
+      end
+    else
+      key_pair   = $evm.vmdb(:key_pair).find_by_id(key_pair_search) || provider.key_pairs.detect {|kp| kp.name == key_pair_search }
+    end
+    matching_options_hash[:guest_access_key_pair] = key_pair.id unless key_pair.blank?
+    log(:info, "Build: #{build} - guest_access_key_pair: #{matching_options_hash[:guest_access_key_pair]}") unless key_pair.blank?
+
     log(:info, "Processing get_network...Complete", true)
+  end
+
+  # get vCPU/vRAM/flavor based on flavor|sizing parameter
+  def get_sizing(build, matching_options_hash, matching_tags_hash)
+    log(:info, "Processing get_sizing...", true)
+    flavor_sizing = matching_options_hash[:flavor] || matching_options_hash[:instance_type] || matching_options_hash[:sizing] rescue nil
+    return if flavor_sizing.blank?
+    provider = @template.ext_management_system
+    flavor   = $evm.vmdb(:flavor_openstack).find_by_id(flavor_sizing) || provider.flavors.detect {|fl| fl.name == flavor_sizing }
+    unless flavor.nil?
+      log(:info, "flavor: #{flavor.name} id: #{flavor.id} cpus: #{flavor.cpus} memory: #{flavor.memory} ems_ref: #{flavor.ems_ref}")
+      matching_options_hash[:instance_type] = flavor.id
+      matching_tags_hash[:flavor] = flavor.name
+      log(:info, "Build: #{build} - instance_type: #{matching_options_hash[:instance_type]}") unless matching_options_hash[:instance_type].blank?
+    end
+    log(:info, "Processing get_sizing...Complete", true)
   end
 
   # use this to set retirement
@@ -325,76 +297,21 @@ begin
       #matching_options_hash[:retirement] = 1.month.to_i
       #matching_options_hash[:retirement_warn] = 1.week.to_i
     end
-    log(:info, "Build: #{build} retirement: #{matching_options_hash[:retirement]}") unless matching_options_hash[:retirement].blank?
-    log(:info, "Build: #{build} retirement_warn: #{matching_options_hash[:retirement_warn]}") unless matching_options_hash[:retirement_warn].blank?
+    log(:info, "Build: #{build} - retirement: #{matching_options_hash[:retirement]}") unless matching_options_hash[:retirement].blank?
+    log(:info, "Build: #{build} - retirement_warn: #{matching_options_hash[:retirement_warn]}") unless matching_options_hash[:retirement_warn].blank?
     log(:info, "Processing get_retirement...Complete", true)
   end
 
   # use this method to define extra provisioning options
   def get_extra_options(build, matching_options_hash, matching_tags_hash)
     log(:info, "Processing get_extra_options...", true)
-    provider = @template.ext_management_system
-    case provider.type
-    when 'EmsAmazon', 'EmsOpenstack';
-      if matching_options_hash[:placement_availability_zone].blank?
-        placement_availability_zone = provider.availability_zones.first
-      else
-        placement_availability_zone = provider.availability_zones.detect { |az| az.name == matching_options_hash[:placement_availability_zone] }
-      end
-      matching_options_hash[:placement_availability_zone] = placement_availability_zone.id unless placement_availability_zone.blank?
-    end
+
     # stuff the service guid & id so that the VMs can be added to the service later
     matching_options_hash[:service_id] = @service.id unless @service.nil?
     matching_options_hash[:service_guid] = @service.guid unless @service.nil?
-    log(:info, "Build: #{build} service_id: #{matching_options_hash[:service_id]}") unless matching_options_hash[:service_id].blank?
-    log(:info, "Build: #{build} service_guid: #{matching_options_hash[:service_guid]}") unless matching_options_hash[:service_guid].blank?
+    log(:info, "Build: #{build} - service_id: #{matching_options_hash[:service_id]}") unless matching_options_hash[:service_id].blank?
+    log(:info, "Build: #{build} - service_guid: #{matching_options_hash[:service_guid]}") unless matching_options_hash[:service_guid].blank?
     log(:info, "Processing get_extra_options...Complete", true)
-  end
-
-  # get vCPU/vRAM/flavor based on flavor|sizing parameter
-  def get_sizing(build, matching_options_hash, matching_tags_hash)
-    log(:info, "Processing get_sizing...", true)
-    flavor_sizing = matching_options_hash[:flavor] || matching_options_hash[:instance_type] || matching_options_hash[:sizing] rescue nil
-    return if flavor_sizing.blank?
-    provider = @template.ext_management_system
-    case provider.type
-    when 'EmsVmware', 'EmsRedhat';
-      case matching_options_hash[:flavor]
-      when 'xsmall'
-        # xSmall - 1 vCPU x 512 MB RAM
-        matching_options_hash[:cores_per_socket], matching_options_hash[:vm_memory] = '1', '512'
-      when 'small'
-        # Small - 1 vCPU x 1 GB RAM
-        matching_options_hash[:cores_per_socket], matching_options_hash[:vm_memory] ='1', '1024'
-      when 'medium'
-        # Medium - 2 vCPU x 2 GB RAM
-        matching_options_hash[:cores_per_socket], matching_options_hash[:vm_memory] = '2', '2048'
-      when 'large'
-        # Large - 2 vCPU x 4 GB RAM
-        matching_options_hash[:cores_per_socket], matching_options_hash[:vm_memory] = '2', '4096'
-      when 'xlarge'
-        # XLarge - 4 vCPU x 4 GB RAM
-        matching_options_hash[:cores_per_socket], matching_options_hash[:vm_memory] = '4', '4096'
-      when 'xxlarge'
-        # XXLarge - 4 vCPU x 6 GB RAM
-        matching_options_hash[:cores_per_socket], matching_options_hash[:vm_memory] = '4', '6144'
-      when 'xxxlarge'
-        # XXXLarge - 8 vCPU x 8 GB RAM
-        matching_options_hash[:cores_per_socket], matching_options_hash[:vm_memory] = '8', '8192'
-      else
-        # matching_options_hash[:cores_per_socket], matching_options_hash[:vm_memory] = '1', '1024'
-      end
-      log(:info, "Build: #{build} flavor: #{flavor_sizing} cores_per_socket: #{matching_options_hash[:cores_per_socket]}") unless matching_options_hash[:cores_per_socket].blank?
-      log(:info, "Build: #{build} flavor: #{flavor_sizing} vm_memory: #{matching_options_hash[:vm_memory]}") unless matching_options_hash[:vm_memory].blank?
-      matching_tags_hash[:flavor] = flavor_sizing
-    when 'EmsAmazon', 'EmsOpenstack';
-      flavor = provider.flavors.detect {|fl| fl.name == flavor_sizing}
-      log(:info, "flavor: #{flavor.name} id: #{flavor.id} - #{flavor.inspect}")
-      matching_options_hash[:instance_type] = flavor.id
-      matching_tags_hash[:flavor] = flavor.name
-      log(:info, "Build: #{build} instance_type: #{matching_options_hash[:instance_type]}") unless matching_options_hash[:instance_type].blank?
-    end # case provider.type
-    log(:info, "Processing get_sizing...Complete", true)
   end
 
   # set_valid_provisioning_args
@@ -402,9 +319,10 @@ begin
     valid_templateFields = [:name, :request_type, :guid, :cluster]
     @valid_provisioning_templateFields = valid_templateFields
 
-    valid_vmFields  = [:vm_name, :number_of_sockets, :cores_per_socket, :vm_memory, :number_of_vms, :provision_type, :vlan, :retirement, :retirement_warn]
-    valid_vmFields += [:linked_clone, :vm_prefix, :network_adapters, :placement_auto, :vm_description, :vm_auto_start, :placement_cluster_name]
+    valid_vmFields  = [:vm_name, :number_of_vms, :vlan, :retirement, :retirement_warn]
+    valid_vmFields += [:vm_prefix, :network_adapters, :placement_auto, :vm_description, :vm_auto_start, :placement_cluster_name]
     valid_vmFields += [:floating_ip_address, :placement_availability_zone, :guest_access_key_pair, :security_groups, :cloud_network, :cloud_subnet, :instance_type]
+    valid_vmFields += [:cloud_tenant]
     @valid_provisioning_vmFields = valid_vmFields
 
     valid_requester_args = [:user_name, :owner_first_name, :owner_last_name, :owner_email, :auto_approve]
@@ -440,7 +358,7 @@ begin
     args << tags_hash.collect { |k, v| "#{k.to_s}=#{v}" }.join('|')
 
     # arg6 = Web Service Values (ws_values)
-    # put all remaining options_hash and tags_hash in ws_values hash for later use in the state machine
+    # put all remaining options_hash and tags_hash in the ws_values hash for later use in the state machine
     args << options_hash.merge(tags_hash).collect { |k, v| "#{k.to_s}=#{v}" }.join('|')
 
     # arg7 = emsCustomAttributes
@@ -452,8 +370,8 @@ begin
     log(:info, "Build: #{build} - Building provision request with the following arguments: #{args.inspect}")
     request_id = $evm.execute('create_provision_request', *args)
     log(:info, "Build: #{build} - Processing build_provision_request...Complete", true)
-    # Reset the @template for the next build
-    @template = nil
+    # Reset variables for the next build
+    @template, @user, @tenant = nil
     log(:info, "Processing build_provision_request...Complete", true)
     return request_id
   end
@@ -639,14 +557,11 @@ begin
       # get requester and tenant information
       get_requester(build, matching_options_hash, matching_tags_hash)
 
+      # get tenant
+      get_tenant(build, matching_options_hash, matching_tags_hash)
+
       # get template
       get_template(build, matching_options_hash, matching_tags_hash)
-
-      # set the cloud tenant (for OpenStack only)
-      get_cloud_tenant(build, matching_options_hash, matching_tags_hash) if @template.ext_management_system.type == 'EmsOpenstack'
-
-      # set the provision type (vmware, pxe, iso, native_clone)
-      get_provision_type(build, matching_options_hash, matching_tags_hash)
 
       # get vm_name
       get_vm_name(build, matching_options_hash, matching_tags_hash)
@@ -665,11 +580,11 @@ begin
 
       # dynamically create all specified categories/tags
       matching_tags_hash.each { |category, tag| process_tags( category, true, tag ) }
-      
+
       # log each builds tags and options
       matching_tags_hash.each {|k,v| log(:info, "Build: #{build} - matching_tags_hash: #{k.inspect}=>#{v.inspect}") }
       matching_options_hash.each {|k,v| log(:info, "Build: #{build} - matching_options_hash: #{k.inspect}=>#{v.inspect}") }
-      
+
       # call build_provision_request using matching_options_hash and matching_tags_hash
       request_id = build_provision_request(build, matching_tags_hash, matching_options_hash)
       log(:info, "Build: #{build} - VM Provision request #{request_id.id} for #{matching_options_hash[:vm_name]} successfully submitted", true)

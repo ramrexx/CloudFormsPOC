@@ -1,9 +1,9 @@
-# list_openstack_flavors.rb
+# list_openstack_tenant_networks.rb
 #
 # Author: Kevin Morey <kmorey@redhat.com>
 # License: GPL v3
 #
-# Description: List OpenStack Template ids in OpenStack
+# Description: List Tenant Networks in OpenStack
 #
 begin
   def log(level, msg, update_message=false)
@@ -61,41 +61,41 @@ begin
   log(:info, "CloudForms Automate Method Started", true)
   dump_root()
 
-  dialog_hash = {}
-
-  # see if provider is already set in root
   provider = get_provider()
 
-  unless provider
-    tenant_category = $evm.object['tenant_category'] || 'tenant'
-    tenant = get_tenant(tenant_category)
-    if tenant.respond_to?('ems_id')
-      # get provider from cloud_tenant
-      provider = $evm.vmdb(:ems_openstack).find_by_id(tenant.ems_id)
-    end
-  end
+  tenant_category = $evm.object['tenant_category'] || 'tenant'
+  tenant = get_tenant(tenant_category)
 
-  if provider
-    provider.flavors.each do |fl|
-      log(:info, "Looking at flavor: #{fl.name} id: #{fl.id} cpus: #{fl.cpus} memory: #{fl.memory} ems_ref: #{fl.ems_ref}")
-      next unless fl.ext_management_system || fl.enabled
-      dialog_hash[fl.id] = "#{fl.name} on #{fl.ext_management_system.name}"
+  dialog_hash = {}
+
+  if tenant.respond_to?('name')
+    # This means that we have a cloud_tenant to look for networks
+    tenant.cloud_networks.each do |cn|
+      log(:info, "Looking at network: #{cn.name} id: #{cn.id} ems_ref: #{cn.ems_ref}")
+      next unless cn.ext_management_system || cn.enabled
+      dialog_hash[cn.id] = "#{cn.name} on #{cn.ext_management_system.name}"
+    end
+  elsif provider
+    # This means that we use the provider to look for networks
+    provider.cloud_networks.each do |cn|
+      log(:info, "Looking at network: #{cn.name} cloud_tenant_id: #{cn.cloud_tenant_id.inspect} ems_ref: #{cn.ems_ref}")
+      next unless cn.ext_management_system || cn.enabled
+      dialog_hash[cn.id] = "#{cn.name} on #{cn.ext_management_system.name}"
     end
   else
-    # no provider or tenant so list everything
-    $evm.vmdb(:flavor_openstack).all.each do |fl|
-      log(:info, "Looking at flavor: #{fl.name} id: #{fl.id} cpus: #{fl.cpus} memory: #{fl.memory} ems_ref: #{fl.ems_ref}")
-      next unless fl.ext_management_system || fl.enabled
-      dialog_hash[fl.id] = "#{fl.name} on #{fl.ext_management_system.name}"
+    $evm.vmdb(:cloud_network).all.each do |cn|
+      log(:info, "Looking at network: #{cn.name} cloud_tenant_id: #{cn.cloud_tenant_id.inspect} ems_ref: #{cn.ems_ref}")
+      next unless cn.ext_management_system || cn.enabled
+      dialog_hash[cn.id] = "#{cn.name} on #{cn.ext_management_system.name}"
     end
   end
 
   if dialog_hash.blank?
-    log(:info, "No Flavors found")
-    dialog_hash[nil] = "< No Flavors found, Contact Administrator >"
+    log(:info, "User: #{$evm.root['user'].name} has no access to Tenant Networks")
+    dialog_hash[nil] = "< No Tenant Networks Found for Tenant: #{tenant_name}, Contact Administrator >"
   else
     #$evm.object['default_value'] = dialog_hash.first
-    dialog_hash[nil] = '< choose a flavor >'
+    dialog_hash[nil] = '< choose a network >'
   end
 
   $evm.object["values"]     = dialog_hash

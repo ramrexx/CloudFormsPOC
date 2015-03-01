@@ -1,9 +1,9 @@
-# list_openstack_flavors.rb
+# list_openstack_templates.rb
 #
 # Author: Kevin Morey <kmorey@redhat.com>
 # License: GPL v3
 #
-# Description: List OpenStack Template ids in OpenStack
+# Description: List OpenStack Template ids
 #
 begin
   def log(level, msg, update_message=false)
@@ -61,44 +61,47 @@ begin
   log(:info, "CloudForms Automate Method Started", true)
   dump_root()
 
-  dialog_hash = {}
-
-  # see if provider is already set in root
   provider = get_provider()
 
-  unless provider
-    tenant_category = $evm.object['tenant_category'] || 'tenant'
-    tenant = get_tenant(tenant_category)
-    if tenant.respond_to?('ems_id')
-      # get provider from cloud_tenant
-      provider = $evm.vmdb(:ems_openstack).find_by_id(tenant.ems_id)
-    end
-  end
+  tenant_category = $evm.object['tenant_category'] || 'tenant'
+  tenant = get_tenant(tenant_category)
 
-  if provider
-    provider.flavors.each do |fl|
-      log(:info, "Looking at flavor: #{fl.name} id: #{fl.id} cpus: #{fl.cpus} memory: #{fl.memory} ems_ref: #{fl.ems_ref}")
-      next unless fl.ext_management_system || fl.enabled
-      dialog_hash[fl.id] = "#{fl.name} on #{fl.ext_management_system.name}"
+  dialog_hash = {}
+
+  if tenant.respond_to?('name')
+    # cloud_tenant is present so we can filter templates by provider
+    provider = $evm.vmdb(:ems_openstack).find_by_id(tenant.ems_id)
+    $evm.vmdb(:template_openstack).all.each do |t|
+      log(:info, "Looking at template: #{t.name} guid: #{t.guid} ems_ref: #{t.ems_ref}")
+      next if ! t.ext_management_system || t.archived || ! t.ems_id == provider.id
+      if t.cloud_tenant_id == tenant.id || t.publicly_available
+        dialog_hash[t.guid] = "#{t.name} on #{t.ext_management_system.name}"
+      end
     end
+    tenant_name = tenant.name
   else
-    # no provider or tenant so list everything
-    $evm.vmdb(:flavor_openstack).all.each do |fl|
-      log(:info, "Looking at flavor: #{fl.name} id: #{fl.id} cpus: #{fl.cpus} memory: #{fl.memory} ems_ref: #{fl.ems_ref}")
-      next unless fl.ext_management_system || fl.enabled
-      dialog_hash[fl.id] = "#{fl.name} on #{fl.ext_management_system.name}"
+    # This means that we are going to leverage group tag
+    $evm.vmdb(:template_openstack).all.each do |t|
+      log(:info, "Looking at template: #{t.name} guid: #{t.guid} ems_ref: #{t.ems_ref}")
+      next if ! t.ext_management_system || t.archived
+      if t.tagged_with?(tenant_category, tenant)
+        dialog_hash[t.guid] = "#{t.name} on #{t.ext_management_system.name}"
+      end
     end
+    tenant_name = tenant
   end
 
   if dialog_hash.blank?
-    log(:info, "No Flavors found")
-    dialog_hash[nil] = "< No Flavors found, Contact Administrator >"
+    log(:info, "User: #{$evm.root['user'].name} / Tenant: #{tenant_name} has no access to Templates")
+    dialog_hash[nil] = "< No Templates Found for Tenant: #{tenant_name}, Contact Administrator >"
   else
-    #$evm.object['default_value'] = dialog_hash.first
-    dialog_hash[nil] = '< choose a flavor >'
+    if dialog_hash.count == 1
+      $evm.object['default_value'] = dialog_hash.first
+    else
+      dialog_hash[nil] = '< choose a template >'
+    end
   end
-
-  $evm.object["values"]     = dialog_hash
+  $evm.object['values'] = dialog_hash
   log(:info, "$evm.object['values']: #{$evm.object['values'].inspect}")
 
   ###############
