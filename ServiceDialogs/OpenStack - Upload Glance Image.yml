@@ -1,0 +1,112 @@
+---
+- description: Upload Image
+  buttons: submit,cancel
+  label: OpenStack - UploadImage
+  dialog_tabs:
+  - description: 
+    display: edit
+    label: Main Tab
+    display_method: 
+    display_method_options: 
+    position: 0
+    dialog_groups:
+    - description: 
+      display: edit
+      label: Main Box
+      display_method: 
+      display_method_options: 
+      position: 0
+      dialog_fields:
+      - name: mid
+        description: 
+        type: DialogFieldDynamicList
+        data_type: 
+        notes: 
+        notes_display: 
+        display: edit
+        display_method: 
+        display_method_options: {}
+        required: false
+        required_method: 
+        required_method_options: {}
+        default_value: 
+        values: 
+        values_method: 
+        values_method_options: {}
+        options:
+          :load_values_on_init: true
+          :show_refresh_button: true
+        label: OpenStack Cluster
+        position: 0
+        validator_type: 
+        validator_rule: 
+        reconfigurable: 
+      - name: cloud_tenant
+        description: 
+        type: DialogFieldDynamicList
+        data_type: 
+        notes: 
+        notes_display: 
+        display: edit
+        display_method: 
+        display_method_options: {}
+        required: false
+        required_method: 
+        required_method_options: {}
+        default_value: 
+        values: 
+        values_method: 
+        values_method_options: {}
+        options:
+          :load_values_on_init: false
+          :show_refresh_button: true
+        label: Tenant
+        position: 1
+        validator_type: 
+        validator_rule: 
+        reconfigurable: 
+      - name: image_name
+        description: cirros.qcow2
+        type: DialogFieldTextBox
+        data_type: 
+        notes: 
+        notes_display: 
+        display: edit
+        display_method: 
+        display_method_options: {}
+        required: true
+        required_method: 
+        required_method_options: {}
+        default_value: ''
+        values: 
+        values_method: 
+        values_method_options: {}
+        options:
+          :protected: false
+        label: Image Name
+        position: 2
+        validator_type: 
+        validator_rule: 
+        reconfigurable: 
+      - name: image_url
+        description: 
+        type: DialogFieldTextAreaBox
+        data_type: 
+        notes: 
+        notes_display: 
+        display: edit
+        display_method: 
+        display_method_options: {}
+        required: false
+        required_method: 
+        required_method_options: {}
+        default_value: ''
+        values: 
+        values_method: 
+        values_method_options: {}
+        options: {}
+        label: Image url
+        position: 3
+        validator_type: 
+        validator_rule: 
+        reconfigurable: 
