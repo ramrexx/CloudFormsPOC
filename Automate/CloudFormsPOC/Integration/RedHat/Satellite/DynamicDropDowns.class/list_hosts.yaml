@@ -4,17 +4,13 @@ version: 1.0
 object:
   attributes:
     display_name: 
-    name: unsubscribe
+    name: List_Hosts
     inherits: 
     description: 
   fields:
-  - satellite:
-      value: sat6.local.domb.com
-  - username:
-      value: admin
   - password:
       value: v2:{4U9m7mmcKqOmJVAOwR0XNA==}
-  - domain:
-      value: local.domb.com
+  - required:
+      value: 'false'
   - method1:
-      value: unsubscribe
+      value: List_Hosts
