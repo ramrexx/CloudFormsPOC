@@ -1,0 +1,14 @@
+---
+object_type: instance
+version: 1.0
+object:
+  attributes:
+    display_name: 
+    name: UploadImage
+    inherits: 
+    description: 
+  fields:
+  - step1:
+      value: /CloudFormsPOC/Integration/RedHat/OpenStack/Glance/UploadImage
+  - step2:
+      value: /CloudFormsPOC/Integration/RedHat/OpenStack/Glance/CheckImageUploaded
