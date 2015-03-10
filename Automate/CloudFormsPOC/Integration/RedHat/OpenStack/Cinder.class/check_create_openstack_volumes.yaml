@@ -1,0 +1,12 @@
+---
+object_type: instance
+version: 1.0
+object:
+  attributes:
+    display_name: 
+    name: Check_Create_OpenStack_Volumes
+    inherits: 
+    description: 
+  fields:
+  - method1:
+      value: check_create_openstack_volumes

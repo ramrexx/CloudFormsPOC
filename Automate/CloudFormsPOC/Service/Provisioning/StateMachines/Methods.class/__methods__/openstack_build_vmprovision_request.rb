@@ -150,20 +150,14 @@ begin
   def get_tenant(build, matching_options_hash, matching_tags_hash)
     log(:info, "Processing get_tenant...", true)
     tenant_category = $evm.object['tenant_category'] || 'tenant'
-
-    cloud_tenant_search_criteria  = matching_options_hash[:cloud_tenant]
-    @tenant = $evm.vmdb(:cloud_tenant).find_by_id(cloud_tenant_search_criteria) || $evm.vmdb(:cloud_tenant).all.detect{ |ct| ct.ems_ref == cloud_tenant_search_criteria }
-    unless @tenant.blank?
-      tenant_name = @tenant.name
-      matching_options_hash[:cloud_tenant] = @tenant.id
-    end
-    unless tenant_name
-      tenant_name = @user.current_group.tags(tenant_category).first rescue nil
-    end
-    if tenant_name
-      matching_tags_hash[tenant_category] = tenant_name
-      @service.tag_assign("#{tenant_category}/#{tenant_name}")
-      log(:info, "Build: #{build} - Tenant: #{tenant_name}")
+    cloud_tenant_search_criteria  = matching_options_hash[:cloud_tenant] || @user.current_group.tags(tenant_category).first rescue nil
+    @tenant   = $evm.vmdb(:cloud_tenant).find_by_id(cloud_tenant_search_criteria) || $evm.vmdb(:cloud_tenant).find_by_name(cloud_tenant_search_criteria) 
+    if @tenant
+      matching_options_hash[:cloud_tenant]    = @tenant.id
+      matching_options_hash[:cloud_tenant_id] = @tenant.id
+      matching_tags_hash[tenant_category]     = @tenant.name
+      @service.tag_assign("#{tenant_category}/#{@tenant.name}")
+      log(:info, "Build: #{build} - Tenant: #{@tenant.name}")
     end
     # raise "missing tenant_name tag on group: #{group.description}" if tenant_name.blank?
     log(:info, "Processing get_tenant...Complete", true)
