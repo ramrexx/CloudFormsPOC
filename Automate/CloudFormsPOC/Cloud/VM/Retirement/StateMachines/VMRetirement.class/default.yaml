@@ -3,7 +3,7 @@ object_type: instance
 version: 1.0
 object:
   attributes:
-    display_name: Default
+    display_name: 
     name: Default
     inherits: 
     description: 
@@ -14,5 +14,7 @@ object:
       value: /Cloud/VM/Retirement/StateMachines/Methods/DeleteFromProvider
   - CheckUnregisteredFromProvider:
       value: /Cloud/VM/Retirement/StateMachines/Methods/CheckUnregisteredFromProvider
+  - PostDeleteFromProvider:
+      value: /Integration/RedHat/OpenStack/Cinder/Delete_Openstack_Volumes
   - DeleteFromVMDB:
       value: /Cloud/VM/Retirement/StateMachines/Methods/DeleteFromVMDB

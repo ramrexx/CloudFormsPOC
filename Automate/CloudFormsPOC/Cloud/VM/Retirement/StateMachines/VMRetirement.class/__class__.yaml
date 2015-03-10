@@ -275,10 +275,50 @@ object:
       max_time: 
   - field:
       aetype: state
-      name: DeleteFromVMDB
+      name: PostDeleteFromProvider
       display_name: 
       datatype: string
       priority: 14
+      owner: 
+      default_value: 
+      substitute: true
+      message: create
+      visibility: 
+      collect: 
+      scope: 
+      description: 
+      condition: 
+      on_entry: update_retirement_status(status => 'Post Delete from Provider')
+      on_exit: update_retirement_status(status => 'Post Delete from Provider')
+      on_error: update_retirement_status(status => 'Error Post Delete from Provider')
+      max_retries: '100'
+      max_time: 
+  - field:
+      aetype: state
+      name: PostDeleteFromProvider1
+      display_name: 
+      datatype: string
+      priority: 15
+      owner: 
+      default_value: 
+      substitute: true
+      message: create
+      visibility: 
+      collect: 
+      scope: 
+      description: 
+      condition: 
+      on_entry: update_retirement_status(status => 'Post Delete from Provider1')
+      on_exit: update_retirement_status(status => 'Post Delete from Provider1')
+      on_error: update_retirement_status(status => 'Error Deleting from Provider1')
+      max_retries: '100'
+      max_time: 
+  - field:
+      aetype: state
+      name: DeleteFromVMDB
+      display_name: 
+      datatype: string
+      priority: 16
       owner: 
       default_value: /Cloud/VM/Retirement/StateMachines/Methods/DeleteFromVMDB
       substitute: true
@@ -298,7 +338,7 @@ object:
       name: Finished
       display_name: 
       datatype: string
-      priority: 15
+      priority: 17
       owner: 
       default_value: 
       substitute: true
