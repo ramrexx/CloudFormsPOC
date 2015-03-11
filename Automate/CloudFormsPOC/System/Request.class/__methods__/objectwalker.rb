@@ -12,28 +12,30 @@
 # Original      1.0     18-Sep-2014
 #               1.1     22-Sep-2014     Added blacklisting/whitelisting to the walk_association functionality
 #               1.2     24-Sep-2014     Changed exception handling logic slightly
+#               1.3     25-Sep-2015     Debugged exception handling, changed some output strings
 #   
 @method = 'objectWalker'
-VERSION = 1.2
+VERSION = 1.3
+#
+@recursion_level = 0
+@object_recorder = {}
+@debug = false
 #
 # Change MAX_RECURSION_LEVEL to adjust the depth of recursion that objectWalker traverses through the objects
 #
 MAX_RECURSION_LEVEL = 7
-@recursion_level = 0
-@object_recorder = {}
 #
 # @print_nil_values can be used to toggle whether or not to include keys that have a nil value in the
 # output dump. There are often many, and including them will usually increase verbosity, but it is
 # sometimes useful to know that a key/attribute exists, even if it currently has no assigned value.
 #
 @print_nil_values = false
-@debug = false
 #
 # @walk_association_policy should have the value of either :whitelist or :blacklist. This will determine whether we either 
 # walk all associations _except_ those in the @walk_association_blacklist hash, or _only_ the associations in the
 # @walk_association_whitelist hash
 #
-@walk_association_policy = :blacklist
+@walk_association_policy = :whitelist
 #
 # if @walk_association_policy = :whitelist, then objectWalker will only traverse associations of objects that are explicitly
 # mentioned in the @walk_association_whitelist hash. This enables us to carefully control what is dumped. If objectWalker finds
@@ -110,7 +112,6 @@ def dump_attributes(object_string, this_object, spaces)
     end
   rescue => err
     $evm.log("error", "#{@method} (dump_attributes) - [#{err}]\n#{err.backtrace.join("\n")}")
-    exit MIQ_ABORT
   end
 end
 
@@ -123,11 +124,12 @@ end
 # Purpose:      Dumps the virtual_columns_names of the object passed to it
 # Arguments:    object_string : friendly text string name for the object
 #               this_object   : the Ruby object whose virtual_column_names are to be dumped
+#               this_object_class : the class of the object whose associations are to be dumped
 #               spaces        : the number of spaces to indent the output (corresponds to recursion depth)
 # Returns:      None
 #-------------------------------------------------------------------------------------------------------------
 
-def dump_virtual_columns(object_string, this_object, spaces)
+def dump_virtual_columns(object_string, this_object, this_object_class, spaces)
   begin
     #
     # Print the virtual columns of this object 
@@ -135,18 +137,21 @@ def dump_virtual_columns(object_string, this_object, spaces)
     if this_object.respond_to?(:virtual_column_names)
       $evm.log("info", "#{spaces}#{@method}:   --- virtual columns follow ---")
       this_object.virtual_column_names.sort.each do |virtual_column_name|
-        virtual_column_value = this_object.send(virtual_column_name)
-        if virtual_column_value.nil?
-          $evm.log("info", "#{spaces}#{@method}:   #{object_string}.#{virtual_column_name} = nil") if @print_nil_values
-        else
-          $evm.log("info", "#{spaces}#{@method}:   #{object_string}.#{virtual_column_name} = #{virtual_column_value}   (type: #{virtual_column_value.class})")
+        begin
+          virtual_column_value = this_object.send(virtual_column_name)
+          if virtual_column_value.nil?
+            $evm.log("info", "#{spaces}#{@method}:   #{object_string}.#{virtual_column_name} = nil") if @print_nil_values
+          else
+            $evm.log("info", "#{spaces}#{@method}:   #{object_string}.#{virtual_column_name} = #{virtual_column_value}   (type: #{virtual_column_value.class})")
+          end
+        rescue NoMethodError
+          $evm.log("info", "#{spaces}#{@method}:   *** #{this_object_class} virtual column: \'#{virtual_column_name}\' gives a NoMethodError when accessed (product bug?) ***")
         end
       end
       $evm.log("info", "#{spaces}#{@method}:   --- end of virtual columns ---")
     end
   rescue => err
     $evm.log("error", "#{@method} (dump_virtual_columns) - [#{err}]\n#{err.backtrace.join("\n")}")
-    exit MIQ_ABORT
   end
 end
 
@@ -183,10 +188,10 @@ def dump_association(object_string, association, associated_objects, spaces)
       if (association =~ /.*s$/)
         dump_object("#{association.chop}", associated_object, spaces)
         if number_of_associated_objects > 1
-          $evm.log("info", "#{spaces}#{@method}:  --- next #{association.chop} ---")
+          $evm.log("info", "#{spaces}#{@method}:   --- next #{association.chop} ---")
           number_of_associated_objects -= 1
         else
-          $evm.log("info", "#{spaces}#{@method}:  --- end of #{object_string}.#{association}.each do |#{association.chop}| ---")
+          $evm.log("info", "#{spaces}#{@method}:   --- end of #{object_string}.#{association}.each do |#{association.chop}| ---")
         end
       else
         dump_object("#{association}", associated_object, spaces)
@@ -194,7 +199,6 @@ def dump_association(object_string, association, associated_objects, spaces)
     end
   rescue => err
     $evm.log("error", "#{@method} (dump_association) - [#{err}]\n#{err.backtrace.join("\n")}")
-    exit MIQ_ABORT
   end
 end
 
@@ -213,53 +217,54 @@ end
 #-------------------------------------------------------------------------------------------------------------
 
 def dump_associations(object_string, this_object, this_object_class, spaces)
-  #
-  # Print the associations of this object according to the @walk_associations_whitelist & @walk_associations_blacklist hashes
-  #
-  object_associations = []
-  associated_objects = []
-  if this_object.respond_to?(:associations)
-    $evm.log("info", "#{spaces}#{@method}:   --- associations follow ---")
-    object_associations = Array(this_object.associations)
-    object_associations.sort.each do |association|
-      begin
-        associated_objects = Array(this_object.send(association))
-        if associated_objects.length == 0
-          $evm.log("info", "#{spaces}#{@method}:   #{object_string}.#{association} (type: Association (empty))")
-        else
-          $evm.log("info", "#{spaces}#{@method}:   #{object_string}.#{association} (type: Association)")
-          #
-          # See if we need to walk this association according to the @walk_association_policy variable, and the @walk_association_{whitelist,clacklist} hashes
-          #
-          if @walk_association_policy == :whitelist
-            if @walk_association_whitelist.has_key?(this_object_class) &&
-                (@walk_association_whitelist[this_object_class].include?(:ALL) || @walk_association_whitelist[this_object_class].include?(association.to_s))
-              dump_association(object_string, association, associated_objects, spaces)
-            else
-              $evm.log("info", "#{spaces}#{@method}:     (#{association} isn't in the @walk_association_whitelist hash for #{this_object_class} and so has not been walked...)")
-            end
-          elsif @walk_association_policy == :blacklist
-            if @walk_association_blacklist.has_key?(this_object_class) &&
-                (@walk_association_blacklist[this_object_class].include?(:ALL) || @walk_association_blacklist[this_object_class].include?(association.to_s))
-              $evm.log("info", "#{spaces}#{@method}:     (#{association} is in the @walk_association_blacklist hash for #{this_object_class} and so has not been walked...)")
-            else
-              dump_association(object_string, association, associated_objects, spaces)
-            end
+  begin
+    #
+    # Print the associations of this object according to the @walk_associations_whitelist & @walk_associations_blacklist hashes
+    #
+    object_associations = []
+    associated_objects = []
+    if this_object.respond_to?(:associations)
+      $evm.log("info", "#{spaces}#{@method}:   --- associations follow ---")
+      object_associations = Array(this_object.associations)
+      object_associations.sort.each do |association|
+        begin
+          associated_objects = Array(this_object.send(association))
+          if associated_objects.length == 0
+            $evm.log("info", "#{spaces}#{@method}:   #{object_string}.#{association} (type: Association (empty))")
           else
-            $evm.log("info", "#{spaces}#{@method}:     Invalid @walk_association_policy: #{@walk_association_policy}")
-            exit MIQ_ABORT
+            $evm.log("info", "#{spaces}#{@method}:   #{object_string}.#{association} (type: Association)")
+            #
+            # See if we need to walk this association according to the @walk_association_policy variable, and the @walk_association_{whitelist,clacklist} hashes
+            #
+            if @walk_association_policy == :whitelist
+              if @walk_association_whitelist.has_key?(this_object_class) &&
+                  (@walk_association_whitelist[this_object_class].include?(:ALL) || @walk_association_whitelist[this_object_class].include?(association.to_s))
+                dump_association(object_string, association, associated_objects, spaces)
+              else
+                $evm.log("info", "#{spaces}#{@method}:   *** not walking: \'#{association}\' isn't in the @walk_association_whitelist hash for #{this_object_class} ***")
+              end
+            elsif @walk_association_policy == :blacklist
+              if @walk_association_blacklist.has_key?(this_object_class) &&
+                  (@walk_association_blacklist[this_object_class].include?(:ALL) || @walk_association_blacklist[this_object_class].include?(association.to_s))
+                $evm.log("info", "#{spaces}#{@method}:   *** not walking: \'#{association}\' is in the @walk_association_blacklist hash for #{this_object_class} ***")
+              else
+                dump_association(object_string, association, associated_objects, spaces)
+              end
+            else
+              $evm.log("info", "#{spaces}#{@method}:   *** Invalid @walk_association_policy: #{@walk_association_policy} ***")
+              exit MIQ_ABORT
+            end
           end
+        rescue NoMethodError
+          $evm.log("info", "#{spaces}#{@method}:   *** #{this_object_class} association: \'#{association}\', gives a NoMethodError when accessed (product bug?) ***")
         end
-      rescue NoMethodError
-        $evm.log("info", "#{spaces}#{@method}:     #{this_object_class} claims to have an association of \'#{association}\', but this gives a NoMethodError when accessed")
-      rescue => err
-        $evm.log("error", "#{@method} (dump_associations) - [#{err}]\n#{err.backtrace.join("\n")}")
-        exit MIQ_ABORT
       end
+      $evm.log("info", "#{spaces}#{@method}:   --- end of associations ---")
+    else
+      $evm.log("info", "#{spaces}#{@method}:   This object has no associations")
     end
-    $evm.log("info", "#{spaces}#{@method}:   --- end of associations ---")
-  else
-    $evm.log("info", "#{spaces}#{@method}:   This object has no associations")
+  rescue => err
+    $evm.log("error", "#{@method} (dump_associations) - [#{err}]\n#{err.backtrace.join("\n")}")
   end
 end
 
@@ -288,7 +293,7 @@ def dump_object(object_string, this_object, spaces)
     #
     @recursion_level += 1
     if @recursion_level > MAX_RECURSION_LEVEL
-      $evm.log("info", "#{spaces}#{@method}:   Exceeded maximum recursion level")
+      $evm.log("info", "#{spaces}#{@method}:   *** exceeded maximum recursion level ***")
       @recursion_level -= 1
       return
     end
@@ -317,13 +322,12 @@ def dump_object(object_string, this_object, spaces)
     # Dump out the things of interest
     #
     dump_attributes(object_string, this_object, spaces)
-    dump_virtual_columns(object_string, this_object, spaces)
+    dump_virtual_columns(object_string, this_object, this_object_class, spaces)
     dump_associations(object_string, this_object, this_object_class, spaces)
   
     @recursion_level -= 1
   rescue => err
     $evm.log("error", "#{@method} (dump_object) - [#{err}]\n#{err.backtrace.join("\n")}")
-    exit MIQ_ABORT
   end
 end
 
@@ -339,3 +343,4 @@ dump_object("$evm.root", $evm.root, "")
 #
 $evm.log("info", "#{@method} - EVM Automate Method Ended")
 exit MIQ_OK
+

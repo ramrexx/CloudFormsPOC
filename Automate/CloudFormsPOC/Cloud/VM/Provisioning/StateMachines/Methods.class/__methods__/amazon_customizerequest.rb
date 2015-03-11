@@ -1,116 +1,74 @@
-# amazon_CustomizeRequest.rb
+# amazon_customizerequest.rb
 #
-# Description: This method is used to Customize the Amazon Provisioning Request
+# Author: Kevin Morey <kmorey@redhat.com>
+# License: GPL v3
 #
-def log(level, msg, update_message=false)
-  $evm.log(level, "#{msg}")
-  $evm.root['miq_provision'].message = msg if $evm.root['miq_provision'] && update_message
-end
+# Description: This method is used to find an appropriate customization template during a Amazon Provisioning task
+#
+begin
+  def log(level, msg, update_message=false)
+    $evm.log(level, "#{msg}")
+    @task.message = msg if @task && update_message
+  end
 
-# process_customization - mapping instance_types, key pairs, security groups and cloud-init templates
-def process_customization(mapping, prov, template, product, provider )
-  log(:info, "Processing Amazon customizations...", true)
-  case mapping
-  when 0
-    # No mapping
-  when 1
-    ws_values = prov.options.fetch(:ws_values, {})
+  def dump_root()
+    $evm.log(:info, "Begin $evm.root.attributes")
+    $evm.root.attributes.sort.each { |k, v| log(:info, "\t Attribute: #{k} = #{v}")}
+    $evm.log(:info, "End $evm.root.attributes")
+    $evm.log(:info, "")
+  end
 
-    if prov.get_option(:instance_type).nil? && ws_values.has_key?(:instance_type)
-      provider.flavors.each do |flavor|
-        if flavor.name.downcase == ws_values[:instance_type].downcase
-          prov.set_option(:instance_type, [flavor.id, "#{flavor.name}':'#{flavor.description}"])
-          log(:info, "Provisioning object updated {:instance_type => #{prov.get_option(:instance_type).inspect}}")
-        end
-      end
-    end
+  ###############
+  # Start Method
+  ###############
+  log(:info, "CloudForms Automate Method Started", true)
+  dump_root()
 
-    if prov.get_option(:guest_access_key_pair).nil? && ws_values.has_key?(:guest_access_key_pair)
-      provider.key_pairs.each do |keypair|
-        if keypair.name == ws_values[:guest_access_key_pair]
-          prov.set_option(:guest_access_key_pair, [keypair.id,keypair.name])
-          log(:info, "Provisioning object updated {:guest_access_key_pair => #{prov.get_option(:guest_access_key_pair).inspect}}")
-        end
-      end
-    end
+  # Get provisioning object
+  @task = $evm.root["miq_provision"]
 
-    if prov.get_option(:security_groups).blank? && ws_values.has_key?(:security_groups)
-      provider.security_groups.each do |securitygroup|
-        if securitygroup.name == ws_values[:security_groups]
-          prov.set_option(:security_groups, [securitygroup.name])
-          log(:info, "Provisioning object updated {:security_groups => #{prov.get_option(:security_groups).inspect}}")
-        end
-      end
-    end
+  log(:info, "Provision:<#{@task.id}> Request:<#{@task.miq_provision_request.id}> Type:<#{@task.type}>")
 
-    if prov.get_option(:customization_template_id).nil?
-      customization_template_search_by_function       = "#{prov.type}_#{prov.get_tags[:function]}" rescue nil
-      customization_template_search_by_role           = "#{prov.type}_#{prov.get_tags[:role]}" rescue nil
-      customization_template_search_by_template_name  = template.name
-      customization_template_search_by_ws_values      = ws_values[:customization_template] rescue nil
-      log(:info, "prov.eligible_customization_templates: #{prov.eligible_customization_templates.inspect}")
-      customization_template = nil
+  @template = @task.vm_template
+  provider = @template.ext_management_system
+  product  = @template.operating_system['product_name'].downcase rescue nil
+  log(:info, "Template: #{@template.name} Provider: #{provider.name} Vendor: #{@template.vendor} Product: #{product}")
 
-      unless customization_template_search_by_function.nil?
-        # Search for customization templates enabled for Cloud-Init that equal MiqProvisionAmazon_prov.get_tags[:function]
-        if customization_template.blank?
-          log(:info, "Searching for customization templates (Cloud-Init) enabled that are named: #{customization_template_search_by_function}")
-          customization_template = prov.eligible_customization_templates.detect { |ct| ct.name.casecmp(customization_template_search_by_function)==0 }
-        end
-      end
-      unless customization_template_search_by_role.nil?
-        # Search for customization templates enabled for Cloud-Init that equal MiqProvisionAmazon_prov.get_tags[:function]
-        if customization_template.blank?
-          log(:info, "Searching for customization templates (Cloud-Init) enabled that are named: #{customization_template_search_by_role}")
-          customization_template = prov.eligible_customization_templates.detect { |ct| ct.name.casecmp(customization_template_search_by_role)==0 }
-        end
-      end
-      unless customization_template_search_by_template_name.nil?
-        # Search for customization templates enabled for Cloud-Init that match the template/image name
-        if customization_template.blank?
-          log(:info, "Searching for customization templates (Cloud-Init) enabled that are named: #{customization_template_search_by_template_name}")
-          customization_template = prov.eligible_customization_templates.detect { |ct| ct.name.casecmp(customization_template_search_by_template_name)==0 }
-        end
-      end
-      unless customization_template_search_by_ws_values.nil?
-        # Search for customization templates enabled for Cloud-Init that match ws_values[:customization_template]
-        if customization_template.blank?
-          log(:info, "Searching for customization templates (Cloud-Init) enabled that are named: #{customization_template_search_by_ws_values}")
-          customization_template = prov.eligible_customization_templates.detect { |ct| ct.name.casecmp(customization_template_search_by_ws_values)==0 }
-        end
-      end
-      if customization_template.blank?
-        log(:warn, "Failed to find matching Customization Template", true)
-      else
-        log(:info, "Found Customization Template ID: #{customization_template.id} Name: #{customization_template.name} Description: #{customization_template.description}")
-        prov.set_customization_template(customization_template) rescue nil
-        log(:info, "Provisioning object updated {:customization_template_id => #{prov.get_option(:customization_template_id).inspect}}")
-        log(:info, "Provisioning object updated {:customization_template_script => #{prov.get_option(:customization_template_script).inspect}}")
-      end
+  ws_values = @task.options.fetch(:ws_values, {})
+  tags = @task.get_tags || {}
+
+  #search for cloud-init templates
+  if @task.get_option(:customization_template_id).nil?
+    log(:info, "@task.eligible_customization_templates: #{@task.eligible_customization_templates.inspect}")
+    customization_template_search   = tags[:role] || tags[:function] rescue nil
+    customization_template_search ||= ws_values[:customization_template_id] || @template.name
+    customization_template   = @task.eligible_customization_templates.detect { |ct| ct.name.casecmp("Amazon_#{customization_template_search}")==0 }
+    customization_template ||= $evm.vmdb(:customization_template_cloud_init).find_by_id(customization_template_search)
+    customization_template ||= @task.eligible_customization_templates.detect { |ct| ct.name.casecmp(customization_template_search)==0 }
+    if customization_template.blank?
+      log(:info, "No matching customization templates found")
     else
-      log(:info, "Customization Template selected from dialog ID: #{prov.get_option(:customization_template_id).inspect}} Script: #{prov.get_option(:customization_template_script).inspect}")
+      log(:info, "Found customization template name: #{customization_template.name} id: #{customization_template.id} Description: #{customization_template.description}")
+      @task.set_customization_template(customization_template) rescue nil
+      log(:info, "Provisioning object updated {:customization_template_id => #{@task.get_option(:customization_template_id).inspect}}")
+      log(:info, "Provisioning object updated {:customization_template_script => #{@task.get_option(:customization_template_script).inspect}}")
     end
-  end # case mapping
-  log(:info, "Processing Amazon customizations...Complete", true)
+  else
+    log(:info, "Customization template selected from dialog id: #{@task.options[:customization_template_id].inspect}")
+  end
+
+  # Log all of the provisioning options to the automation.log
+  @task.options.each { |k,v| log(:info, "Provisioning Option Key: #{k.inspect} Value: #{v.inspect}") }
+
+  ###############
+  # Exit Method
+  ###############
+  log(:info, "CloudForms Automate Method Ended", true)
+  exit MIQ_OK
+
+  # Set Ruby rescue behavior
+rescue => err
+  log(:error, "[#{err}]\n#{err.backtrace.join("\n")}")
+  @task.finished("#{err}") if @task
+  exit MIQ_ABORT
 end
-
-def log(level, msg, update_message=false)
-  $evm.log(level, "#{msg}")
-  $evm.root['miq_provision'].message = "#{msg}" if $evm.root['miq_provision'] && update_message
-end
-
-# Get provisioning object
-prov = $evm.root["miq_provision"]
-
-log(:info, "Provision:<#{prov.id}> Request:<#{prov.miq_provision_request.id}> Type:<#{prov.type}>")
-
-template = prov.vm_template
-provider = template.ext_management_system
-product  = template.operating_system['product_name'].downcase rescue nil
-log(:info, "Template: #{template.name} Provider: #{provider.name} Vendor: #{template.vendor} Product: #{product}")
-
-mapping = 1
-process_customization(mapping, prov, template, product, provider)
-
-# Log all of the provisioning options to the automation.log
-prov.options.each { |k,v| log(:info, "Provisioning Option Key: #{k.inspect} Value: #{v.inspect}") }
