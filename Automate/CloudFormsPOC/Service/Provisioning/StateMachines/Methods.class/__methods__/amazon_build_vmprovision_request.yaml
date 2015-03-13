@@ -3,7 +3,7 @@ object_type: method
 version: 1.0
 object:
   attributes:
-    name: vmware_customizerequest
+    name: amazon_build_vmprovision_request
     display_name: 
     description: 
     scope: instance
