@@ -13,10 +13,30 @@ object:
   schema:
   - field:
       aetype: attribute
+      name: manage_quotas_by_group
+      display_name: Manage Quotas by Group - valid (true, false, both)
+      datatype: string
+      priority: 1
+      owner: 
+      default_value: 
+      substitute: true
+      message: create
+      visibility: 
+      collect: 
+      scope: 
+      description: 
+      condition: 
+      on_entry: 
+      on_exit: 
+      on_error: 
+      max_retries: 
+      max_time: 
+  - field:
+      aetype: attribute
       name: max_owner_cpu
       display_name: Owner - Max CPUs Allowed
       datatype: string
-      priority: 1
+      priority: 2
       owner: 
       default_value: 
       substitute: true
@@ -36,7 +56,7 @@ object:
       name: max_owner_memory
       display_name: Owner - Max Memory Allowed (MB)
       datatype: string
-      priority: 2
+      priority: 3
       owner: 
       default_value: 
       substitute: true
@@ -56,7 +76,27 @@ object:
       name: max_owner_storage
       display_name: Owner - Max Storage Allowed (GB)
       datatype: string
-      priority: 3
+      priority: 4
+      owner: 
+      default_value: 
+      substitute: true
+      message: create
+      visibility: 
+      collect: 
+      scope: 
+      description: 
+      condition: 
+      on_entry: 
+      on_exit: 
+      on_error: 
+      max_retries: 
+      max_time: 
+  - field:
+      aetype: attribute
+      name: max_owner_vms
+      display_name: Owner - Max VMs Allowed
+      datatype: string
+      priority: 5
       owner: 
       default_value: 
       substitute: true
@@ -76,7 +116,7 @@ object:
       name: max_group_cpu
       display_name: Group - Max CPUs Allowed
       datatype: string
-      priority: 4
+      priority: 6
       owner: 
       default_value: 
       substitute: true
@@ -96,7 +136,7 @@ object:
       name: max_group_memory
       display_name: Group - Max Memory Allowed (MB)
       datatype: string
-      priority: 5
+      priority: 7
       owner: 
       default_value: 
       substitute: true
@@ -116,7 +156,27 @@ object:
       name: max_group_storage
       display_name: Group - Max Storage Allowed (GB)
       datatype: string
-      priority: 6
+      priority: 8
+      owner: 
+      default_value: 
+      substitute: true
+      message: create
+      visibility: 
+      collect: 
+      scope: 
+      description: 
+      condition: 
+      on_entry: 
+      on_exit: 
+      on_error: 
+      max_retries: 
+      max_time: 
+  - field:
+      aetype: attribute
+      name: max_group_vms
+      display_name: Group - Max VMs Allowed
+      datatype: string
+      priority: 9
       owner: 
       default_value: 
       substitute: true
@@ -136,7 +196,7 @@ object:
       name: ValidateQuotas
       display_name: 
       datatype: string
-      priority: 7
+      priority: 10
       owner: 
       default_value: 
       substitute: true

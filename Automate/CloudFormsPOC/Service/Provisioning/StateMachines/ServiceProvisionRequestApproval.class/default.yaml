@@ -7,8 +7,4 @@ object:
     name: Default
     inherits: 
     description: 
-  fields:
-  - max_cpus:
-      value: '1'
-  - max_memory:
-      value: '1024'
+  fields: []
