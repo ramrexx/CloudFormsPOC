@@ -10,3 +10,5 @@ object:
   fields:
   - max_cpus:
       value: '1'
+  - max_memory:
+      value: '1024'

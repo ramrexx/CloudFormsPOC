@@ -1,20 +1,52 @@
-#
 # service_request_pending.rb
+#
+# Author: Kevin Morey <kmorey@redhat.com>
+# License: GPL v3
 #
 # Description: This method is executed when the service request is NOT auto-approved
 #
+begin
+  def log(level, msg, update_message=false)
+    $evm.log(level, "#{msg}")
+  end
 
-# get the request object from root
-miq_request = $evm.root['miq_request']
-log(:info, "miq_request.id:<#{miq_request.id}> miq_request.options[:dialog]:<#{miq_request.options[:dialog].inspect}>")
+  def dump_root()
+    $evm.log(:info, "Begin $evm.root.attributes")
+    $evm.root.attributes.sort.each { |k, v| log(:info, "\t Attribute: #{k} = #{v}")}
+    $evm.log(:info, "End $evm.root.attributes")
+    $evm.log(:info, "")
+  end
 
-# lookup the service_template object
-service_template = $evm.vmdb(miq_request.source_type, miq_request.source_id)
-log(:info, "service_template id:<#{service_template.id}> service_type:<#{service_template.service_type}> description:<#{service_template.description}> services:<#{service_template.service_resources.count}>")
+  ###############
+  # Start Method
+  ###############
+  log(:info, "CloudForms Automate Method Started", true)
+  dump_root()
 
-# Get objects
-msg = $evm.object['reason']
-log(:info, "#{msg}")
+  # get the request object from root
+  @miq_request = $evm.root['miq_request']
+  log(:info, "Request id: #{@miq_request.id} options: #{@miq_request.options.inspect}")
 
-# Raise automation event: request_pending
-miq_request.pending
+  # lookup the service_template object
+  service_template = $evm.vmdb(@miq_request.source_type, @miq_request.source_id)
+  log(:info, "service_template id: #{service_template.id} service_type: #{service_template.service_type} description: #{service_template.description} services: #{service_template.service_resources.count}")
+
+  # Get objects
+  msg = $evm.object['reason']
+  @miq_request.set_option(:pending_reason, msg)
+  log(:info, "Reason: #{msg}")
+
+  # Raise automation event: request_pending
+  @miq_request.pending
+
+  ###############
+  # Exit Method
+  ###############
+  log(:info, "CloudForms Automate Method Ended", true)
+  exit MIQ_OK
+
+  # Set Ruby rescue behavior
+rescue => err
+  log(:error, "[#{err}]\n#{err.backtrace.join("\n")}")
+  exit MIQ_ABORT
+end

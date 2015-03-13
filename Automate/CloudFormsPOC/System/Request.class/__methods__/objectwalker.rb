@@ -48,7 +48,7 @@ MAX_RECURSION_LEVEL = 7
 #
 @service_mode_base_instance_methods = []
 #
-# @walk_association_policy should have the value of either :whitelist or :blacklist. This will determine whether we either 
+# @walk_association_policy should have the value of either :whitelist or :blacklist. This will determine whether we either
 # walk all associations _except_ those in the @walk_association_blacklist hash, or _only_ the associations in the
 # @walk_association_whitelist hash
 #
@@ -64,21 +64,23 @@ MAX_RECURSION_LEVEL = 7
 # If you wish to explore and dump this associaiton, edit the hash to add the association name to the list associated with the object type. The symbol
 # :ALL can be used to walk all associations of an object type
 #
-@walk_association_whitelist = { "MiqAeServiceServiceTemplateProvisionTask" => ["source", "destination", "miq_request", "miq_request_tasks", "service_resource"],
-                                "MiqAeServiceServiceTemplate" => ["service_resources"],
-                                "MiqAeServiceServiceResource" => ["resource", "service_template"],
-                                "MiqAeServiceMiqProvisionRequest" => ["miq_request", "miq_request_tasks","eligible_clusters", "eligible_hosts", \
-                                                                      "eligible_storages", "miq_provisions", "requester", "resource", "source", "vm_template"],
-                                "MiqAeServiceMiqProvisionRequestTemplate" => ["miq_request", "miq_request_tasks"],
-                                "MiqAeServiceMiqProvisionVmware" => ["source", "destination", "miq_provision_request", "miq_request", "miq_request_task", "vm", \
-                                                                     "vm_template"],
-                                "MiqAeServiceMiqProvisionRedhat" => [:ALL],
-                                "MiqAeServiceMiqProvisionRedhatViaPxe" => [:ALL],
-                                "MiqAeServiceVmVmware" => ["ems_cluster", "ems_folder", "resource_pool", "ext_management_system", "storage", "service", "hardware", \
-                                                           "operating_system"],
-                                "MiqAeServiceVmRedhat" => ["ems_cluster", "ems_folder", "resource_pool", "ext_management_system", "storage", "service", "hardware"],
-                                "MiqAeServiceHardware" => ["nics", "guest_devices", "ports", "vm" ],
-                                "MiqAeServiceGuestDevice" => ["hardware", "lan", "network"]}
+@walk_association_whitelist = {
+  "MiqAeServiceServiceTemplateProvisionRequest" => ['miq_request', 'requester', 'resource', 'source'],
+  "MiqAeServiceServiceTemplateProvisionTask" => ["source", "destination", "miq_request", "miq_request_tasks", "service_resource"],
+  "MiqAeServiceServiceTemplate" => ["service_resources"],
+  "MiqAeServiceServiceResource" => ["resource", "service_template"],
+  "MiqAeServiceMiqProvisionRequest" => ["miq_request", "miq_request_tasks","eligible_clusters", "eligible_hosts", \
+                                        "eligible_storages", "miq_provisions", "requester", "resource", "source", "vm_template"],
+  "MiqAeServiceMiqProvisionRequestTemplate" => ["miq_request", "miq_request_tasks"],
+  "MiqAeServiceMiqProvisionVmware" => ["source", "destination", "miq_provision_request", "miq_request", "miq_request_task", "vm", \
+                                       "vm_template"],
+  "MiqAeServiceMiqProvisionRedhat" => [:ALL],
+  "MiqAeServiceMiqProvisionRedhatViaPxe" => [:ALL],
+  "MiqAeServiceVmVmware" => ["ems_cluster", "ems_folder", "resource_pool", "ext_management_system", "storage", "service", "hardware", \
+                             "operating_system"],
+  "MiqAeServiceVmRedhat" => ["ems_cluster", "ems_folder", "resource_pool", "ext_management_system", "storage", "service", "hardware"],
+  "MiqAeServiceHardware" => ["nics", "guest_devices", "ports", "vm" ],
+"MiqAeServiceGuestDevice" => ["hardware", "lan", "network"]}
 #
 # if @walk_association_policy = :blacklist, then objectWalker will traverse all associations of all objects, except those
 # that are explicitly mentioned in the @walk_association_blacklist hash. This enables us to run a more exploratory dump, at the cost of a
@@ -112,7 +114,7 @@ end
 #-------------------------------------------------------------------------------------------------------------
 # Method:       dump_attributes
 # Purpose:      Dump the attributes of an object
-# Arguments:    object_string : 
+# Arguments:    object_string :
 #               this_object
 #               indent_string
 # Returns:      None
@@ -171,7 +173,7 @@ end
 def dump_virtual_columns(object_string, this_object, this_object_class, indent_string)
   begin
     #
-    # Print the virtual columns of this object 
+    # Print the virtual columns of this object
     #
     if this_object.respond_to?(:virtual_column_names)
       $evm.log("info", "#{indent_string}#{@method}:   --- virtual columns follow ---")
@@ -450,7 +452,7 @@ def dump_object(object_string, this_object, indent_string)
       @object_recorder[this_object_class] = []
       @object_recorder[this_object_class] << this_object_id
     end
-    
+
     #$evm.log("info", "#{indent_string}#{@method}:   Dumping $evm.root") if @recursion_level == 1
     #
     # Dump out the things of interest
@@ -459,7 +461,7 @@ def dump_object(object_string, this_object, indent_string)
     dump_virtual_columns(object_string, this_object, this_object_class, indent_string)
     dump_associations(object_string, this_object, this_object_class, indent_string)
     dump_methods(object_string, this_object, indent_string) if @dump_methods
-  
+
     @recursion_level -= 1
   rescue => err
     $evm.log("error", "#{@method} (dump_object) - [#{err}]\n#{err.backtrace.join("\n")}")
@@ -518,4 +520,3 @@ dump_object("$evm.parent", $evm.parent, "")
 #
 $evm.log("info", "#{@method} - EVM Automate Method Ended")
 exit MIQ_OK
-

@@ -27,32 +27,27 @@ begin
   def get_dialog_hashes(dialog_options)
     log(:info, "Processing get_dialog_tags_hash...", true)
     dialogs_tags_hash, dialogs_options_hash = {}, {}
-    dialog_tags_regex = /^dialog_tag_(\d*)_(.*)/
-    dialog_options_regex = /^dialog_option_(\d*)_(.*)/
+    dialog_tags_regex = /^dialog_tag_\d*_(.*)/
+    dialog_options_regex = /^dialog_option_\d*_(.*)/
     # Loop through all of the tags and build a dialogs_tags_hash
     dialog_options.each do |k, v|
       next if v.blank?
       if dialog_tags_regex =~ k
-        build = $1.to_i
-        tag_category = $2.to_sym
+        tag_category = $1.to_sym
         tag_value = v.downcase
-        log(:info, "Build: #{build} - Adding tag: {#{tag_category.inspect} => #{tag_value.inspect}} to dialogs_tags_hash)")
-        (dialogs_tags_hash[build] ||={})[tag_category] = tag_value
+        log(:info, "Adding tag: {#{tag_category.inspect} => #{tag_value.inspect}} to dialogs_tags_hash)")
+        dialogs_tags_hash[tag_category] = tag_value
       elsif dialog_options_regex =~ k
-        build = $1.to_i
-        option_key = $2.to_sym
+        option_key = $1.to_sym
         option_value = v
       else
-        build = 0
         option_key = k.to_sym
         option_value = v
       end
       next if option_key.blank?
-      log(:info, "Build: #{build} - Adding option: {#{option_key.inspect} => #{option_value.inspect}} to dialogs_options_hash)")
-      (dialogs_options_hash[build]||={})[option_key] = option_value
+      log(:info, "Adding option: {#{option_key.inspect} => #{option_value.inspect}} to dialogs_options_hash)")
+      dialogs_options_hash[option_key] = option_value
     end
-    log(:info, "Inspecting dialogs_tags_hash: #{dialogs_tags_hash.inspect}")
-    log(:info, "Inspecting dialogs_options_hash: #{dialogs_options_hash.inspect}")
     log(:info, "Processing get_dialog_tags_hash...Complete", true)
     return dialogs_tags_hash, dialogs_options_hash
   end
@@ -77,8 +72,8 @@ begin
   # service_naming - name the service
   def service_naming(dialogs_tags_hash, dialogs_options_hash)
     log(:info, "Processing service_naming...", true)
-    new_service_name = dialogs_options_hash[0][:dialog_service_name] rescue nil
-    new_service_description = dialogs_options_hash[0][:dialog_service_description] rescue nil
+    new_service_name = dialogs_options_hash[:dialog_service_name] rescue nil
+    new_service_description = dialogs_options_hash[:dialog_service_description] rescue nil
 
     if new_service_name.blank?
       new_service_name = "#{@service.name}-#{Time.now.strftime('%Y%m%d-%H%M%S')}"
@@ -96,8 +91,8 @@ begin
   # service_tagging - tag the parent service with tags in dialogs_tags_hash
   def service_tagging(dialogs_tags_hash)
     log(:info, "Processing service_tagging...", true)
-    unless dialogs_tags_hash[0].nil?
-      dialogs_tags_hash[0].each do |k, v|
+    unless dialogs_tags_hash.nil?
+      dialogs_tags_hash.each do |k, v|
         log(:info, "Adding Tag: {#{k.inspect} => #{v.inspect}} to Service:<#{@service.name}>")
         process_tags( k, true, v )
         @service.tag_assign("#{k}/#{v}")
@@ -110,12 +105,12 @@ begin
   def service_retirement(dialogs_tags_hash, dialogs_options_hash)
     log(:info, "Processing service_retirement...", true)
 
-    new_service_retirement = dialogs_options_hash[0][:dialog_service_retirement] rescue nil
-    new_service_retirement_warning = dialogs_options_hash[0][:dialog_service_retirement_warning] rescue nil
+    new_service_retirement = dialogs_options_hash[:dialog_service_retirement] rescue nil
+    new_service_retirement_warning = dialogs_options_hash[:dialog_service_retirement_warning] rescue nil
 
     if new_service_retirement.nil?
       # service retirement based tag
-      service_retirement_tag = dialogs_tags_hash[0][:environment] rescue nil
+      service_retirement_tag = dialogs_tags_hash[:environment] rescue nil
       case service_retirement_tag
       when 'dev'
         # retire service in 2 weeks with 3 day warning
@@ -172,6 +167,15 @@ begin
     log(:info, "Processing get_tenant...Complete", true)
   end
 
+  # use this method to define extra provisioning options
+  def get_extra_options(matching_options_hash, matching_tags_hash)
+    log(:info, "Processing get_extra_options...", true)
+    # Stuff the current group information
+    matching_options_hash[:group_id] = @user.current_group.id
+    matching_options_hash[:group_name] = @user.current_group.description
+    log(:info, "Processing get_extra_options...Complete", true)
+  end
+
   # get vCPU/vRAM/flavor based on flavor|sizing parameter
   def get_sizing(matching_options_hash, matching_tags_hash, prov)
     log(:info, "Processing get_sizing...", true)
@@ -223,52 +227,28 @@ begin
   @task = $evm.root['service_template_provision_task']
   @user = $evm.vmdb('user').find_by_id($evm.root['user_id'])
 
-  # build a hash of dialog_options
-  dialog_options = @task.dialog_options
-
   # Get destination service object
   @service = @task.destination
-  log(:info, "Detected Service:<#{@service.name}> Id:<#{@service.id}> Tasks:<#{@task.miq_request_tasks.count}>")
+  log(:info, "Detected Service: #{@service.name} Id: #{@service.id} Tasks: #{@task.miq_request_tasks.count}")
 
   # Get dialog options from task
   dialog_options = @task.dialog_options
   log(:info, "dialog_options: #{dialog_options.inspect}")
 
   # build a hash of dialog_options
-  dialogs_tags_hash, dialogs_options_hash = get_dialog_hashes(dialog_options)
+  matching_tags_hash, matching_options_hash = get_dialog_hashes(dialog_options)
 
   # Service naming
-  service_naming(dialogs_tags_hash, dialogs_options_hash)
+  service_naming(matching_tags_hash, matching_options_hash)
 
   # Tag Service
-  service_tagging(dialogs_tags_hash)
+  service_tagging(matching_tags_hash)
 
   # Set Service Retirement
-  service_retirement(dialogs_tags_hash, dialogs_options_hash)
+  service_retirement(matching_tags_hash, matching_options_hash)
 
-  matching_options_hash = {}
-  matching_tags_hash = {}
-  log(:info, "dialogs_tags_hash: #{dialogs_tags_hash.inspect}")
-  log(:info, "dialogs_options_hash: #{dialogs_options_hash.inspect}")
-  # merge build 0 hash
-  dialogs_options_hash.each do |build, options|
-    unless dialogs_options_hash[0].nil?
-      matching_options_hash = dialogs_options_hash[0].merge(dialogs_options_hash[build] || {})
-    else
-      matching_options_hash = dialogs_options_hash[build] || {}
-    end
-  end
-  log(:info, "matching_options_hash: #{matching_options_hash.inspect}")
-
-  dialogs_tags_hash.each do |build, options|
-    unless dialogs_tags_hash[0].nil?
-      matching_tags_hash = dialogs_tags_hash[0].merge(dialogs_tags_hash[build] || {})
-    else
-      matching_tags_hash = dialogs_tags_hash[build] || {}
-    end
-  end
   log(:info, "matching_tags_hash: #{matching_tags_hash.inspect}")
-
+  log(:info, "matching_options_hash: #{matching_options_hash.inspect}")
   @task.miq_request_tasks.each do |t|
     # Child Service
     child_service = t.destination
@@ -287,17 +267,23 @@ begin
       # Get sizing/flavor
       get_sizing(matching_options_hash, matching_tags_hash, prov)
 
+      # get ws_values
+      ws_values = prov.get_option(:ws_values) || {}
+
       # Add all tags to miq_provision
       matching_tags_hash.each do |k, v|
         log(:info, "Adding Tag: {#{k.inspect} => #{v.inspect}} to Provisioning Id: #{prov.id}")
         process_tags( k, true, v )
         prov.add_tag(k, v)
+        prov.set_option(:ws_values, ws_values.merge!(k=>v))
+        log(:info, "Adding {#{k.inspect} => #{v.inspect}} to ws_values")
       end
 
-      # Add all options to miq_provision
       matching_options_hash.each do |k, v|
         log(:info, "Adding Option: {#{k.inspect} => #{v.inspect}} to Provisioning Id: #{prov.id}")
         prov.set_option(k, v)
+        prov.set_option(:ws_values, ws_values.merge!(k=>v))
+        log(:info, "Adding {#{k.inspect} => #{v.inspect}} to ws_values")
       end
     end # t.miq_request_tasks.each
   end # $evm.root['service_template_provision_task'].miq_request_tasks.each do
