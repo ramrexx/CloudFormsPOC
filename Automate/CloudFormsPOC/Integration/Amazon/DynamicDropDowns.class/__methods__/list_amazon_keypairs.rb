@@ -1,9 +1,9 @@
-# list_amazon_flavors.rb
+# list_amazon_keypairs.rb
 #
 # Author: Kevin Morey <kmorey@redhat.com>
 # License: GPL v3
 #
-# Description: List Amazon Flavors
+# Description: List all Amazon kay pairs
 #
 begin
   def log(level, msg, update_message=false)
@@ -33,7 +33,7 @@ begin
   end
 
   def query_catalogitem(option_key)
-    # use this method to query a catalogitem 
+    # use this method to query a catalogitem
     # note that this only works for items not bundles since we do not know which item within a bundle(s) to query from
     option_value = nil
     service_template = $evm.root['service_template']
@@ -66,35 +66,34 @@ begin
   provider_id = query_catalogitem(:src_ems_id)
   log(:info, "Found provider_id: #{provider_id}") if provider_id
 
-  dialog_hash = {}
-
   # see if provider is already set in root
   provider = get_provider(provider_id)
 
+  dialog_hash = {}
+
   if provider
-    provider.flavors.each do |fl|
-      next unless fl.ext_management_system || fl.enabled
-      dialog_hash[fl.id] = "#{fl.name} on #{fl.ext_management_system.name}"
+    $evm.vmdb(:auth_key_pair_amazon).all.each do |kp|
+      next unless kp.resource_id == provider.id 
+      dialog_hash[kp.id] = "#{kp.name} on #{provider.name}"
     end
   else
     # no provider so list everything
-    $evm.vmdb(:flavor_amazon).all.each do |fl|
-      next unless fl.ext_management_system || fl.enabled
-      dialog_hash[fl.id] = "#{fl.name} on #{fl.ext_management_system.name}"
+    $evm.vmdb(:auth_key_pair_amazon).all.each do |kp|
+      provider = $evm.vmdb(:ems_amazon).find_by_id(kp.resource_id)
+      dialog_hash[kp.id] = "#{kp.name} on #{provider.name}"
     end
   end
 
   if dialog_hash.blank?
-    log(:info, "No Flavors found")
-    dialog_hash[nil] = "< No Flavors found, Contact Administrator >"
+    dialog_hash[nil] = "< No Key Pairs Found, Contact Administrator >"
   else
     #$evm.object['default_value'] = dialog_hash.first
-    dialog_hash[nil] = '< choose a flavor >'
+    dialog_hash[nil] = '< choose a key pair >'
   end
 
-  $evm.object["values"]     = dialog_hash
+  $evm.object['values'] = dialog_hash
   log(:info, "$evm.object['values']: #{$evm.object['values'].inspect}")
-
+  
   ###############
   # Exit Method
   ###############

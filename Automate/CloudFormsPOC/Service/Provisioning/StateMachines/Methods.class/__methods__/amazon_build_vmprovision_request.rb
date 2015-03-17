@@ -217,7 +217,7 @@ begin
     log(:info, "Build: #{build} - placement_availability_zone: #{matching_options_hash[:placement_availability_zone]}") unless availability_zone.blank?
 
     if matching_options_hash[:cloud_network].blank?
-        # cloud_network = provider.cloud_networks.first
+      # cloud_network = provider.cloud_networks.first
     else
       cloud_network   = $evm.vmdb(:cloud_network).find_by_id(matching_options_hash[:cloud_network]) || provider.cloud_networks.detect {|cn| cn.name == matching_options_hash[:cloud_network] }
     end
@@ -225,21 +225,26 @@ begin
     log(:info, "Build: #{build} - cloud_network: #{matching_options_hash[:cloud_network]}") unless cloud_network.blank?
 
     if matching_options_hash[:security_groups].blank?
-        # security_group = provider.security_groups.first
+      security_group = provider.security_groups.first
     else
       security_group   = $evm.vmdb(:security_group).find_by_id(matching_options_hash[:security_groups]) || provider.security_groups.detect { |sg| sg.name == matching_options_hash[:security_groups] }
     end
-    matching_options_hash[:security_groups] = security_group.name unless security_group.blank?
-    log(:info, "Build: #{build} - security_groups: #{matching_options_hash[:security_groups]}") unless security_group.blank?
+    if security_group
+      matching_options_hash[:security_groups] = security_group.id
+      matching_options_hash[:security_groups_id] = security_group.id
+      log(:info, "Build: #{build} - security_groups: #{matching_options_hash[:security_groups]}")
+    end
 
     key_pair_search = matching_options_hash[:guest_access_key_pair] || matching_options_hash[:key_pair]
     if key_pair_search.blank?
-        # key_pair = provider.key_pairs.first
+      key_pair = provider.key_pairs.first
     else
-      key_pair   = $evm.vmdb(:key_pair).find_by_id(key_pair_search) || provider.key_pairs.detect {|kp| kp.name == key_pair_search }
+      key_pair   = $evm.vmdb(:auth_key_pair_amazon).find_by_id(key_pair_search) || provider.key_pairs.detect {|kp| kp.name == key_pair_search }
     end
-    matching_options_hash[:guest_access_key_pair] = key_pair.id unless key_pair.blank?
-    log(:info, "Build: #{build} - guest_access_key_pair: #{matching_options_hash[:guest_access_key_pair]}") unless key_pair.blank?
+    if key_pair
+      matching_options_hash[:guest_access_key_pair] = key_pair.id
+      log(:info, "Build: #{build} - guest_access_key_pair: #{matching_options_hash[:guest_access_key_pair]}")
+    end
     log(:info, "Processing get_network...Complete", true)
   end
 

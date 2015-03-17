@@ -3,7 +3,7 @@ object_type: method
 version: 1.0
 object:
   attributes:
-    name: amazon_preprovision
+    name: list_amazon_security_groups
     display_name: 
     description: 
     scope: instance

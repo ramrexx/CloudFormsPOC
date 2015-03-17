@@ -1,9 +1,9 @@
-# list_amazon_flavors.rb
+# list_amazon_templates_with_provider.rb
 #
 # Author: Kevin Morey <kmorey@redhat.com>
 # License: GPL v3
 #
-# Description: List Amazon Flavors
+# Description: List Amazon Template ids based on provider_id
 #
 begin
   def log(level, msg, update_message=false)
@@ -33,7 +33,7 @@ begin
   end
 
   def query_catalogitem(option_key)
-    # use this method to query a catalogitem 
+    # use this method to query a catalogitem
     # note that this only works for items not bundles since we do not know which item within a bundle(s) to query from
     option_value = nil
     service_template = $evm.root['service_template']
@@ -71,28 +71,29 @@ begin
   # see if provider is already set in root
   provider = get_provider(provider_id)
 
+  dialog_hash = {}
+
   if provider
-    provider.flavors.each do |fl|
-      next unless fl.ext_management_system || fl.enabled
-      dialog_hash[fl.id] = "#{fl.name} on #{fl.ext_management_system.name}"
+    $evm.vmdb(:template_amazon).all.each do |ami|
+      next if ! ami.ext_management_system || ami.archived
+      next unless ami.ems_id == provider.id 
+      dialog_hash[ami.id] = "#{ami.name} on #{ami.ext_management_system.name}"
     end
   else
     # no provider so list everything
-    $evm.vmdb(:flavor_amazon).all.each do |fl|
-      next unless fl.ext_management_system || fl.enabled
-      dialog_hash[fl.id] = "#{fl.name} on #{fl.ext_management_system.name}"
+    $evm.vmdb(:template_amazon).all.each do |ami|
+      next if ! ami.ext_management_system || ami.archived
+      dialog_hash[ami.id] = "#{ami.name} on #{ami.ext_management_system.name}"
     end
   end
 
   if dialog_hash.blank?
-    log(:info, "No Flavors found")
-    dialog_hash[nil] = "< No Flavors found, Contact Administrator >"
+    dialog_hash[nil] = "< No Templates Found, Contact Administrator >"
   else
-    #$evm.object['default_value'] = dialog_hash.first
-    dialog_hash[nil] = '< choose a flavor >'
+    #$evm.object['default_value'] = dialog_hash.first if dialog_hash.count == 1
+    dialog_hash[nil] = '< choose a template >'
   end
-
-  $evm.object["values"]     = dialog_hash
+  $evm.object['values'] = dialog_hash
   log(:info, "$evm.object['values']: #{$evm.object['values'].inspect}")
 
   ###############

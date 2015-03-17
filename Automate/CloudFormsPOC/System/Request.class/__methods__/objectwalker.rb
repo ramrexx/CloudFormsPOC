@@ -74,10 +74,10 @@ MAX_RECURSION_LEVEL = 7
   "MiqAeServiceMiqProvisionRequestTemplate" => ["miq_request", "miq_request_tasks"],
   "MiqAeServiceMiqProvisionVmware" => ["source", "destination", "miq_provision_request", "miq_request", "miq_request_task", "vm", \
                                        "vm_template"],
+  "MiqAeServiceEmsAmazon" => [:ALL],
   "MiqAeServiceMiqProvisionRedhat" => [:ALL],
   "MiqAeServiceMiqProvisionRedhatViaPxe" => [:ALL],
-  "MiqAeServiceVmVmware" => ["ems_cluster", "ems_folder", "resource_pool", "ext_management_system", "storage", "service", "hardware", \
-                             "operating_system"],
+  "MiqAeServiceVmVmware" => [:ALL],
   "MiqAeServiceVmRedhat" => ["ems_cluster", "ems_folder", "resource_pool", "ext_management_system", "storage", "service", "hardware"],
   "MiqAeServiceHardware" => ["nics", "guest_devices", "ports", "vm" ],
 "MiqAeServiceGuestDevice" => ["hardware", "lan", "network"]}
