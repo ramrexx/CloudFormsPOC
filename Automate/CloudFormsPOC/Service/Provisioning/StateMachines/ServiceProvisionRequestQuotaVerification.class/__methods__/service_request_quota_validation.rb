@@ -163,38 +163,56 @@ begin
       entity_name = entity.description
       entity_type = 'Group'
       # set reason variables
-      entity_cpu_reason = :group_cpu_quota_exceeded
-      entity_ram_reason = :group_ram_quota_exceeded
-      entity_vms_reason = :group_vms_quota_exceeded
+      entity_cpu_reason       = :group_cpu_quota_exceeded
+      entity_warn_cpu_reason  = :group_warn_cpu_quota_exceeded
+      entity_ram_reason       = :group_ram_quota_exceeded
+      entity_warn_ram_reason  = :group_warn_ram_quota_exceeded
+      entity_vms_reason       = :group_vms_quota_exceeded
+      entity_warn_vms_reason  = :group_warn_vms_quota_exceeded
       quota_max_cpu = nil || $evm.object['max_group_cpu'].to_i
       log(:info, "Found quota from model <max_group_cpu> with value #{quota_max_cpu}") unless quota_max_cpu.zero?
+      quota_warn_cpu = nil || $evm.object['warn_group_cpu'].to_i
+      log(:info, "Found quota from model <warn_group_cpu> with value #{quota_warn_cpu}") unless quota_warn_cpu.zero?
       quota_max_memory = nil || $evm.object['max_group_memory'].to_i
       log(:info, "Found quota from model <max_group_memory> with value: #{quota_max_memory}") unless quota_max_memory.zero?
+      quota_warn_memory = nil || $evm.object['warn_group_memory'].to_i
+      log(:info, "Found quota from model <warn_group_memory> with value: #{quota_warn_memory}") unless quota_warn_memory.zero?
       quota_max_vms = nil || $evm.object['max_group_vms'].to_i
       log(:info, "Found quota from model <max_group_vms> with value #{quota_max_vms}") unless quota_max_vms.zero?
+      quota_warn_vms = nil || $evm.object['warn_group_vms'].to_i
+      log(:info, "Found quota from model <warn_group_vms> with value #{quota_warn_vms}") unless quota_warn_vms.zero?
     else
       # set user specific values
       entity_name = entity.name
       entity_type = 'User'
       # set reason variables
-      entity_cpu_reason = :owner_cpu_quota_exceeded
-      entity_ram_reason = :owner_ram_quota_exceeded
-      entity_vms_reason = :group_vms_quota_exceeded
+      entity_cpu_reason       = :owner_cpu_quota_exceeded
+      entity_warn_cpu_reason  = :owner_warn_cpu_quota_exceeded
+      entity_ram_reason       = :owner_ram_quota_exceeded
+      entity_warn_ram_reason  = :owner_warn_ram_quota_exceeded
+      entity_vms_reason       = :owner_vms_quota_exceeded
+      entity_warn_vms_reason  = :owner_warn_vms_quota_exceeded
       # Use value from model unless specified
       quota_max_cpu = nil || $evm.object['max_owner_cpu'].to_i
       log(:info, "Found quota from model <max_owner_cpu> with value #{quota_max_cpu}") unless quota_max_cpu.zero?
+      quota_warn_cpu = nil || $evm.object['warn_owner_cpu'].to_i
+      log(:info, "Found quota from model <warn_owner_cpu> with value #{quota_warn_cpu}") unless quota_warn_cpu.zero?
       quota_max_memory = nil || $evm.object['max_owner_memory'].to_i
       log(:info, "Found quota from model <max_owner_memory> with value: #{quota_max_memory}") unless quota_max_memory.zero?
+      quota_warn_memory = nil || $evm.object['warn_owner_memory'].to_i
+      log(:info, "Found quota from model <warn_owner_memory> with value: #{quota_warn_memory}") unless quota_warn_memory.zero?
       quota_max_vms = nil || $evm.object['max_owner_vms'].to_i
       log(:info, "Found quota from model <max_owner_vms> with value #{quota_max_vms}") unless quota_max_vms.zero?
+      quota_warn_vms = nil || $evm.object['warn_owner_vms'].to_i
+      log(:info, "Found quota from model <warn_owner_vms> with value #{quota_warn_vms}") unless quota_warn_vms.zero?
     end
 
     # Get the current consumption
-    (entity_consumption||={})[:cpu] = entity.allocated_vcpu
-    entity_consumption[:memory] = entity.allocated_memory
-    entity_consumption[:vms] = entity.vms.count
-    entity_consumption[:allocated_storage] = entity.allocated_storage
-    entity_consumption[:provisioned_storage] = entity.provisioned_storage
+    (entity_consumption||={})[:cpu]           = entity.allocated_vcpu
+    entity_consumption[:memory]               = entity.allocated_memory
+    entity_consumption[:vms]                  = entity.vms.select {|vm| vm.id if ! vm.archived }.count
+    entity_consumption[:allocated_storage]    = entity.allocated_storage
+    entity_consumption[:provisioned_storage]  = entity.provisioned_storage
     log(:info, "#{entity_type}: #{entity_name} current Storage Allocated (bytes): #{entity_consumption[:allocated_storage]}")
     log(:info, "#{entity_type}: #{entity_name} current Storage Provisioned (bytes): #{entity_consumption[:provisioned_storage]}")
 
@@ -216,6 +234,20 @@ begin
         quota_hash[entity_cpu_reason] = "#{entity_type} vCPUs #{entity_consumption[:cpu]} + requested #{quota_hash[:total_cpus_requested]} &gt; quota #{quota_max_cpu}"
       end
     end
+    # If entity tagged with quota_warn_cpu then override model
+    tag_warn_cpu = entity.tags(:quota_warn_cpu).first
+    unless tag_warn_cpu.nil?
+      quota_warn_cpu = tag_warn_cpu.to_i
+      log(:info, "#{entity_type}: #{entity_name} overriding quota from #{entity_type} tag: quota_warn_cpu with value: #{quota_warn_cpu}")
+    end
+    # Validate CPU Warn Quota
+    unless quota_warn_cpu.zero?
+      if entity_consumption && (entity_consumption[:cpu] + quota_hash[:total_cpus_requested] > quota_warn_cpu)
+        log(:info, "#{entity_type}: #{entity_name} vCPUs allocated: #{entity_consumption[:cpu]} + requested: #{quota_hash[:total_cpus_requested]} exceeds warn quota: #{quota_warn_cpu}")
+        quota_hash[:quota_warn_exceeded] = true
+        quota_hash[entity_warn_cpu_reason] = "#{entity_type} vCPUs #{entity_consumption[:cpu]} + requested #{quota_hash[:total_cpus_requested]} &gt; warn quota #{quota_warn_cpu}"
+      end
+    end
 
     ##########
     # Memory Quota Check
@@ -235,6 +267,20 @@ begin
         quota_hash[entity_ram_reason] = "#{entity_type} - vRAM #{entity_consumption[:memory] / 1024**2} + requested #{quota_hash[:total_memory_requested]} &gt; quota #{quota_max_memory}"
       end
     end
+    # If entity tagged with quota_warn_memory then override model
+    tag_warn_memory = entity.tags(:quota_warn_memory).first
+    unless tag_warn_memory.nil?
+      quota_warn_memory = tag_warn_memory.to_i
+      log(:info, "#{entity_type}: #{entity_name} overriding quota from #{entity_type} tag: quota_warn_memory with value: #{quota_warn_memory}")
+    end
+    # Validate Memory Warn Quota
+    unless quota_warn_memory.zero?
+      if entity_consumption && (entity_consumption[:memory] / 1024**2 + quota_hash[:total_memory_requested] > quota_warn_memory)
+        log(:info, "#{entity_type}: #{entity_name} current vRAM allocated: #{entity_consumption[:memory] / 1024**2}MB + requested: #{quota_hash[:total_memory_requested]}MB exceeds warn quota: #{quota_warn_memory}MB")
+        quota_hash[:quota_warn_exceeded] = true
+        quota_hash[entity_warn_ram_reason] = "#{entity_type} - vRAM #{entity_consumption[:memory] / 1024**2} + requested #{quota_hash[:total_memory_requested]} &gt; warn quota #{quota_warn_memory}"
+      end
+    end
 
     ##########
     # VMs Quota Check
@@ -252,6 +298,20 @@ begin
         log(:info, "#{entity_type}: #{entity_name} current VMs allocated: #{entity_consumption[:vms]} + requested: #{quota_hash[:total_vms_requested]} exceeds quota: #{quota_max_vms}")
         quota_hash[:quota_exceeded] = true
         quota_hash[entity_vms_reason] = "#{entity_type} - VMs #{entity_consumption[:vms]} + requested #{quota_hash[:total_vms_requested]} &gt; quota #{quota_max_vms}"
+      end
+    end
+    # If entity tagged with quota_warn_memory then override model
+    tag_warn_vms = entity.tags(:quota_warn_vms).first
+    unless tag_warn_vms.nil?
+      quota_warn_vms = tag_warn_vms.to_i
+      log(:info, "#{entity_type}: #{entity_name} overriding quota from #{entity_type} tag: quota_warn_vms with value: #{quota_warn_vms}")
+    end
+    # Validate Group Memory Quota
+    unless quota_warn_vms.zero?
+      if entity_consumption && (entity_consumption[:vms] + quota_hash[:total_vms_requested] > quota_warn_vms)
+        log(:info, "#{entity_type}: #{entity_name} current VMs allocated: #{entity_consumption[:vms]} + requested: #{quota_hash[:total_vms_requested]} exceeds warn quota: #{quota_warn_vms}")
+        quota_hash[:quota_warn_exceeded] = true
+        quota_hash[entity_warn_vms_reason] = "#{entity_type} - VMs #{entity_consumption[:vms]} + requested #{quota_hash[:total_vms_requested]} &gt; warn quota #{quota_warn_vms}"
       end
     end
   end
@@ -281,6 +341,7 @@ begin
   group = user.current_group
 
   (quota_hash||={})[:quota_exceeded] = false
+  quota_hash[:quota_warn_exceeded] = false
   quota_hash[:total_cpus_requested] = get_total_cpus_requested(service_template, options_hash)
   quota_hash[:total_memory_requested] = get_total_memory_requested(service_template, options_hash)
   quota_hash[:total_vms_requested] = get_total_vms_requested(service_template, options_hash)
@@ -308,10 +369,25 @@ begin
     quota_message += "(#{quota_hash[:owner_ram_quota_exceeded]}}) " unless quota_hash[:owner_ram_quota_exceeded].blank?
     quota_message += "(#{quota_hash[:owner_vms_quota_exceeded]}}) " unless quota_hash[:owner_vms_quota_exceeded].blank?
     log(:info, "Inspecting quota_message: #{quota_message}")
-
     miq_request.set_message(quota_message[0..250])
+    miq_request.set_option(:service_quota_exceeded, quota_message)
     $evm.root['ae_result'] = 'error'
     $evm.object['reason'] = quota_message
+  elsif quota_hash[:quota_warn_exceeded]
+    quota_message = "Service request warning due to the following quota limits:"
+    quota_message += "(#{quota_hash[:group_warn_cpu_quota_exceeded]}}) " unless quota_hash[:group_warn_cpu_quota_exceeded].blank?
+    quota_message += "(#{quota_hash[:group_warn_ram_quota_exceeded]}}) " unless quota_hash[:group_warn_ram_quota_exceeded].blank?
+    quota_message += "(#{quota_hash[:group_warn_vms_quota_exceeded]}}) " unless quota_hash[:group_warn_vms_quota_exceeded].blank?
+    quota_message += "(#{quota_hash[:owner_warn_cpu_quota_exceeded]}}) " unless quota_hash[:owner_warn_cpu_quota_exceeded].blank?
+    quota_message += "(#{quota_hash[:owner_warn_ram_quota_exceeded]}}) " unless quota_hash[:owner_warn_ram_quota_exceeded].blank?
+    quota_message += "(#{quota_hash[:owner_warn_vms_quota_exceeded]}}) " unless quota_hash[:owner_warn_vms_quota_exceeded].blank?
+    log(:info, "Inspecting quota_message: #{quota_message}")
+    miq_request.set_message(quota_message[0..250])
+    miq_request.set_option(:service_quota_warn_exceeded, quota_message)
+    $evm.root['ae_result'] = 'ok'
+    $evm.object['reason'] = quota_message
+    # send a warning message that quota threshold is close
+    $evm.instantiate('/Service/Provisioning/Email/ServiceTemplateProvisionRequest_Warning')
   end
 
   ###############

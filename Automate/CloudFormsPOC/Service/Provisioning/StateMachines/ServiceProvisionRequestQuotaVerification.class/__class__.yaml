@@ -53,10 +53,50 @@ object:
       max_time: 
   - field:
       aetype: attribute
+      name: warn_owner_cpu
+      display_name: Owner - Warn CPUs Allowed
+      datatype: string
+      priority: 3
+      owner: 
+      default_value: 
+      substitute: true
+      message: create
+      visibility: 
+      collect: 
+      scope: 
+      description: 
+      condition: 
+      on_entry: 
+      on_exit: 
+      on_error: 
+      max_retries: 
+      max_time: 
+  - field:
+      aetype: attribute
       name: max_owner_memory
       display_name: Owner - Max Memory Allowed (MB)
       datatype: string
-      priority: 3
+      priority: 4
+      owner: 
+      default_value: 
+      substitute: true
+      message: create
+      visibility: 
+      collect: 
+      scope: 
+      description: 
+      condition: 
+      on_entry: 
+      on_exit: 
+      on_error: 
+      max_retries: 
+      max_time: 
+  - field:
+      aetype: attribute
+      name: warn_owner_memory
+      display_name: Owner - Warn Memory Allowed (MB)
+      datatype: string
+      priority: 5
       owner: 
       default_value: 
       substitute: true
@@ -76,7 +116,27 @@ object:
       name: max_owner_storage
       display_name: Owner - Max Storage Allowed (GB)
       datatype: string
-      priority: 4
+      priority: 6
+      owner: 
+      default_value: 
+      substitute: true
+      message: create
+      visibility: 
+      collect: 
+      scope: 
+      description: 
+      condition: 
+      on_entry: 
+      on_exit: 
+      on_error: 
+      max_retries: 
+      max_time: 
+  - field:
+      aetype: attribute
+      name: warn_owner_storage
+      display_name: Owner - Warn Storage Allowed (GB)
+      datatype: string
+      priority: 7
       owner: 
       default_value: 
       substitute: true
@@ -96,7 +156,27 @@ object:
       name: max_owner_vms
       display_name: Owner - Max VMs Allowed
       datatype: string
-      priority: 5
+      priority: 8
+      owner: 
+      default_value: 
+      substitute: true
+      message: create
+      visibility: 
+      collect: 
+      scope: 
+      description: 
+      condition: 
+      on_entry: 
+      on_exit: 
+      on_error: 
+      max_retries: 
+      max_time: 
+  - field:
+      aetype: attribute
+      name: warn_owner_vms
+      display_name: Owner - Warn VMs Allowed
+      datatype: string
+      priority: 9
       owner: 
       default_value: 
       substitute: true
@@ -116,7 +196,27 @@ object:
       name: max_group_cpu
       display_name: Group - Max CPUs Allowed
       datatype: string
-      priority: 6
+      priority: 10
+      owner: 
+      default_value: 
+      substitute: true
+      message: create
+      visibility: 
+      collect: 
+      scope: 
+      description: 
+      condition: 
+      on_entry: 
+      on_exit: 
+      on_error: 
+      max_retries: 
+      max_time: 
+  - field:
+      aetype: attribute
+      name: warn_group_cpu
+      display_name: Group - Warn CPUs Allowed
+      datatype: string
+      priority: 11
       owner: 
       default_value: 
       substitute: true
@@ -136,7 +236,27 @@ object:
       name: max_group_memory
       display_name: Group - Max Memory Allowed (MB)
       datatype: string
-      priority: 7
+      priority: 12
+      owner: 
+      default_value: 
+      substitute: true
+      message: create
+      visibility: 
+      collect: 
+      scope: 
+      description: 
+      condition: 
+      on_entry: 
+      on_exit: 
+      on_error: 
+      max_retries: 
+      max_time: 
+  - field:
+      aetype: attribute
+      name: warn_group_memory
+      display_name: Group - Warn Memory Allowed (MB)
+      datatype: string
+      priority: 13
       owner: 
       default_value: 
       substitute: true
@@ -156,7 +276,27 @@ object:
       name: max_group_storage
       display_name: Group - Max Storage Allowed (GB)
       datatype: string
-      priority: 8
+      priority: 14
+      owner: 
+      default_value: 
+      substitute: true
+      message: create
+      visibility: 
+      collect: 
+      scope: 
+      description: 
+      condition: 
+      on_entry: 
+      on_exit: 
+      on_error: 
+      max_retries: 
+      max_time: 
+  - field:
+      aetype: attribute
+      name: warn_group_storage
+      display_name: Group - Warn Storage Allowed (GB)
+      datatype: string
+      priority: 15
       owner: 
       default_value: 
       substitute: true
@@ -176,7 +316,27 @@ object:
       name: max_group_vms
       display_name: Group - Max VMs Allowed
       datatype: string
-      priority: 9
+      priority: 16
+      owner: 
+      default_value: 
+      substitute: true
+      message: create
+      visibility: 
+      collect: 
+      scope: 
+      description: 
+      condition: 
+      on_entry: 
+      on_exit: 
+      on_error: 
+      max_retries: 
+      max_time: 
+  - field:
+      aetype: attribute
+      name: warn_group_vms
+      display_name: Group - Warn VMs Allowed
+      datatype: string
+      priority: 17
       owner: 
       default_value: 
       substitute: true
@@ -196,7 +356,7 @@ object:
       name: ValidateQuotas
       display_name: 
       datatype: string
-      priority: 10
+      priority: 18
       owner: 
       default_value: 
       substitute: true
