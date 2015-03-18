@@ -14,7 +14,7 @@ object:
   - field:
       aetype: attribute
       name: manage_quotas_by_group
-      display_name: Manage Quotas by Group - valid (true, false, both)
+      display_name: Manage Quotas by Group - (true, false, both)
       datatype: string
       priority: 1
       owner: 
