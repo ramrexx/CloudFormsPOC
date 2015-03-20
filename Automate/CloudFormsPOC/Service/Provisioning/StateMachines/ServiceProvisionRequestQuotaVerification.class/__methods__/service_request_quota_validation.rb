@@ -70,6 +70,8 @@ begin
             if template
               log(:info, "Retrieving template #{template.name} allocated_disk_storage => #{template.allocated_disk_storage} from Service Catalog Bundle")
               options_array << template.allocated_disk_storage
+              # log(:info, "Retrieving template #{template.name} provisioned_storage => #{template.provisioned_storage} from Service Catalog Bundle")
+              # options_array << template.provisioned_storage
             end
           else
             log(:info, "Retrieving #{prov_option}=>#{grandchild_service_template_service_resource.resource.get_option(prov_option)} from Service Catalog Bundle")
@@ -83,6 +85,8 @@ begin
           if template
             log(:info, "Retrieving template #{template.name} allocated_disk_storage => #{template.allocated_disk_storage} from Service Catalog Item")
             options_array << template.allocated_disk_storage
+            # log(:info, "Retrieving template #{template.name} provisioned_storage => #{template.provisioned_storage} from Service Catalog Bundle")
+            # options_array << template.provisioned_storage
           end
         else
           log(:info, "Retrieving #{prov_option}=>#{child_service_resource.resource.get_option(prov_option)} from Service Catalog Item")
@@ -183,7 +187,7 @@ begin
     entity_consumption[:memory]               = entity.allocated_memory
     entity_consumption[:vms]                  = entity.vms.select {|vm| vm.id if ! vm.archived }.count
     entity_consumption[:allocated_storage]    = entity.allocated_storage
-    # entity_consumption[:provisioned_storage]  = entity.provisioned_storage
+    entity_consumption[:provisioned_storage]  = entity.provisioned_storage
     # log(:info, "#{entity_type}: #{entity_name} current Storage Provisioned (bytes): #{entity_consumption[:provisioned_storage]}")
 
     # CPU Quota Check
@@ -342,9 +346,6 @@ begin
   # quota_hash[:total_storage_requested]  = get_total_requested(options_hash, :provisioned_storage)
   quota_hash[:total_vms_requested]      = get_total_requested(options_hash, :number_of_vms)
   log(:info, "Inspecting quota_hash: #{quota_hash}")
-
-  # exit if no work is needed
-  exit MIQ_OK if quota_hash[:total_cpus_requested].zero? && quota_hash[:total_memory_requested].zero? && quota_hash[:total_storage_requested].zero? && quota_hash[:total_vms_requested].zero?
 
   # specify whether quotas should be managed by group or user or both (valid options are [true | false | 'both'])
   manage_quotas_by_group = $evm.object['manage_quotas_by_group'] || true

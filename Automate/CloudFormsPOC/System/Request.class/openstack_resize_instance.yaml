@@ -1,0 +1,12 @@
+---
+object_type: instance
+version: 1.0
+object:
+  attributes:
+    display_name: 
+    name: OpenStack_Resize_Instance
+    inherits: 
+    description: 
+  fields:
+  - rel2:
+      value: /Integration/RedHat/OpenStack/Nova/Resize_OpenStack_Instance

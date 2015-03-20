@@ -11,4 +11,4 @@ object:
   - manage_quotas_by_group:
       value: 'true'
   - warn_group_storage:
-      value: '3'
+      value: '5'
