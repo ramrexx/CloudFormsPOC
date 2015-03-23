@@ -7,6 +7,4 @@ object:
     name: Default
     inherits: 
     description: 
-  fields:
-  - manage_quotas_by_group:
-      value: 'true'
+  fields: []

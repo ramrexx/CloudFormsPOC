@@ -3,12 +3,11 @@
 # Author: Kevin Morey <kmorey@redhat.com>
 # License: GPL v3
 #
-# Description: This method validates the group and/or owner quotas using the values
-# [max_group_cpu, max_group_memory, max_group_vms, max_owner_cpu, max_owner_memory, max_owner_vms]
-# in the following order:
-# 1. In the model
-# 2. Group tags - This looks at the Group for the following tag values: [quota_max_cpu, quota_max_memory, quota_max_vms]
-# 3. Owner tags - This looks at the User for the following tag values: [quota_max_cpu, quota_max_memory, quota_max_vms]
+# Description: This method validates the group and/or owner quotas in the following order:
+# 1. Group model - This looks at the Instance for the following attributes: [max_group_cpu, warn_group_cpu, max_group_memory, warn_group_memory, max_group_storage, warn_group_storage, max_group_vms, warn_group_vms]
+# 2. Group tags - This looks at the Group for the following tag values: [quota_max_cpu, quota_warn_cpu, quota_max_memory, quota_warn_memory, quota_max_storage, quota_warn_storage, quota_max_vms, quota_warn_vms]
+# 3. Owner model - This looks at the Instance for the following attributes: [max_owner_cpu, warn_owner_cpu, max_owner_memory, warn_owner_memory, max_owner_storage, warn_owner_storage, max_owner_vms, warn_owner_vms]
+# 4. User tags - This looks at the User for the following tag values: [quota_max_cpu, quota_warn_cpu, quota_max_memory, quota_warn_memory, quota_max_storage, quota_warn_storage, quota_max_vms, quota_warn_vms]
 #
 begin
   def log(level, msg, update_message=false)
@@ -185,6 +184,7 @@ begin
     # Get the current consumption
     (entity_consumption||={})[:cpu]           = entity.allocated_vcpu
     entity_consumption[:memory]               = entity.allocated_memory
+    # count all entity vms that are not archived
     entity_consumption[:vms]                  = entity.vms.select {|vm| vm.id if ! vm.archived }.count
     entity_consumption[:allocated_storage]    = entity.allocated_storage
     entity_consumption[:provisioned_storage]  = entity.provisioned_storage
