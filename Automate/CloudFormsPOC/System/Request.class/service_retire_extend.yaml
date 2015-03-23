@@ -1,0 +1,12 @@
+---
+object_type: instance
+version: 1.0
+object:
+  attributes:
+    display_name: 
+    name: service_retire_extend
+    inherits: 
+    description: 
+  fields:
+  - rel5:
+      value: /Service/Retirement/Email/Service_Retire_Extend
