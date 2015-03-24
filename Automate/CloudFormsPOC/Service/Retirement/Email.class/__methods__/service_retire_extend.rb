@@ -3,7 +3,8 @@
 # Author: Kevin Morey <kmorey@redhat.com>
 # License: GPL v3
 #
-# Description: This method is used to add x days to retirement date when target Service has a retires_on value and is not already retired
+# Description: This method is used to add x days to retirement date when target Service has a retires_on value and is not 
+# already retired, then loop through all child vms and synchronize the retires_on date
 #
 begin
   def log(level, msg, update_message=false)
@@ -26,37 +27,37 @@ begin
   # Number of days to automatically extend retirement
   service_retire_extend_days = nil
   service_retire_extend_days ||= $evm.root['dialog_retire_extend_days'] || $evm.object['service_retire_extend_days']
-  raise "ERROR - service_retire_extend_days not found!" if service_retire_extend_days.nil?
 
   log(:info, "Number of days to extend: #{service_retire_extend_days}")
 
   service = $evm.root['service']
 
-  service.attributes.each {|k, v| log(:info, "Service: #{service.name} Attribute: #{k} = #{v.inspect}") }
-
+  service.attributes.each {|k, v| log(:info, "Service: #{service.name} updated {#{k} => #{v.inspect}}") if k.include?('retire') }
   unless service.retires_on.blank? || service_retire_extend_days.to_i.zero?
-    $evm.log(:info, "Extending retirement #{service_retire_extend_days} days for Service: #{service.name}")
-
+    log(:info, "Extending retirement #{service_retire_extend_days} days for Service: #{service.name}")
     # Set new retirement date here
     service.retires_on += service_retire_extend_days.to_i
-
     service.attributes.each {|k, v| log(:info, "Service: #{service.name} updated {#{k} => #{v.inspect}}") if k.include?('retire') }
+    service.vms.each do |vm|
+      log(:info, "Extending retirement #{service_retire_extend_days} days for VM: #{vm.name}")
+      vm.retires_on = service.retires_on
+      vm.retirement_warn = service.retirement_warn
+      vm.attributes.each {|k, v| log(:info, "VM: #{vm.name} updated {#{k} => #{v.inspect}}") if k.include?('retire') }
+    end
 
     # Get Service Owner Name and Email
     owner_id = service.evm_owner_id
     owner = $evm.vmdb('user', owner_id) unless owner_id.nil?
 
     # to_email_address from owner.email then from model if nil
-    to = owner.email unless owner.nil?
+    to = owner.email rescue nil
     to ||= $evm.object['to_email_address']
 
     # Get from_email_address from model unless specified below
-    from = nil
-    from ||= $evm.object['from_email_address']
+    from = nil || $evm.object['from_email_address']
 
     # Get signature from model unless specified below
-    signature = nil
-    signature ||= $evm.object['signature']
+    signature = nil || $evm.object['signature']
 
     # email subject
     subject = "Service Retirement Extended for #{service.name}"
