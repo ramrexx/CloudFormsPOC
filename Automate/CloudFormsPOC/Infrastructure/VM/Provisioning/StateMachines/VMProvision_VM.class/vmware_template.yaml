@@ -1,0 +1,20 @@
+---
+object_type: instance
+version: 1.0
+object:
+  attributes:
+    display_name: Provision VM from Template
+    name: vmware_template
+    inherits: 
+    description: 
+  fields:
+  - AcquireMACAddress:
+      value: ! '#/Infrastructure/VM/Provisioning/StateMachines/Methods/GenerateMACAddress#${/#miq_provision.source.vendor}'
+  - PreProvision:
+      value: ! '#/Integration/VMware/vCenter/Create_vCenter_Folder '
+  - Provision:
+      value: /Infrastructure/VM/Provisioning/StateMachines/Methods/Provision
+  - CheckProvisioned:
+      value: /Infrastructure/VM/Provisioning/StateMachines/Methods/CheckProvisioned
+  - AddVMToService:
+      value: /Infrastructure/VM/Provisioning/StateMachines/Methods/Add_VM_To_Service

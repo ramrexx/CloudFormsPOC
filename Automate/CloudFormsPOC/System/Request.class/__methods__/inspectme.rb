@@ -1,5 +1,8 @@
 # InspectMe.rb
 #
+# Author: Kevin Morey <kmorey@redhat.com>
+# License: GPL v3
+#
 # Description: Dump the objects in storage to the automation.log
 #
 def dump_root()

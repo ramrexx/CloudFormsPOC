@@ -1,3 +1,7 @@
+# redhat_CustomizeRequest
+#
+# Author: Kevin Morey <kmorey@redhat.com>
+# License: GPL v3
 #
 # Description: This method is used to Customize the Provisioning Request
 # Customization Template mapping for RHEV, RHEV PXE, and RHEV ISO provisioning

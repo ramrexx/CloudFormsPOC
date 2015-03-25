@@ -1,5 +1,8 @@
 # RemoveVMFromService.rb
 #
+# Author: Kevin Morey <kmorey@redhat.com>
+# License: GPL v3
+#
 # Description: This method removes the VM from the service during retirement and for Flex VMs subtract parent vm tag :flex_current by 1
 #
 

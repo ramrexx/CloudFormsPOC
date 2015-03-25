@@ -1,5 +1,8 @@
 # initialize_rightsizing_tags.rb
 #
+# Author: Kevin Morey <kmorey@redhat.com>
+# License: GPL v3
+#
 # Description: This method checks for the existence of the rightsize category and creates tags
 #
 

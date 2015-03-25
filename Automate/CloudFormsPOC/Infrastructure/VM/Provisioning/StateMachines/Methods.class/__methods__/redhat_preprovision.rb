@@ -1,3 +1,7 @@
+# redhat_PreProvision.rb
+#
+# Author: Kevin Morey <kmorey@redhat.com>
+# License: GPL v3
 #
 # Description: This default method is used to apply PreProvision customizations for RHEV provisioning
 #

@@ -1,5 +1,8 @@
 # Description: vmname
 #
+# Author: Kevin Morey <kmorey@redhat.com>
+# License: GPL v3
+#
 # 1. If VM Name was not chosen during dialog processing then use vm_prefix from dialog
 # else use model and [:environment] tag to generate name
 # 2. Use the template product to help generate a name

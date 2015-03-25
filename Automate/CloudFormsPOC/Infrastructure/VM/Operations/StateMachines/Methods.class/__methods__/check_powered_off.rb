@@ -1,5 +1,8 @@
 # check_powered_off.rb
 #
+# Author: Kevin Morey <kmorey@redhat.com>
+# License: GPL v3
+#
 # Description: This method checks to see if the VM has been powered off
 #
 vm = $evm.root['vm']

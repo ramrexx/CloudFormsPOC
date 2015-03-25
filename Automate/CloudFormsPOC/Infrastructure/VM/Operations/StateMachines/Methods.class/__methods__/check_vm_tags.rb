@@ -1,5 +1,8 @@
 # check_vm_tags.rb
-# 
+#
+# Author: Kevin Morey <kmorey@redhat.com>
+# License: GPL v3
+#
 # Description: This method checks for rightsize tag and stops the VM
 #
 category = :rightsize

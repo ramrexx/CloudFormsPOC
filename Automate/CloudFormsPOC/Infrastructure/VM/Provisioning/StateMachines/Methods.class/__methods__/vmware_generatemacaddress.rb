@@ -1,3 +1,7 @@
+# vmware_GenerateMACAddress.rb
+#
+# Author: Kevin Morey <kmorey@redhat.com>
+# License: GPL v3
 #
 # Description: This method generates a mac address for PXE Enabled clients on RHEV
 #

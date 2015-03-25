@@ -1,5 +1,8 @@
 # right_size_vm.rb
 #
+# Author: Kevin Morey <kmorey@redhat.com>
+# License: GPL v3
+#
 # Description: This method reconfigures the VM based on right size recommendations
 #
 category = :rightsize
