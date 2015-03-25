@@ -2,6 +2,8 @@ Welcome to the CloudFormsPOC Project
 ====================================
 More information can be found at: https://access.redhat.com/documentation/en-US/CloudForms/
 
+For installation instructions visit the wiki: 
+https://github.com/ramrexx/CloudFormsPOC/wiki
 
 Automate
 ========================
