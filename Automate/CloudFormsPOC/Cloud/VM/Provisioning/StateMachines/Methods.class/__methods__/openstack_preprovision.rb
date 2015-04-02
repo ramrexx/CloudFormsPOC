@@ -92,18 +92,24 @@ begin
   def add_networks(ws_values)
     # ensure the cloud_network is set and look for additional networks to add to clone_options
     log(:info, "Processing add_networks...", true)
-    cloud_network_id = @task.get_option(:cloud_network) || ws_values[:cloud_network] rescue nil
-    cloud_network_id ||= @task.get_option(:cloud_network_id) || ws_values[:cloud_network_id] rescue nil
-    unless cloud_network_id.nil?
+    clone_options = @task.get_option(:clone_options) || {}
+    clone_options[:nics] = []
+    cloud_network_id = @task.get_option(:cloud_network_0) || ws_values[:cloud_network_0] rescue nil
+    cloud_network_id ||= @task.get_option(:cloud_network) || ws_values[:cloud_network] rescue nil
+    n = 0
+    while !cloud_network_id.nil? do
+      log(:info, "cloud network id found: #{cloud_network_id}", true)
       cloud_network = $evm.vmdb(:cloud_network).find_by_id(cloud_network_id)
-      @task.set_option(:cloud_network, [cloud_network.id, cloud_network.name])
-      log(:info, "Provisioning object updated {:cloud_network => #{@task.get_option(:cloud_network).inspect}}")
+      break if cloud_network.nil?
+      log(:info, "cloud network object found: #{cloud_network.inspect}", true)
+      clone_options[:nics][n] = {}
+      clone_options[:nics][n]['net_id'] = cloud_network['ems_ref'].to_s
+      n +=1
+      cloud_network_id = nil
+      cloud_network_id ||= @task.get_option("cloud_network_#{n}".to_sym) || ws_values["cloud_network_#{n}".to_sym] rescue nil
     end
-    network_hash = @task.options[:network_hash]
-    log(:info, "network_hash: #{network_hash.inspect}")
-    unless network_hash.blank?
-
-    end
+    log(:info, "Clone options updated with NIC information: #{clone_options.inspect}", true)
+    @task.set_option(:clone_options, clone_options)
     log(:info, "Processing add_networks...Complete", true)
   end
 
@@ -126,9 +132,9 @@ begin
 
   add_volumes(ws_values, template)
 
-  # add_affinity_group(ws_values)
+  add_affinity_group(ws_values)
 
-  # add_networks(ws_values)
+  add_networks(ws_values)
 
   # Log all of the options to the automation.log
   @task.options.each { |k,v| log(:info, "Provisioning Option Key(#{k.class}): #{k.inspect} Value: #{v.inspect}") }

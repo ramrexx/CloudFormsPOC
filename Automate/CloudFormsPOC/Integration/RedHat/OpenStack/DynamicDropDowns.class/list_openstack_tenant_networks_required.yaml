@@ -4,11 +4,9 @@ version: 1.0
 object:
   attributes:
     display_name: 
-    name: List_Openstack_Tenant_Networks
+    name: List_Openstack_Tenant_Networks_required
     inherits: 
     description: 
   fields:
-  - required:
-      value: 'false'
   - execute:
       value: list_openstack_tenant_networks
