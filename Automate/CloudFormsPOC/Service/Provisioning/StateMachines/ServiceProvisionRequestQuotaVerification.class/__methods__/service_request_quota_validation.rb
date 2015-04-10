@@ -72,6 +72,24 @@ begin
               # log(:info, "Retrieving template #{template.name} provisioned_storage => #{template.provisioned_storage} from Service Catalog Bundle")
               # options_array << template.provisioned_storage
             end
+          elsif prov_option == :cores_per_socket
+            flavor = $evm.vmdb(:flavor).find_by_id(grandchild_service_template_service_resource.resource.get_option(:instance_type))
+            if flavor
+              log(:info, "Retrieving flavor #{flavor.name} cpus => #{flavor.cpus} from Service Catalog Bundle")
+              options_array << flavor.cpus
+            else
+              log(:info, "Retrieving #{prov_option}=>#{grandchild_service_template_service_resource.resource.get_option(prov_option)} from Service Catalog Bundle")
+              options_array << grandchild_service_template_service_resource.resource.get_option(prov_option)
+            end
+          elsif prov_option == :vm_memory
+            flavor = $evm.vmdb(:flavor).find_by_id(grandchild_service_template_service_resource.resource.get_option(:instance_type))
+            if flavor
+              log(:info, "Retrieving flavor #{flavor.name} memory => #{flavor.memory} from Service Catalog Bundle")
+              options_array << flavor.memory / 1024**2
+            else
+              log(:info, "Retrieving #{prov_option}=>#{grandchild_service_template_service_resource.resource.get_option(prov_option)} from Service Catalog Bundle")
+              options_array << grandchild_service_template_service_resource.resource.get_option(prov_option)
+            end
           else
             log(:info, "Retrieving #{prov_option}=>#{grandchild_service_template_service_resource.resource.get_option(prov_option)} from Service Catalog Bundle")
             options_array << grandchild_service_template_service_resource.resource.get_option(prov_option)
@@ -84,8 +102,26 @@ begin
           if template
             log(:info, "Retrieving template #{template.name} allocated_disk_storage => #{template.allocated_disk_storage} from Service Catalog Item")
             options_array << template.allocated_disk_storage
-            # log(:info, "Retrieving template #{template.name} provisioned_storage => #{template.provisioned_storage} from Service Catalog Bundle")
+            # log(:info, "Retrieving template #{template.name} provisioned_storage => #{template.provisioned_storage} from Service Catalog Item")
             # options_array << template.provisioned_storage
+          end
+        elsif prov_option == :cores_per_socket
+          flavor = $evm.vmdb(:flavor).find_by_id(child_service_resource.resource.get_option(:instance_type))
+          if flavor
+            log(:info, "Retrieving flavor #{flavor.name} cpus => #{flavor.cpus} from Service Catalog Item")
+            options_array << flavor.cpus
+          else
+            log(:info, "Retrieving #{prov_option}=>#{child_service_resource.resource.get_option(prov_option)} from Service Catalog Item")
+            options_array << child_service_resource.resource.get_option(prov_option)
+          end
+        elsif prov_option == :vm_memory
+          flavor = $evm.vmdb(:flavor).find_by_id(child_service_resource.resource.get_option(:instance_type))
+          if flavor
+            log(:info, "Retrieving flavor #{flavor.name} memory => #{flavor.memory} from Service Catalog Item")
+            options_array << flavor.memory / 1024**2
+          else
+            log(:info, "Retrieving #{prov_option}=>#{child_service_resource.resource.get_option(prov_option)} from Service Catalog Item")
+            options_array << child_service_resource.resource.get_option(prov_option)
           end
         else
           log(:info, "Retrieving #{prov_option}=>#{child_service_resource.resource.get_option(prov_option)} from Service Catalog Item")
@@ -104,7 +140,18 @@ begin
     end
     dialog_array = []
     options_hash.each do |sequence_id, options|
-      dialog_array << options[prov_option] unless options[prov_option].blank?
+      flavor = $evm.vmdb(:flavor).find_by_id(options[:instance_type])
+      if flavor
+        if prov_option == :cores_per_socket
+          dialog_array << flavor.cpus
+        elsif prov_option == :vm_memory
+          dialog_array << flavor.memory / 1024**2
+        else
+          dialog_array << options[prov_option] unless options[prov_option].blank?
+        end
+      else
+        dialog_array << options[prov_option] unless options[prov_option].blank?
+      end
     end
     unless dialog_array.blank?
       dialog_totals = dialog_array.collect(&:to_i).inject(&:+)

@@ -163,39 +163,23 @@ begin
   # get template based on incoming dialog_options
   def get_template(build, matching_options_hash, matching_tags_hash)
     log(:info, "Processing get_template...", true)
-    template_search_by_guid = matching_options_hash[:guid]
-    template_search_by_name = matching_options_hash[:template]
-    template_search_by_product = matching_options_hash[:os]
-    templates = []
+    template_search_by_criteria = matching_options_hash[:guid] || matching_options_hash[:template] || matching_options_hash[:name] || matching_options_hash[:os]
+    @template = $evm.vmdb(:template_vmware).find_by_guid(template_search_by_criteria) || $evm.vmdb(:template_vmware).find_by_id(template_search_by_criteria)
+    @template ||= $evm.vmdb(:template_vmware).find_by_name(template_search_by_criteria)
 
-    if template_search_by_guid && templates.blank?
-      # Search for templates tagged with 'prov_scope' => 'all' & match the guid from option_?_guid
-      log(:info, "Searching for VMware templates tagged with 'prov_scope' => 'all' that match guid: #{template_search_by_guid}")
-      templates = $evm.vmdb(:template_vmware).all.select do |t|
-        t.ext_management_system && t.tagged_with?('prov_scope', 'all') && t.guid == template_search_by_guid
-      end.sort { |t1, t2| t1.ext_management_system.vms.count <=> t2.ext_management_system.vms.count }
-    end
-    if template_search_by_name && templates.blank?
-      # Search for templates that tagged with 'prov_scope' => 'all' & match the name from option_?_template || option_?_name - then load balance them across different providers based on vm count
-      log(:info, "Searching for VMware templates tagged with 'prov_scope' => 'all' that are named: #{template_search_by_name}")
-      templates = $evm.vmdb(:template_vmware).all.select do |t|
-        t.ext_management_system && t.tagged_with?('prov_scope', 'all') && t.name == template_search_by_name
-      end.sort { |t1, t2| t1.ext_management_system.vms.count <=> t2.ext_management_system.vms.count }
-    end
-    if template_search_by_product && templates.blank?
+    unless @template
       # Search for templates tagged with 'prov_scope' => 'all' & product_name include option_?_os (I.e. 'windows', red hat') - then load balance them across different providers based on vm count
-      log(:info, "Searching for VMware templates tagged with 'prov_scope' => 'all' that inlcude product: #{template_search_by_product}")
-      templates = $evm.vmdb(:template_vmware).all.select do |t|
-        t.ext_management_system && t.tagged_with?('prov_scope', 'all') && t.operating_system[:product_name].downcase.include?(template_search_by_product)
+      log(:info, "Searching for templates tagged with 'prov_scope'=>'all' that inlcude product: #{template_search_by_criteria}")
+      templates_array = $evm.vmdb(:template_vmware).all.select do |t|
+        t.ext_management_system && t.tagged_with?('prov_scope', 'all') && t.operating_system[:product_name].downcase.include?(template_search_by_criteria) rescue next
       end.sort { |t1, t2| t1.ext_management_system.vms.count <=> t2.ext_management_system.vms.count }
+      # get the first template in the list
+      @template = templates_array.first unless templates_array.blank?
     end
-    raise "No templates found" if templates.blank?
-
-    # get the first template in the list
-    @template = templates.first
+    raise "No template found" if @template.blank?
+    log(:info, "Build: #{build} - template: #{@template.name} product: #{@template.operating_system[:product_name].downcase rescue 'unknown'} guid: #{@template.guid} on provider: #{@template.ext_management_system.name}")
     matching_options_hash[:name] = @template.name
     matching_options_hash[:guid] = @template.guid
-    log(:info, "Build: #{build} - template: #{@template.name} product: #{@template.operating_system[:product_name].downcase rescue 'unknown'} guid: #{@template.guid} on provider: #{@template.ext_management_system.name}")
     log(:info, "Processing get_template...Complete", true)
   end
 
