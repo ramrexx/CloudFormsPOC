@@ -1,13 +1,8 @@
-Copyright (C) 2015 Red Hat, Inc.
+Copyright 2015 CloudFormsPOC Authors.
 
-Licensed under the Apache License, version 2.0 or (at your option) the
-GNU General Public License, version 2 (GPLv2). 
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or any later version. See <http://www.gnu.org/licenses/>
 
-http://www.apache.org/licenses/LICENSE-2.0.html 
-http://www.gnu.org/licenses/gpl-2.0.html
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License. 
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
