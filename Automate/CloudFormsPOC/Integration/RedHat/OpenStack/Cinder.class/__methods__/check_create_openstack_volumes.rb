@@ -36,7 +36,7 @@ begin
           :provider => 'OpenStack',
           :openstack_api_key => ems_openstack.authentication_password,
           :openstack_username => ems_openstack.authentication_userid,
-          :openstack_auth_url => "#{proto}://#{ems_openstack[:ipaddress]}:#{ems_openstack[:port]}/v2.0/tokens",
+          :openstack_auth_url => "#{proto}://#{ems_openstack.hostname}:#{ems_openstack.port}/v2.0/tokens",
           :openstack_auth_token => auth_token,
           :connection_options => { :ssl_verify_peer => verify_peer, :ssl_version => :TLSv1 },
           :openstack_tenant => tenant
@@ -90,10 +90,12 @@ begin
       volume_details = openstack_volume.get_volume_details(volume_uuid).body['volume']
       log(:info, "Volume Details: #{volume_details.inspect}")
       log(:info, "Volume Status is #{volume_details['status']}", true)
-      unless volume_details['status'] == "available"
-        retry_method(15.seconds, "Volume Status: #{volume_details['status']}")
-      else
+      if volume_details['status'] == "available"
         log(:info, "Successfully created volume: #{volume_uuid}", true)
+      elsif volume_details['status'] == "error"
+        raise "Volume creation failed for #{volume_uuid}"
+      else
+        retry_method(15.seconds, "Volume Status: #{volume_details['status']}")
       end
     end
   end

@@ -28,7 +28,7 @@ begin
           :provider => 'OpenStack',
           :openstack_api_key => ems_openstack.authentication_password,
           :openstack_username => ems_openstack.authentication_userid,
-          :openstack_auth_url => "#{proto}://#{ems_openstack[:ipaddress]}:#{ems_openstack[:port]}/v2.0/tokens",
+          :openstack_auth_url => "#{proto}://#{ems_openstack.hostname}:#{ems_openstack.port}/v2.0/tokens",
           :openstack_auth_token => auth_token,
           :connection_options => { :ssl_verify_peer => verify_peer, :ssl_version => :TLSv1 },
           :openstack_tenant => tenant

@@ -37,13 +37,15 @@ begin
         (volume_options_hash[boot_index] ||={})[paramter] = value
       end
     end
-    # loop through ws_values for volume matching parameters
-    ws_values.each do |k, value|
-      next if value.blank?
-      if volume_regex =~ k
-        boot_index, paramter = $1.to_i, $2.to_sym
-        log(:info, "boot_index: #{boot_index} - Adding option: {#{paramter.inspect} => #{value.inspect}} to volume_ws_values_hash")
-        (volume_ws_values_hash[boot_index] ||={})[paramter] = value
+    if volume_options_hash.blank?
+      # loop through ws_values for volume matching parameters
+      ws_values.each do |k, value|
+        next if value.blank?
+        if volume_regex =~ k
+          boot_index, paramter = $1.to_i, $2.to_sym
+          log(:info, "boot_index: #{boot_index} - Adding option: {#{paramter.inspect} => #{value.inspect}} to volume_ws_values_hash")
+          (volume_ws_values_hash[boot_index] ||={})[paramter] = value
+        end
       end
     end
     volume_hash = volume_options_hash.merge(volume_ws_values_hash) if volume_options_hash
@@ -61,7 +63,7 @@ begin
           :provider => "OpenStack",
           :openstack_api_key => ems_openstack.authentication_password,
           :openstack_username => ems_openstack.authentication_userid,
-          :openstack_auth_url => "#{proto}://#{ems_openstack[:ipaddress]}:#{ems_openstack[:port]}/v2.0/tokens",
+          :openstack_auth_url => "#{proto}://#{ems_openstack.hostname}:#{ems_openstack.port}/v2.0/tokens",
           :openstack_auth_token => auth_token,
           :connection_options => { :ssl_verify_peer => verify_peer, :ssl_version => :TLSv1 },
           :openstack_tenant => tenant
@@ -123,12 +125,13 @@ begin
         end
       else
         volume_options[:bootable] = false
-        volume_options[:imageref] = ''
+        volume_options[:imageref] = nil
       end
       unless volume_options[:size].to_i.zero?
         volume_options[:name]         = "CloudForms created volume #{boot_index} for #{@task.get_option(:vm_target_name)}"
         volume_options[:description]  = "#{volume_options[:name]} at #{Time.now}"
-        log(:info, "Creating volume #{volume_options[:name]}/#{volume_options[:description]} of size #{volume_options[:size]}GB", true)
+        log(:info, "Creating volume #{volume_options.inspect}")
+        #log(:info, "Creating volume #{volume_options[:name]}/#{volume_options[:description]} of size #{volume_options[:size]}GB", true)
         new_volume = openstack_volume.create_volume(volume_options[:name], volume_options[:description], volume_options[:size], { :bootable => volume_options[:bootable], :imageRef => volume_options[:imageref] }).body['volume']
         log(:info, "Successfully created volume #{boot_index}: #{new_volume['id']}", true)
         volume_options[:uuid] = new_volume['id']
