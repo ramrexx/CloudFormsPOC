@@ -38,7 +38,7 @@ alias clean_pgsql="echo Cleaned: `date` > /opt/rh/postgresql92/root/var/lib/pgsq
 alias black_console="LOCK_CONSOLE=false /bin/appliance_console"
 
 # Rails Console
-alias railsc="cd /var/www/miq/vmdb;echo '\$evm = MiqAeMethodService::MiqAeService.new(MiqAeEngine::MiqAeWorkspaceRuntime.new)'; rails c"
+alias railsc="cd /var/www/miq/vmdb;echo '\$evm = MiqAeMethodService::MiqAeService.new(MiqAeEngine::MiqAeWorkspaceRuntime.new)'; script/rails c"
 
 # Application Status
 alias status='echo "EVM Status:";service evmserverd status;echo " ";echo "HTTP Status:";service httpd status'
