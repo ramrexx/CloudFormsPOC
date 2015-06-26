@@ -4,9 +4,9 @@ version: 1.0
 object:
   attributes:
     display_name: 
-    name: Chef_Dialog_CookBookList
+    name: Chef_Node_Delete
     inherits: 
     description: 
   fields:
   - method1:
-      value: Chef_Dialog_CookBookList
+      value: Chef_Node_Delete

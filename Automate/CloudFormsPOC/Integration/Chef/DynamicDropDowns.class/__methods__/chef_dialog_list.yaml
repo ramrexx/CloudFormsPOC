@@ -3,7 +3,7 @@ object_type: method
 version: 1.0
 object:
   attributes:
-    name: Chef_Dialog_CookBookList_orig
+    name: Chef_Dialog_List
     display_name: 
     description: 
     scope: instance

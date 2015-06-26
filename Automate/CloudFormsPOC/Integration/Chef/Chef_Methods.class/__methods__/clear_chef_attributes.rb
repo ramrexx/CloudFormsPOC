@@ -10,7 +10,8 @@ vm = $evm.root['vm']
 
 vm.custom_set("CHEF_Bootstrapped", nil)
 vm.custom_set("CHEF_Roles", nil)
-vm.custom_set("CHEF_Cookbook", nil)
+vm.custom_set("CHEF_Environment", nil)
+vm.custom_set("CHEF_Recipes", nil)
 
 #
 #
