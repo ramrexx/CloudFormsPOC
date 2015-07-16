@@ -2,14 +2,13 @@
 #
 # CFME Automate Method: Chef_Bootstrap
 #
-# Notes: This method uses a kinfe wrapper to bootstrap a Chef client
+# Notes: This method uses knife to bootstrap a Chef client
 #
 ###################################
 begin
   # Method for logging
   def log(level, message)
-    @method = 'Chef_Bootstrap'
-    $evm.log(level, "#{@method}: #{message}")
+    $evm.log(level, "#{message}")
   end
 
   # dump_root
@@ -24,9 +23,9 @@ begin
     log(:info, "VM:<#{vm.name}> Begin Attributes [vm.attributes]")
     vm.attributes.sort.each { |k, v| log(:info, "VM:<#{vm.name}> Attributes - #{k}: #{v.inspect}")}
     log(:info, "VM:<#{vm.name}> End Attributes [vm.attributes]")
+    log(:info, "Full Dump: #{vm.inspect}")
     log(:info, "")
   end
-
   
   # basic retry logic
   def retry_method(retry_time=1.minute)
@@ -36,18 +35,39 @@ begin
     exit MIQ_OK
   end
 
-  def run_linux_admin(cmd)
+      # process_tags - Dynamically create categories and tags
+  def process_tags( category, category_description, single_value, tag, tag_description )
+    # Convert to lower case and replace all non-word characters with underscores
+    category_name = category.to_s.downcase.gsub(/\W/, '_')
+    tag_name = tag.to_s.downcase.gsub(/\W/, '_')
+    tag_name = tag.gsub(/:/, '_')
+    log(:info, "Converted category name:<#{category_name}> Converted tag name: <#{tag_name}>")
+    # if the category exists else create it
+    unless $evm.execute('category_exists?', category_name)
+      log(:info, "Category <#{category_name}> doesn't exist, creating category")
+      $evm.execute('category_create', :name => category_name, :single_value => single_value, :description => "#{category_description}")
+    end
+    # if the tag exists else create it
+    unless $evm.execute('tag_exists?', category_name, tag_name)
+      log(:info, "Adding new tag <#{tag_name}> description <#{tag_description}> in Category <#{category_name}>")
+      $evm.execute('tag_create', category_name, :name => tag_name, :description => "#{tag_description}")
+    end
+  end
+
+  def run_linux_admin(cmd, timeout=10)
     require 'linux_admin'
-    log(:info, "Executing command: #{cmd}")
+    require 'timeout'
     begin
-      result = LinuxAdmin.run!(cmd)
-      log(:info, "Inspecting output: #{result.output.inspect}")
-      log(:info, "Inspecting error: #{result.error.inspect}")
-      log(:info, "Inspecting exit_status: #{result.exit_status.inspect}")
-      return result
-    rescue => admincmderr
-      log(:error, "Error running #{cmd}: #{admincmderr}")
-      log(:error, "Backtrace: #{admincmderr.backtrace.join('\n')}")
+      Timeout::timeout(timeout) {
+        log(:info, "Executing #{cmd} with timeout of #{timeout} seconds")
+        result = LinuxAdmin.run(cmd)
+        log(:info, "Inspecting output: #{result.output.inspect}")
+        log(:info, "Inspecting error: #{result.error.inspect}") unless result.error.blank? 
+        log(:info, "Inspecting exit_status: #{result.exit_status.inspect}")
+        return result
+      }
+    rescue => timeout
+      log(:error, "Error executing chef: #{timeout.class} #{timeout} #{timeout.backtrace.join("\n")}")
       return false
     end
   end
@@ -57,26 +77,43 @@ begin
   # dump all root attributes to the log
   dump_root
 
-  username = nil || $evm.object['username']
-  password = nil || $evm.object.decrypt('password')
-
   vm = nil
+  chef_role = nil
+  chef_recipe = nil
+  chef_environment = nil
 
   case $evm.root['vmdb_object_type']
-    when 'miq_provision'
-      log(:info, "Getting VM from MIQ Provision Object")
-      vm = prov.vm
-      log(:info, "Got VM #{vm.name} from miq_provision")
-    when 'vm'
-      log(:info, "Getting vm from $evm.root['vm']")
-      vm = $evm.root['vm']
-      log(:info, "Got #{vm.name} from $evm.root['vm']")
+  when 'miq_provision'
+    prov = $evm.root['miq_provision']
+    chef_role = prov.get_tags[:chef_role]
+    chef_recipe = prov.get_tags[:chef_recipe]
+    chef_environment = prov.get_tags[:chef_environment]
+    log(:info, "CHEF Tags from Prov: #{chef_role rescue 'nil'} - #{chef_recipe rescue 'nil'} #{chef_environment rescue 'nil'}")
+    vm = prov.vm
+  when 'vm'
+    chef_role = $evm.root['dialog_chef_role']
+    chef_recipe = $evm.root['dialog_chef_recipe']
+    chef_environment = $evm.root['dialog_chef_environment']
+    log(:info, "CHEF Dialog Info: #{chef_role rescue 'nil'} - #{chef_recipe rescue 'nil'} #{chef_environment rescue 'nil'}")
+    vm = $evm.root['vm']
   end
 
-  # raise an exception if the VM object is nil
-  raise "VM Object is nil, cannot bootstrap nil" if vm.nil?
-
   dump_vm(vm)
+
+  unless chef_role || chef_recipe
+    log(:info, "nothing to do for chef, bye")
+    exit MIQ_OK
+  end
+
+  if vm.nil?
+    log(:error, "VM is nil, cannot continue")
+    raise "VM is nil, cannot continue with method"
+  end
+
+  log(:info, "Requested role:'#{chef_role rescue 'nil'}")
+  log(:info, "Requested recipe:'#{chef_recipe rescue 'nil'}")
+
+  log(:info, "VM IP Addresses: #{vm.ipaddresses.inspect}")
 
   # Since this may support provisioning we need to put in retry logic to wait 
   # until IP Addresses are populated.
@@ -91,83 +128,98 @@ begin
       $evm.root['ae_result'] = 'ok'
     else
       log(:warn, "VM:<#{vm.name}> IP addresses:<#{vm.ipaddresses.inspect}> not present.")
-      $evm.root['ae_result'] = 'retry'
-      $evm.root['ae_retry_interval'] = '1.minute'
-      exit MIQ_OK
+      retry_method("15.seconds")
     end
   else
     log(:warn, "VM:<#{vm.name}> IP addresses:<#{vm.ipaddresses.inspect}> not present.")
-    $evm.root['ae_result'] = 'retry'
-    $evm.root['ae_retry_interval'] = '1.minute'
-    exit MIQ_OK
+    retry_method("15.seconds")
+  end
+
+  if vm.hostnames.empty? || vm.hostnames.first.blank?
+    log(:info, "Waiting for vm hostname to populate")
+    vm.refresh
+    retry_method("15.seconds")
+  end
+
+  username = $evm.object['username']
+  password = $evm.object.decrypt('password')
+
+  if chef_environment.blank?
+    chef_environment = $evm.object['chef_environment']
+    chef_environment = "_default" if chef_environment.blank?
+    log(:info, "Defaulted chef_environment to #{chef_environment}")
   end
   
   # VM Has not yet been bootstrapped in chef
   if vm.custom_get("CHEF_Bootstrapped").blank?
-    cmd = "/var/www/miq/knife_wrapper.sh bootstrap #{vm.ipaddresses.first} -x #{username} -P #{password}"
-    result = run_linux_admin(cmd)
+    cmd = "/usr/bin/knife bootstrap #{vm.ipaddresses.first} -x '#{username}' -P '#{password}' -E #{chef_environment} --node-ssl-verify-mode none"
+    result = run_linux_admin(cmd, 300)
     if result
       log(:info, "Successfully bootstrapped #{vm.name}: #{result}")
       vm.custom_set("CHEF_Bootstrapped", "YES: #{Time.now}}")
       vm.custom_set("CHEF_Failure", nil)
+      process_tags("chef_bootstrapped", "Chef Bootstrapped", true, "true", "True")
+      vm.tag_assign("chef_bootstrapped/true")
     else
       log(:error, "Unable to bootstrap #{vm.name}, please check CHEF stacktrace")
       vm.custom_set("CHEF_Failure", "Bootstrap: #{Time.now}")
+      process_tags("chef_bootstrapped", "Chef Bootstrapped", true, "false", "False")
+      vm.tag_assign("chef_bootstrapped/false")
       raise "Exiting due to chef bootstrap failure"
     end
   end
 
-  chef_role = $evm.root['dialog_chef_role'] rescue nil
-  chef_cookbook = $evm.root['dialog_chef_cookbook'] rescue nil
-
-  # Add the roles and cookbook separately.  If you add them all at once, then if one
-  # item failes, all items fail.  This way is a little more code, but more resilience
-
-  vmname = vm.name
-  vmname = "#{vmname}.phx.salab.redhat.com" unless vmname.match(/phx.salab.redhat.com$/)
-
-  log(:info, "Running knife commands using #{vmname} because hey, DNS is borked")
+  vmname = vm.hostnames.first
+  log(:info, "Presuming chef name is #{vmname}")
 
   unless chef_role.blank?
-    cmd = "/var/www/miq/knife_wrapper.sh node run_list add #{vmname} role[#{chef_role}]"
+    cmd = "/usr/bin/knife node run_list add #{vmname} role[#{chef_role}] -E #{chef_environment}"
     result = run_linux_admin(cmd)
     log(:info, "Chef role add command returned #{result}")
     if result
       log(:info, "Role #{chef_role} added successfully")
-      current = vm.custom_get("CHEF_Roles")
-      if current.nil?
-        vm.custom_set("CHEF_Roles", "#{chef_role}")
-      else
-        vm.custom_set("CHEF_Roles", "#{current} #{chef_role}")
-      end
     else
       log(:error, "Role #{chef_role}, failed to add.  Please check VM for logs")
     end
   end
 
-  unless chef_cookbook.blank?
-    cmd = "/var/www/miq/knife_wrapper.sh node run_list add #{vmname} recipe[#{chef_cookbook}]"
+  unless chef_recipe.blank?
+    cmd = "/usr/bin/knife node run_list add #{vmname} recipe[#{chef_recipe}] -E #{chef_environment}"
     result = run_linux_admin(cmd)
-    log(:info, "Chef cookbook add command returned #{result}")
+    log(:info, "Chef recipe add command returned #{result}")
     if result
-      log(:info, "Role #{chef_cookbook} added successfully")
-      current = vm.custom_get("CHEF_Cookbook")
-      if current.nil?
-        vm.custom_set("CHEF_Cookbook", "#{chef_cookbook}")
-      else
-        vm.custom_set("CHEF_Cookbook", "#{current} #{chef_cookbook}")
-      end
+      log(:info, "Recipe #{chef_recipe} added successfully")
     else
-      log(:error, "Role #{chef_role}, failed to add.  Please check VM for logs")
+      log(:error, "Recipe #{chef_recipe}, failed to add.  Please check VM for logs")
     end
   end
 
-  # Exit method
-  log(:info, "CFME Automate Method Ended")
+  vm.custom_set("CHEF_Environment", chef_environment)
+  require 'yaml'
+  cmd = "/usr/bin/knife node show #{vmname} -r -l"
+  result = run_linux_admin(cmd)
+  yaml = result.output.strip
+  run_list = YAML.load(yaml)["#{vmname}"]["run_list"]
+  log(:debug, "CHEF_Run_List for Node #{vmname}: #{run_list}")
+  vm.custom_set("CHEF_Run_List", run_list)
+  run_list.gsub! ",", ""
+  run_list.split(" ").each { |run_list_item|
+      log(:info, "run_list_item: #{run_list_item}")
+      result = run_list_item.match(/^(role|recipe)\[(.*?)\]$/)
+      log(:info, "Matched #{result}")
+      if result[1] && result[2]
+        process_tags("chef_#{result[1]}", "Chef #{result[1]}", false, result[2], result[2])
+        vm.tag_assign("chef_#{result[1]}/#{result[2].gsub! ':', '_'}")
+      end
+  }
+
+  vm.custom_set("CHEF_Node_Name", vmname)
+ 
+  log(:debug, "Automate Method Ended")
   exit MIQ_OK
 
-  # Ruby rescue
+# Ruby rescue
 rescue => err
   log(:error, "[#{err}]\n#{err.backtrace.join("\n")}")
-  exit MIQ_ABORT
+  exit MIQ_OK
 end

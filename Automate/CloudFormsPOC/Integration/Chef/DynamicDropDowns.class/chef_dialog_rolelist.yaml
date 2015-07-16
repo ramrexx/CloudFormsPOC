@@ -9,4 +9,4 @@ object:
     description: 
   fields:
   - method1:
-      value: Chef_Dialog_RoleList
+      value: Chef_Dialog_List

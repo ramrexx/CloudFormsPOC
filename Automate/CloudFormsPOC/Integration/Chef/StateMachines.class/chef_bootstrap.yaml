@@ -4,9 +4,9 @@ version: 1.0
 object:
   attributes:
     display_name: 
-    name: Chef_Dialog_CookBookList
+    name: Chef_Bootstrap
     inherits: 
     description: 
   fields:
-  - method1:
-      value: Chef_Dialog_CookBookList
+  - step1:
+      value: /Integration/Chef/Chef_Methods/Chef_Bootstrap

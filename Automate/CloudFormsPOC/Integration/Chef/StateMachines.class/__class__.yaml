@@ -5,15 +5,15 @@ object:
   attributes:
     description: 
     display_name: 
-    name: ChefProvisionStateMachine
+    name: StateMachines
     type: 
     inherits: 
     visibility: 
     owner: 
   schema:
   - field:
-      aetype: attribute
-      name: bootstrapUsername
+      aetype: state
+      name: step1
       display_name: 
       datatype: string
       priority: 1
@@ -32,10 +32,10 @@ object:
       max_retries: 
       max_time: 
   - field:
-      aetype: attribute
-      name: bootstrapPassword
+      aetype: state
+      name: step2
       display_name: 
-      datatype: password
+      datatype: string
       priority: 2
       owner: 
       default_value: 
@@ -53,7 +53,7 @@ object:
       max_time: 
   - field:
       aetype: state
-      name: PreExecution
+      name: step3
       display_name: 
       datatype: string
       priority: 3
@@ -73,7 +73,7 @@ object:
       max_time: 
   - field:
       aetype: state
-      name: BootStrap
+      name: step4
       display_name: 
       datatype: string
       priority: 4
@@ -90,64 +90,4 @@ object:
       on_exit: 
       on_error: 
       max_retries: 
-      max_time: 
-  - field:
-      aetype: state
-      name: AddRoles
-      display_name: 
-      datatype: string
-      priority: 5
-      owner: 
-      default_value: 
-      substitute: true
-      message: create
-      visibility: 
-      collect: 
-      scope: 
-      description: 
-      condition: 
-      on_entry: 
-      on_exit: 
-      on_error: 
-      max_retries: 
-      max_time: 
-  - field:
-      aetype: state
-      name: AddRecipes
-      display_name: 
-      datatype: string
-      priority: 6
-      owner: 
-      default_value: 
-      substitute: true
-      message: create
-      visibility: 
-      collect: 
-      scope: 
-      description: 
-      condition: 
-      on_entry: 
-      on_exit: 
-      on_error: 
-      max_retries: 
-      max_time: 
-  - field:
-      aetype: state
-      name: UpdateAttributes
-      display_name: 
-      datatype: string
-      priority: 7
-      owner: 
-      default_value: 
-      substitute: true
-      message: create
-      visibility: 
-      collect: 
-      scope: 
-      description: 
-      condition: 
-      on_entry: 
-      on_exit: 
-      on_error: 
-      max_retries: '5'
       max_time: 

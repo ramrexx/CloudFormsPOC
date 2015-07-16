@@ -3,8 +3,8 @@ object_type: method
 version: 1.0
 object:
   attributes:
-    name: AddChefRole
-    display_name: Add Chef Role
+    name: Chef_Node_Delete
+    display_name: 
     description: 
     scope: instance
     language: ruby

@@ -4,9 +4,11 @@ version: 1.0
 object:
   attributes:
     display_name: 
-    name: Chef_Dialog_RoleList
+    name: Chef_Dialog_RecipeList
     inherits: 
     description: 
   fields:
+  - chef_type:
+      value: recipe
   - method1:
-      value: Chef_Dialog_RoleList
+      value: Chef_Dialog_List

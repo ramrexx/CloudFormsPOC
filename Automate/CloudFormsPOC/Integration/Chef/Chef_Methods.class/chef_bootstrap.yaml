@@ -11,6 +11,6 @@ object:
   - username:
       value: root
   - password:
-      value: v1:{N+eSIDwjCJS4xkOjAqKnog==}
+      value: v2:{hTrY5vNUdK99qeX4weZgXA==}
   - method1:
       value: Chef_Bootstrap
