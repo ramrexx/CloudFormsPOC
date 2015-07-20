@@ -120,9 +120,9 @@ begin
 
     # get array_of_current_disks on the vm if they exist
     current_disks_hash = call_rhev(servername, username, password, :get, "#{vm.ems_ref}/disks", :xml, nil)
+    array_of_current_disks = []
     if current_disks_hash.blank?
       log(:info, "No disks found for VM: #{vm.name}")
-      array_of_current_disks = []
     else
       array_of_current_disks = current_disks_hash['disk']
     end
