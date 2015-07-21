@@ -1,5 +1,11 @@
 Welcome to the CloudFormsPOC Project
 ====================================
+Current Appliance: 5.4
+
+Previous Versions
+====================================
+5.3 - https://github.com/ramrexx/CloudFormsPOC/tree/cf3.1
+
 More information can be found at: https://access.redhat.com/documentation/en-US/CloudForms/
 
 For installation instructions visit the wiki: 
