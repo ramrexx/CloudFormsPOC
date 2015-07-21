@@ -1,15 +1,20 @@
 Welcome to the CloudFormsPOC Project
 ====================================
-Current Appliance: 5.4
+Current Appliance Version: 5.4.x
 
-Previous Versions
+Previous Appliance Versions
 ====================================
 5.3 - https://github.com/ramrexx/CloudFormsPOC/tree/cf3.1
 
-More information can be found at: https://access.redhat.com/documentation/en-US/CloudForms/
+Official Documentation
+====================================
+Red Hat CloudForms Documentation: https://access.redhat.com/documentation/en-US/CloudForms/
+ManageIQ Documentation: http://manageiq.org/documentation/
 
-For installation instructions visit the wiki: 
+Installation instructions
+====================================
 https://github.com/ramrexx/CloudFormsPOC/wiki
+
 
 Automate 
 ========================
