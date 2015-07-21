@@ -9,6 +9,6 @@ object:
     description: 
   fields:
   - step2:
-      value: /Integration/RedHat/OpenStack/Cinder/createVolume1
+      value: "/Integration/RedHat/OpenStack/Cinder/createVolume1"
   - step3:
-      value: /Integration/RedHat/OpenStack/Cinder/volumeStatus
+      value: "/Integration/RedHat/OpenStack/Cinder/volumeStatus"

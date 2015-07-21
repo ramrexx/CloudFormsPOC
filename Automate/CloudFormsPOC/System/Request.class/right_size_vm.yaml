@@ -9,4 +9,4 @@ object:
     description: 
   fields:
   - rel1:
-      value: /${/#ae_provider_category}/VM/Operations/StateMachines/RightSizing/${/#vm.vendor}
+      value: "/${/#ae_provider_category}/VM/Operations/StateMachines/RightSizing/${/#vm.vendor}"

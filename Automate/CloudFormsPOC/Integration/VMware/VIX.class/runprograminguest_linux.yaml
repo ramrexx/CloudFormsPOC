@@ -13,6 +13,6 @@ object:
   - guest_password:
       value: v1:{o3WJPVTn5+vX6FFWAd1Auw==}
   - guest_program:
-      value: /root/runonce.sh
+      value: "/root/runonce.sh"
   - execute:
       value: RunProgramInGuest_Linux

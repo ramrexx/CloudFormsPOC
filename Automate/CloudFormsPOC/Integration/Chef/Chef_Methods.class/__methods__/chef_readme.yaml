@@ -1,0 +1,12 @@
+---
+object_type: method
+version: 1.0
+object:
+  attributes:
+    name: chef_readme
+    display_name: README
+    description: 
+    scope: instance
+    language: ruby
+    location: inline
+  inputs: []

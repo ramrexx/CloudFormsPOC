@@ -9,6 +9,6 @@ object:
     description: 
   fields:
   - lifecycle:
-      value: /Integration/Amazon/RDS/DeleteRDSInstance
+      value: "/Integration/Amazon/RDS/DeleteRDSInstance"
   - status:
-      value: /Integration/Amazon/RDS/RDSInstanceStatus
+      value: "/Integration/Amazon/RDS/RDSInstanceStatus"

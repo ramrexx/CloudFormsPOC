@@ -9,7 +9,7 @@ object:
     description: 
   fields:
   - guest_username:
-      value: .\\Administrator
+      value: ".\\\\Administrator"
   - guest_password:
       value: v1:{N+eSIDwjCJS4xkOjAqKnog==}
   - guest_program:

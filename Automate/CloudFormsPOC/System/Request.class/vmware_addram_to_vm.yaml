@@ -9,4 +9,4 @@ object:
     description: 
   fields:
   - rel1:
-      value: /Integration/VMware/StateMachines/vSphere/AddRAM_to_VM
+      value: "/Integration/VMware/StateMachines/vSphere/AddRAM_to_VM"

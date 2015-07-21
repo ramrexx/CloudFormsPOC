@@ -9,4 +9,4 @@ object:
     description: 
   fields:
   - pre2:
-      value: /Service/Provisioning/StateMachines/Methods/OpenStack_CatalogItemInitialization_ClusterBestFit
+      value: "/Service/Provisioning/StateMachines/Methods/OpenStack_CatalogItemInitialization_ClusterBestFit"

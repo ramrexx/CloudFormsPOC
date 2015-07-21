@@ -9,4 +9,4 @@ object:
     description: 
   fields:
   - Step2:
-      value: /Integration/VMware/vCenter/ReconfigVM_Rename
+      value: "/Integration/VMware/vCenter/ReconfigVM_Rename"

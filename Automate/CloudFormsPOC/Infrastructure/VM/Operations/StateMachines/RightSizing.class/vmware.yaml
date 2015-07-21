@@ -9,12 +9,12 @@ object:
     description: 
   fields:
   - vendor:
-      value: ! '''${/#vm.vendor.downcase}'' == ''vmware'''
+      value: "'${/#vm.vendor.downcase}' == 'vmware'"
   - Step1:
-      value: /Infrastructure/VM/Operations/StateMachines/Methods/initialize_rightsizing_tags
+      value: "/Infrastructure/VM/Operations/StateMachines/Methods/initialize_rightsizing_tags"
   - Step2:
-      value: /Infrastructure/VM/Operations/StateMachines/Methods/check_vm_tags
+      value: "/Infrastructure/VM/Operations/StateMachines/Methods/check_vm_tags"
   - Step3:
-      value: /Infrastructure/VM/Operations/StateMachines/Methods/check_powered_off
+      value: "/Infrastructure/VM/Operations/StateMachines/Methods/check_powered_off"
   - Step4:
-      value: /Infrastructure/VM/Operations/StateMachines/Methods/right_size_vm
+      value: "/Infrastructure/VM/Operations/StateMachines/Methods/right_size_vm"

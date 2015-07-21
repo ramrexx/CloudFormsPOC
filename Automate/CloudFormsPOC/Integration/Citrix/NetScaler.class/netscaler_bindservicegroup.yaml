@@ -13,7 +13,7 @@ object:
   - password:
       value: v1:{2ugZrD9bJJg+abB/0Sy/8g==}
   - wsdl_uri:
-      value: /var/www/miq/netscaler.wsdl
+      value: "/var/www/miq/netscaler.wsdl"
   - servicegroupname:
       value: svc-grp
   - port:

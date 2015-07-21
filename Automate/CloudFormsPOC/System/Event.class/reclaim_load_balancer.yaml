@@ -9,4 +9,4 @@ object:
     description: 
   fields:
   - rel2:
-      value: /Integration/RedHat/StateMachines/OpenStack/ReclaimLoadBalancer
+      value: "/Integration/RedHat/StateMachines/OpenStack/ReclaimLoadBalancer"

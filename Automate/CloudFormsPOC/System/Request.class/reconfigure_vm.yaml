@@ -9,4 +9,4 @@ object:
     description: 
   fields:
   - rel1:
-      value: /CompanyXYZ/Operations/StateMachines/Reconfigure/default
+      value: "/CompanyXYZ/Operations/StateMachines/Reconfigure/default"

@@ -9,10 +9,10 @@ object:
     description: 
   fields:
   - AcquireMACAddress:
-      value: ! '#/Infrastructure/VM/Provisioning/StateMachines/Methods/GenerateMACAddress#${/#miq_provision.source.vendor}'
+      value: "#/Infrastructure/VM/Provisioning/StateMachines/Methods/GenerateMACAddress#${/#miq_provision.source.vendor}"
   - Provision:
-      value: /Infrastructure/VM/Provisioning/StateMachines/Methods/Provision
+      value: "/Infrastructure/VM/Provisioning/StateMachines/Methods/Provision"
   - CheckProvisioned:
-      value: /Infrastructure/VM/Provisioning/StateMachines/Methods/CheckProvisioned
+      value: "/Infrastructure/VM/Provisioning/StateMachines/Methods/CheckProvisioned"
   - AddVMToService:
-      value: /Infrastructure/VM/Provisioning/StateMachines/Methods/Add_VM_To_Service
+      value: "/Infrastructure/VM/Provisioning/StateMachines/Methods/Add_VM_To_Service"

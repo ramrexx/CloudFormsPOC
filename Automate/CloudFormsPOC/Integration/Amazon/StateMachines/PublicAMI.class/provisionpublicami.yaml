@@ -9,14 +9,14 @@ object:
     description: 
   fields:
   - step1:
-      value: /Integration/Amazon/EC2/TrainingClassItemInitialization
+      value: "/Integration/Amazon/EC2/TrainingClassItemInitialization"
   - step2:
-      value: /Integration/Amazon/SecurityGroup/RDPSecurityGroup
+      value: "/Integration/Amazon/SecurityGroup/RDPSecurityGroup"
   - step3:
-      value: /Integration/Amazon/KeyPair/CreateAWSKeypair
+      value: "/Integration/Amazon/KeyPair/CreateAWSKeypair"
   - step4:
-      value: /Integration/Amazon/EC2/DeployPublicAMI
+      value: "/Integration/Amazon/EC2/DeployPublicAMI"
   - step5:
-      value: /Integration/Amazon/EC2/PublicAMIInstanceStatus
+      value: "/Integration/Amazon/EC2/PublicAMIInstanceStatus"
   - step6:
-      value: /Integration/Amazon/EC2/PublicAMIAssociateWithService
+      value: "/Integration/Amazon/EC2/PublicAMIAssociateWithService"

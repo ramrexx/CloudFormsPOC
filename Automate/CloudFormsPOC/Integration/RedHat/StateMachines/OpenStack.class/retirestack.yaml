@@ -9,6 +9,6 @@ object:
     description: 
   fields:
   - step2:
-      value: /Integration/RedHat/OpenStack/Heat/deleteStack
+      value: "/Integration/RedHat/OpenStack/Heat/deleteStack"
   - step3:
-      value: /Integration/RedHat/OpenStack/Heat/deleteStackStatus
+      value: "/Integration/RedHat/OpenStack/Heat/deleteStackStatus"

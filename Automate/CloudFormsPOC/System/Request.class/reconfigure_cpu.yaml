@@ -9,4 +9,4 @@ object:
     description: 
   fields:
   - rel2:
-      value: /Integration/VCLI/Reconfigure_CPU
+      value: "/Integration/VCLI/Reconfigure_CPU"

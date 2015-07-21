@@ -9,6 +9,6 @@ object:
     description: 
   fields:
   - rel2:
-      value: /Integration/VMware/VIX/RunProgramInGuest_Linux
+      value: "/Integration/VMware/VIX/RunProgramInGuest_Linux"
   - rel3:
-      value: /Integration/VMware/VIX/RunProgramInGuest_Windows
+      value: "/Integration/VMware/VIX/RunProgramInGuest_Windows"

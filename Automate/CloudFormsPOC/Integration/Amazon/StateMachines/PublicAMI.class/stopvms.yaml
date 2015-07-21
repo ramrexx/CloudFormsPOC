@@ -9,4 +9,4 @@ object:
     description: 
   fields:
   - step1:
-      value: /Integration/Amazon/EC2/PowerOffVMs
+      value: "/Integration/Amazon/EC2/PowerOffVMs"

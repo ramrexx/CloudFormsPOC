@@ -9,4 +9,4 @@ object:
     description: 
   fields:
   - step2:
-      value: /Integration/RedHat/OpenStack/Cinder/attachVolume
+      value: "/Integration/RedHat/OpenStack/Cinder/attachVolume"

@@ -9,14 +9,14 @@ object:
     description: 
   fields:
   - RegisterDNS:
-      value: /Integration/RedHat/OpenStack/Cinder/Create_OpenStack_Volumes
+      value: "/Integration/RedHat/OpenStack/Cinder/Create_OpenStack_Volumes"
   - RegisterCMDB:
-      value: /Integration/RedHat/OpenStack/Cinder/Check_Create_OpenStack_Volumes
+      value: "/Integration/RedHat/OpenStack/Cinder/Check_Create_OpenStack_Volumes"
   - Provision:
-      value: /Cloud/VM/Provisioning/StateMachines/Methods/Provision
+      value: "/Cloud/VM/Provisioning/StateMachines/Methods/Provision"
   - CheckProvisioned:
-      value: /Cloud/VM/Provisioning/StateMachines/Methods/CheckProvisioned
+      value: "/Cloud/VM/Provisioning/StateMachines/Methods/CheckProvisioned"
   - PostProvision:
-      value: /Integration/RedHat/OpenStack/Cinder/Attach_Openstack_Volumes
+      value: "/Integration/RedHat/OpenStack/Cinder/Attach_Openstack_Volumes"
   - AddVMToService:
-      value: /Cloud/VM/Provisioning/StateMachines/Methods/Add_VM_To_Service
+      value: "/Cloud/VM/Provisioning/StateMachines/Methods/Add_VM_To_Service"

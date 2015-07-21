@@ -9,4 +9,4 @@ object:
     description: 
   fields:
   - step2:
-      value: /Integration/RedHat/OpenStack/LoadBalancer/CreateLoadBalancer
+      value: "/Integration/RedHat/OpenStack/LoadBalancer/CreateLoadBalancer"

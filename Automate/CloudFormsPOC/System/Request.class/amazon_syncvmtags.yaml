@@ -9,4 +9,4 @@ object:
     description: 
   fields:
   - rel2:
-      value: /Integration/Amazon/EC2/SyncVMTags
+      value: "/Integration/Amazon/EC2/SyncVMTags"

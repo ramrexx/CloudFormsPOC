@@ -60,7 +60,7 @@ object:
       owner: 
       default_value: 
       substitute: true
-      message: ! '*'
+      message: "*"
       visibility: 
       collect: 
       scope: 
@@ -84,7 +84,7 @@ object:
       visibility: 
       collect: 
       scope: 
-      description: ! 'true / false (Default: true)'
+      description: 'true / false (Default: true)'
       condition: 
       on_entry: 
       on_exit: 
@@ -104,7 +104,7 @@ object:
       visibility: 
       collect: 
       scope: 
-      description: ! 'description / value / none (Default: description)'
+      description: 'description / value / none (Default: description)'
       condition: 
       on_entry: 
       on_exit: 
@@ -124,7 +124,7 @@ object:
       visibility: 
       collect: 
       scope: 
-      description: ! 'string / integer (Default: string)'
+      description: 'string / integer (Default: string)'
       condition: 
       on_entry: 
       on_exit: 
@@ -144,7 +144,7 @@ object:
       visibility: 
       collect: 
       scope: 
-      description: ! 'ascending / descending (Default: ascending)'
+      description: 'ascending / descending (Default: ascending)'
       condition: 
       on_entry: 
       on_exit: 

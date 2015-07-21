@@ -9,6 +9,6 @@ object:
     description: 
   fields:
   - step1:
-      value: /CloudFormsPOC/Integration/RedHat/OpenStack/Glance/UploadImage
+      value: "/CloudFormsPOC/Integration/RedHat/OpenStack/Glance/UploadImage"
   - step2:
-      value: /CloudFormsPOC/Integration/RedHat/OpenStack/Glance/CheckImageUploaded
+      value: "/CloudFormsPOC/Integration/RedHat/OpenStack/Glance/CheckImageUploaded"

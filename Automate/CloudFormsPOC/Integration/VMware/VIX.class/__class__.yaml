@@ -18,7 +18,7 @@ object:
       datatype: string
       priority: 1
       owner: 
-      default_value: /usr/bin/vmrun
+      default_value: "/usr/bin/vmrun"
       substitute: true
       message: create
       visibility: 

@@ -9,4 +9,4 @@ object:
     description: 
   fields:
   - rel2:
-      value: /CompanyXYZ/Integration/VMware/RBVMOMI/UnMount_ISO
+      value: "/CompanyXYZ/Integration/VMware/RBVMOMI/UnMount_ISO"

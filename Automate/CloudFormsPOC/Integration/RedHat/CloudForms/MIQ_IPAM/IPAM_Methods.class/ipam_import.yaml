@@ -9,6 +9,6 @@ object:
     description: 
   fields:
   - import_file:
-      value: /var/www/miq/ipamdb.csv
+      value: "/var/www/miq/ipamdb.csv"
   - execute:
       value: IPAM_Import

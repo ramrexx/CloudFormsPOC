@@ -9,4 +9,4 @@ object:
     description: 
   fields:
   - rel1:
-      value: /Integration/RedHat/OpenStack/Nova/AllocateFloatingIP
+      value: "/Integration/RedHat/OpenStack/Nova/AllocateFloatingIP"

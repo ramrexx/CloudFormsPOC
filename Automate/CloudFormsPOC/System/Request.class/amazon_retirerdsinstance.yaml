@@ -9,4 +9,4 @@ object:
     description: 
   fields:
   - rel1:
-      value: /Integration/Amazon/StateMachines/RDS/DeleteRDSInstance
+      value: "/Integration/Amazon/StateMachines/RDS/DeleteRDSInstance"

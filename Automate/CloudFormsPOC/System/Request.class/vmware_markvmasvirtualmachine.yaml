@@ -9,4 +9,4 @@ object:
     description: 
   fields:
   - rel2:
-      value: /Integration/VMware/StateMachines/vSphere/MarkVMAsVirtualMachine
+      value: "/Integration/VMware/StateMachines/vSphere/MarkVMAsVirtualMachine"

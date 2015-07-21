@@ -9,4 +9,4 @@ object:
     description: 
   fields:
   - step1:
-      value: /Integration/Chef/Chef_Methods/Chef_Bootstrap
+      value: "/Integration/Chef/Chef_Methods/Chef_Bootstrap"

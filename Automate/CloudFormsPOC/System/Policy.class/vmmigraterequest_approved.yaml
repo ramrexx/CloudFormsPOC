@@ -9,4 +9,4 @@ object:
     description: 
   fields:
   - rel5:
-      value: /Infrastructure/VM/Operations/Email/VmMigrateRequest_Approved
+      value: "/Infrastructure/VM/Operations/Email/VmMigrateRequest_Approved"

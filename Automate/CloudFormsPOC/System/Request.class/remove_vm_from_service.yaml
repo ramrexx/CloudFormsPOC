@@ -9,4 +9,4 @@ object:
     description: 
   fields:
   - rel2:
-      value: /Service/Provisioning/StateMachines/Methods/Remove_VM_From_Service
+      value: "/Service/Provisioning/StateMachines/Methods/Remove_VM_From_Service"

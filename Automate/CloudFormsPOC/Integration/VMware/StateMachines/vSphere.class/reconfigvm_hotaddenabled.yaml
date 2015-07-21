@@ -9,12 +9,12 @@ object:
     description: 
   fields:
   - Step1:
-      value: /Integration/VMware/vCenter/Check_PoweredOff
+      value: "/Integration/VMware/vCenter/Check_PoweredOff"
   - Step2:
-      value: /Integration/VMware/vCenter/ReconfigVM_cpuHotAddEnabled
+      value: "/Integration/VMware/vCenter/ReconfigVM_cpuHotAddEnabled"
   - Step3:
-      value: /Integration/VMware/vCenter/Check_ReconfigVM_cpuHotAddEnabled
+      value: "/Integration/VMware/vCenter/Check_ReconfigVM_cpuHotAddEnabled"
   - Step4:
-      value: /Integration/VMware/vCenter/ReconfigVM_memoryHotAddEnabled
+      value: "/Integration/VMware/vCenter/ReconfigVM_memoryHotAddEnabled"
   - step5:
-      value: /Integration/VMware/vCenter/Check_ReconfigVM_memoryHotAddEnabled
+      value: "/Integration/VMware/vCenter/Check_ReconfigVM_memoryHotAddEnabled"

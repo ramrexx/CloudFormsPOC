@@ -9,12 +9,12 @@ object:
     description: 
   fields:
   - UnregisterFromProvider:
-      value: ! '#/Cloud/VM/Retirement/StateMachines/Methods/UnregisterFromProvider'
+      value: "#/Cloud/VM/Retirement/StateMachines/Methods/UnregisterFromProvider"
   - DeleteFromProvider:
-      value: /Cloud/VM/Retirement/StateMachines/Methods/DeleteFromProvider
+      value: "/Cloud/VM/Retirement/StateMachines/Methods/DeleteFromProvider"
   - CheckUnregisteredFromProvider:
-      value: /Cloud/VM/Retirement/StateMachines/Methods/CheckUnregisteredFromProvider
+      value: "/Cloud/VM/Retirement/StateMachines/Methods/CheckUnregisteredFromProvider"
   - PostDeleteFromProvider:
-      value: /Integration/RedHat/OpenStack/Cinder/Delete_Openstack_Volumes
+      value: "/Integration/RedHat/OpenStack/Cinder/Delete_Openstack_Volumes"
   - DeleteFromVMDB:
-      value: /Cloud/VM/Retirement/StateMachines/Methods/DeleteFromVMDB
+      value: "/Cloud/VM/Retirement/StateMachines/Methods/DeleteFromVMDB"

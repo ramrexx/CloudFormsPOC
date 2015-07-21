@@ -9,4 +9,4 @@ object:
     description: 
   fields:
   - step2:
-      value: /Integration/RedHat/OpenStack/Keystone/createTenant
+      value: "/Integration/RedHat/OpenStack/Keystone/createTenant"

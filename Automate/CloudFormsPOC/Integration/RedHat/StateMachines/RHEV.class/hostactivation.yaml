@@ -9,8 +9,8 @@ object:
     description: 
   fields:
   - Step2:
-      value: /Integration/RedHat/RHEV/HostActivation
+      value: "/Integration/RedHat/RHEV/HostActivation"
   - Step3:
-      value: /Integration/RedHat/RHEV/Check_ExitMaintenanceMode
+      value: "/Integration/RedHat/RHEV/Check_ExitMaintenanceMode"
   - Step4:
-      value: /Integration/RedHat/RHEV/EmailStatus
+      value: "/Integration/RedHat/RHEV/EmailStatus"

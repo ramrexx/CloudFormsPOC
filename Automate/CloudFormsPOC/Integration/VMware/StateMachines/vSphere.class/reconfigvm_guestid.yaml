@@ -9,6 +9,6 @@ object:
     description: 
   fields:
   - Step2:
-      value: /Integration/VMware/vCenter/ReconfigVM_GuestId
+      value: "/Integration/VMware/vCenter/ReconfigVM_GuestId"
   - Step3:
-      value: /Integration/VMware/vCenter/Check_ReconfigVM_GuestId
+      value: "/Integration/VMware/vCenter/Check_ReconfigVM_GuestId"

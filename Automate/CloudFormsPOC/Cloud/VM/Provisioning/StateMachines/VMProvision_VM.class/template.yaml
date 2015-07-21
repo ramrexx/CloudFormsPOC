@@ -9,10 +9,10 @@ object:
     description: 
   fields:
   - Provision:
-      value: /Cloud/VM/Provisioning/StateMachines/Methods/Provision
+      value: "/Cloud/VM/Provisioning/StateMachines/Methods/Provision"
   - CheckProvisioned:
-      value: /Cloud/VM/Provisioning/StateMachines/Methods/CheckProvisioned
+      value: "/Cloud/VM/Provisioning/StateMachines/Methods/CheckProvisioned"
   - PostProvision2:
-      value: /Integration/Amazon/EC2/SyncVMTags
+      value: "/Integration/Amazon/EC2/SyncVMTags"
   - AddVMToService:
-      value: /Cloud/VM/Provisioning/StateMachines/Methods/Add_VM_To_Service
+      value: "/Cloud/VM/Provisioning/StateMachines/Methods/Add_VM_To_Service"

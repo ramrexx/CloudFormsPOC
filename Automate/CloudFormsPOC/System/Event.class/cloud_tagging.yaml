@@ -9,4 +9,4 @@ object:
     description: 
   fields:
   - rel2:
-      value: /Integration/RedHat/OpenStack/Tenants/CreateCloudTenantTags
+      value: "/Integration/RedHat/OpenStack/Tenants/CreateCloudTenantTags"

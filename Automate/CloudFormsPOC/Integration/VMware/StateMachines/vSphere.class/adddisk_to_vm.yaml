@@ -9,4 +9,4 @@ object:
     description: 
   fields:
   - Step2:
-      value: /Integration/VMware/vCenter/AddDisk_to_VM
+      value: "/Integration/VMware/vCenter/AddDisk_to_VM"

@@ -9,12 +9,12 @@ object:
     description: 
   fields:
   - step2:
-      value: /Integration/RedHat/OpenStack/Cinder/createVolume
+      value: "/Integration/RedHat/OpenStack/Cinder/createVolume"
   - step3:
-      value: /Integration/RedHat/OpenStack/Cinder/check_createVolume
+      value: "/Integration/RedHat/OpenStack/Cinder/check_createVolume"
   - step4:
-      value: /Integration/RedHat/OpenStack/Nova/createInstance
+      value: "/Integration/RedHat/OpenStack/Nova/createInstance"
   - step5:
-      value: /Integration/RedHat/OpenStack/Nova/check_createInstance
+      value: "/Integration/RedHat/OpenStack/Nova/check_createInstance"
   - step6:
-      value: /Integration/RedHat/StateMachines/Methods/post_createInstance
+      value: "/Integration/RedHat/StateMachines/Methods/post_createInstance"

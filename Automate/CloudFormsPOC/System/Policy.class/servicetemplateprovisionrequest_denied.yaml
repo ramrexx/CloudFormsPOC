@@ -9,4 +9,4 @@ object:
     description: 
   fields:
   - rel6:
-      value: /${/#miq_request.resource.ci_type}/Provisioning/Email/ServiceTemplateProvisionRequest_denied
+      value: "/${/#miq_request.resource.ci_type}/Provisioning/Email/ServiceTemplateProvisionRequest_denied"
