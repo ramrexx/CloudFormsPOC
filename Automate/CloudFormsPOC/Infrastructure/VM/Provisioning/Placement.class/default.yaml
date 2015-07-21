@@ -9,6 +9,8 @@ object:
     description: 
   fields:
   - redhat:
-      value: redhat_best_placement_with_scope
+      value: redhat_best_fit_cluster
   - vmware:
-      value: vmware_best_fit_with_scope
+      value: vmware_best_fit_least_utilized
+  - microsoft:
+      value: microsoft_best_fit_least_utilized
