@@ -8,15 +8,16 @@ Previous Appliance Versions
 
 Official Documentation
 ====================================
-Red Hat CloudForms Documentation: https://access.redhat.com/documentation/en-US/CloudForms/
-ManageIQ Documentation: http://manageiq.org/documentation/
+Red Hat: https://access.redhat.com/documentation/en-US/CloudForms
+
+ManageIQ: http://manageiq.org/documentation/
 
 Installation instructions
 ====================================
 https://github.com/ramrexx/CloudFormsPOC/wiki
 
 Automate 
-========================
+====================================
 https://github.com/ramrexx/CloudFormsPOC/wiki#automate-importing-the-cloudformspoc-domain
 
 Contains proven workflow orchestration examples for:
