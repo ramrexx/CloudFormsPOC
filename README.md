@@ -15,7 +15,6 @@ Installation instructions
 ====================================
 https://github.com/ramrexx/CloudFormsPOC/wiki
 
-
 Automate 
 ========================
 https://github.com/ramrexx/CloudFormsPOC/wiki#automate-importing-the-cloudformspoc-domain
