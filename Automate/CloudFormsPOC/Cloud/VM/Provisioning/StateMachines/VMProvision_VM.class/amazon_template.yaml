@@ -15,4 +15,4 @@ object:
   - PostProvision2:
       value: "/Integration/Amazon/EC2/SyncVMTags"
   - AddVMToService:
-      value: "/Cloud/VM/Provisioning/StateMachines/Methods/Add_VM_To_Service"
+      value: "/System/CommonMethods/StateMachineMethods/Add_VM_to_Service"

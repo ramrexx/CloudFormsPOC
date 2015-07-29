@@ -3,43 +3,31 @@
 # Author: Kevin Morey <kmorey@redhat.com>
 # License: GPL v3
 #
-# Description: List Amazon Flavors
+# Description: List Amazon Flavors based on option_?_guid or
 #
-begin
-  def log(level, msg, update_message=false)
-    $evm.log(level, "#{msg}")
+def get_provider(provider_id=nil)
+  $evm.root.attributes.detect { |k,v| provider_id = v if k.end_with?('provider_id') } rescue nil
+  provider = $evm.vmdb(:ems_amazon).find_by_id(provider_id)
+  $evm.log(:info, "Found provider: #{provider.name} via provider_id: #{provider.id}") if provider
+
+  # set to true to default to the first provider
+  use_default = false
+  unless provider
+    # default the provider to first provider
+    provider = $evm.vmdb(:ems_amazon).first if use_default
+    $evm.log(:info, "Found amazon: #{provider.name} via default method") if provider && use_default
   end
+  provider ? (return provider) : (return nil)
+end
 
-  def dump_root()
-    $evm.log(:info, "Begin $evm.root.attributes")
-    $evm.root.attributes.sort.each { |k, v| log(:info, "\t Attribute: #{k} = #{v}")}
-    $evm.log(:info, "End $evm.root.attributes")
-    $evm.log(:info, "")
-  end
-
-  def get_provider(provider_id=nil)
-    $evm.root.attributes.detect { |k,v| provider_id = v if k.end_with?('provider_id') } rescue nil
-    provider = $evm.vmdb(:ems_amazon).find_by_id(provider_id)
-    log(:info, "Found provider: #{provider.name} via provider_id: #{provider.id}") if provider
-
-    # set to true to default to the fist amazon provider
-    use_default = false
-    unless provider
-      # default the provider to first openstack provider
-      provider = $evm.vmdb(:ems_amazon).first if use_default
-      log(:info, "Found amazon: #{provider.name} via default method") if provider && use_default
-    end
-    provider ? (return provider) : (return nil)
-  end
-
-  def query_catalogitem(option_key)
-    # use this method to query a catalogitem 
-    # note that this only works for items not bundles since we do not know which item within a bundle(s) to query from
-    option_value = nil
-    service_template = $evm.root['service_template']
-    unless service_template.nil?
+def query_catalogitem(option_key, option_value=nil)
+  # use this method to query a catalogitem
+  # note that this only works for items not bundles since we do not know which item within a bundle(s) to query from
+  service_template = $evm.root['service_template']
+  unless service_template.nil?
+    begin
       if service_template.service_type == 'atomic'
-        log(:info, "Catalog item: #{service_template.name}")
+        $evm.log(:info, "Catalog item: #{service_template.name}")
         service_template.service_resources.each do |catalog_item|
           catalog_item_resource = catalog_item.resource
           if catalog_item_resource.respond_to?('get_option')
@@ -47,62 +35,56 @@ begin
           else
             option_value = catalog_item_resource[option_key] rescue nil
           end
-          log(:info, "Found {#{option_key} => #{option_value}}") if option_value
+          $evm.log(:info, "Found {#{option_key} => #{option_value}}") if option_value
         end
       else
-        log(:info, "Catalog bundle: #{service_template.name} found, skipping query")
+        $evm.log(:info, "Catalog bundle: #{service_template.name} found, skipping query")
       end
-    end
-    option_value ? (return option_value) : (return nil)
-  end
-
-  ###############
-  # Start Method
-  ###############
-  log(:info, "CloudForms Automate Method Started", true)
-  dump_root()
-
-  # check the catalogitem for a provider id
-  provider_id = query_catalogitem(:src_ems_id)
-  log(:info, "Found provider_id: #{provider_id}") if provider_id
-
-  dialog_hash = {}
-
-  # see if provider is already set in root
-  provider = get_provider(provider_id)
-
-  if provider
-    provider.flavors.each do |fl|
-      next unless fl.ext_management_system || fl.enabled
-      dialog_hash[fl.id] = "#{fl.name} on #{fl.ext_management_system.name}"
-    end
-  else
-    # no provider so list everything
-    $evm.vmdb(:flavor_amazon).all.each do |fl|
-      next unless fl.ext_management_system || fl.enabled
-      dialog_hash[fl.id] = "#{fl.name} on #{fl.ext_management_system.name}"
+    rescue
+      return nil
     end
   end
-
-  if dialog_hash.blank?
-    log(:info, "No Flavors found")
-    dialog_hash[nil] = "< No Flavors found, Contact Administrator >"
-  else
-    #$evm.object['default_value'] = dialog_hash.first
-    dialog_hash[nil] = '< choose a flavor >'
-  end
-
-  $evm.object["values"]     = dialog_hash
-  log(:info, "$evm.object['values']: #{$evm.object['values'].inspect}")
-
-  ###############
-  # Exit Method
-  ###############
-  log(:info, "CloudForms Automate Method Ended", true)
-  exit MIQ_OK
-
-  # Set Ruby rescue behavior
-rescue => err
-  log(:error, "[#{err}]\n#{err.backtrace.join("\n")}")
-  exit MIQ_ABORT
+  option_value ? (return option_value) : (return nil)
 end
+
+def get_provider_from_template(template_guid=nil)
+  $evm.root.attributes.detect { |k,v| template_guid = v if k.end_with?('_guid') } rescue nil
+  template = $evm.vmdb(:template_amazon).find_by_guid(template_guid)
+  return nil unless template
+  provider = $evm.vmdb(:ems_amazon).find_by_id(template.ems_id)
+  $evm.log(:info, "Found provider: #{provider.name} via template.ems_id: #{template.ems_id}") if provider
+  provider ? (return provider) : (return nil)
+end
+
+def flavor_eligible?(flavor)
+  return false unless flavor.ext_management_system || flavor.enabled
+  true
+end
+
+dialog_hash = {}
+
+# see if provider is already set in root
+provider = get_provider(query_catalogitem(:src_ems_id)) || get_provider_from_template()
+
+if provider
+  provider.flavors.each do |flavor|
+    next unless flavor_eligible?(flavor)
+    dialog_hash[flavor.id] = "#{flavor.name} on #{flavor.ext_management_system.name}"
+  end
+else
+  # no provider so list everything
+  $evm.vmdb(:flavor_amazon).all.each do |flavor|
+    next unless flavor_eligible?(flavor)
+    dialog_hash[flavor.id] = "#{flavor.name} on #{flavor.ext_management_system.name}"
+  end
+end
+
+if dialog_hash.blank?
+  dialog_hash[''] = "< No Flavors found, Contact Administrator >"
+else
+  #$evm.object['default_value'] = dialog_hash.first
+  dialog_hash[''] = '< choose a flavor >'
+end
+
+$evm.object["values"]     = dialog_hash
+$evm.log(:info, "$evm.object['values']: #{$evm.object['values'].inspect}")

@@ -13,4 +13,4 @@ object:
   - data_type:
       value: integer
   - method1:
-      value: List_Disk_Numbers
+      value: list_disk_numbers

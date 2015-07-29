@@ -16,7 +16,8 @@ tags  = {}
 
 # Get Tags that are in scope
 # Default is to look for Hosts and Datastores tagged with prov_scope = All or match to Group
-tags["prov_scope"] = ["all", user.normalized_ldap_group]
+normalized_ldap_group = user.normalized_ldap_group.gsub(/\W/,'_')
+tags["prov_scope"] = ["all", normalized_ldap_group]
 
 $evm.log("info", "VM=<#{vm.name}>, Space Required=<#{vm.provisioned_storage}>, group=<#{user.normalized_ldap_group}>")
 
@@ -35,10 +36,10 @@ $evm.log("info", "storage_max_vms:<#{storage_max_vms}> storage_max_pct_used:<#{s
 
 #############################
 # Set host sort order here
-# options: :active_provisioning_memory, :active_provisioning_cpu, :current_memory_usage,
+# options: :active_provioning_memory, :active_provioning_cpu, :current_memory_usage,
 #          :current_memory_headroom, :current_cpu_usage, :random
 #############################
-HOST_SORT_ORDER = [:active_provisioning_memory, :current_memory_headroom, :random]
+HOST_SORT_ORDER = [:active_provioning_memory, :current_memory_headroom, :random]
 
 #############################
 # Sort hosts
@@ -51,9 +52,9 @@ ems.hosts.each do |h|
   HOST_SORT_ORDER.each do |type|
     sd[0] << case type
              # Multiply values by (-1) to cause larger values to sort first
-             when :active_provisioning_memory
+             when :active_provioning_memory
                active_prov_data[:active][:memory_by_host_id][host_id]
-             when :active_provisioning_cpu
+             when :active_provioning_cpu
                active_prov_data[:active][:cpu_by_host_id][host_id]
              when :current_memory_headroom
                h.current_memory_headroom * -1
@@ -175,7 +176,7 @@ hosts.each do |h|
                  when :free_space_percentage
                    active_pct_of_storage  = ((active_prov_data[:active][:storage_by_id][storage_id]) / s.total_space.to_f) * 100
                    s.v_used_space_percent_of_total + active_pct_of_storage
-                 when :active_provisioning_vms
+                 when :active_provioning_vms
                    active_prov_data[:active][:vms_by_storage_id][storage_id].length
                  when :random
                    rand(1000)

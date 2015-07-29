@@ -11,4 +11,4 @@ object:
   - required:
       value: 'false'
   - method1:
-      value: List_Datastores
+      value: list_datastores

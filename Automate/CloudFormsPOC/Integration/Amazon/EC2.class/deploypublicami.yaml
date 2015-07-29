@@ -9,8 +9,8 @@ object:
     description: 
   fields:
   - us_east_1:
-      value: ami-c49c0dac
+      value: ami-5b9e6b30
   - us_west_1:
-      value: ami-45332200
+      value: ami-876983c3
   - method1:
       value: deployPublicAMI

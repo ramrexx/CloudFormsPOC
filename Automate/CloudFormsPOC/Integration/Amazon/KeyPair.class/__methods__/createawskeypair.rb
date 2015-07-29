@@ -37,9 +37,9 @@ begin
   def get_mgt_system()
     aws_mgt = nil
     if @task
-      if @task.get_option(:mid)
-        aws_mgt = $evm.vmdb(:ems_amazon).find_by_id(@task.get_option(:mid))
-        log(:info, "Got AWS Mgt System from @task.get_option(:mid)")
+      if @task.get_option(:provider_id)
+        aws_mgt = $evm.vmdb(:ems_amazon).find_by_id(@task.get_option(:provider_id))
+        log(:info, "Got AWS Mgt System from @task.get_option(:provider_id)")
       end
     elsif $evm.root['vm']
       vm = $evm.root['vm']

@@ -3,7 +3,7 @@ object_type: instance
 version: 1.0
 object:
   attributes:
-    display_name: Provision VM from Template
+    display_name: Provision RHEV VM from Template
     name: redhat_template
     inherits: 
     description: 
@@ -14,5 +14,3 @@ object:
       value: "/Infrastructure/VM/Provisioning/StateMachines/Methods/Provision"
   - CheckProvisioned:
       value: "/Infrastructure/VM/Provisioning/StateMachines/Methods/CheckProvisioned"
-  - AddVMToService:
-      value: "/Infrastructure/VM/Provisioning/StateMachines/Methods/Add_VM_To_Service"

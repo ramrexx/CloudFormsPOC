@@ -3,86 +3,110 @@
 # Author: Kevin Morey <kmorey@redhat.com>
 # License: GPL v3
 #
-# Description: List Amazon Template ids
+# Description: Build list of Amazon tempalates
 #
-begin
-  def log(level, msg, update_message=false)
-    $evm.log(level, "#{msg}")
+def get_provider(provider_id=nil)
+  $evm.root.attributes.detect { |k,v| provider_id = v if k.end_with?('provider_id') } rescue nil
+  provider = $evm.vmdb(:ems_amazon).find_by_id(provider_id)
+  $evm.log(:info, "Found provider: #{provider.name} via provider_id: #{provider.id}") if provider
+
+  # set to true to default to the fist amazon provider
+  use_default = false
+  unless provider
+    # default the provider to first openstack provider
+    provider = $evm.vmdb(:ems_amazon).first if use_default
+    $evm.log(:info, "Found amazon: #{provider.name} via default method") if provider && use_default
   end
-
-  def dump_root()
-    $evm.log(:info, "Begin $evm.root.attributes")
-    $evm.root.attributes.sort.each { |k, v| log(:info, "\t Attribute: #{k} = #{v}")}
-    $evm.log(:info, "End $evm.root.attributes")
-    $evm.log(:info, "")
-  end
-
-  def get_tenant(tenant_category, tenant_id=nil)
-    # get the tenant tag from the group
-    # get the tenant name from the group tenant tag
-    group = $evm.root['user'].current_group
-    tenant = group.tags(tenant_category).first rescue nil
-    log(:info, "Found tenant tag: #{tenant} via group: #{group.description}") if tenant
-    tenant ? (return tenant) : (return nil)
-  end
-
-  ###############
-  # Start Method
-  ###############
-  log(:info, "CloudForms Automate Method Started", true)
-  dump_root()
-
-  prov_category = 'prov_scope'
-  prov_tag = 'all'
-
-  tenant_category = $evm.object['tenant_category'] || 'tenant'
-  tenant = get_tenant(tenant_category)
-
-  dialog_hash = {}
-
-  if tenant
-    # tenant is present so we can filter templates by tag
-    $evm.vmdb(:template_amazon).all.each do |t|
-      log(:info, "Looking at template: #{t.name} guid: #{t.guid} ems_ref: #{t.ems_ref}")
-      next if ! t.ext_management_system || t.archived
-      if t.tagged_with?(tenant_category, tenant)
-        dialog_hash[t.guid] = "#{t.name} on #{t.ext_management_system.name}"
-      end
-    end
-  else
-    # This means that we are going to leverage prov_category
-    $evm.vmdb(:template_amazon).all.each do |t|
-      log(:info, "Looking at template: #{t.name} guid: #{t.guid} ems_ref: #{t.ems_ref}")
-      next if ! t.ext_management_system || t.archived
-      if t.tagged_with?(prov_category, prov_tag)
-        dialog_hash[t.guid] = "#{t.name} on #{t.ext_management_system.name}"
-      end
-    end
-  end
-
-  if dialog_hash.blank?
-    if tenant
-      log(:info, "User: #{$evm.root['user'].name} with Tenant tag: #{tenant} has no access to Amazon Templates")
-      dialog_hash[nil] = "< No Templates Found for Tenant tag: #{tenant}, Contact Administrator >"
-    else
-      log(:info, "User: #{$evm.root['user'].name} with #{prov_category} tag: #{prov_tag} has no access to Amazon Templates")
-      dialog_hash[nil] = "< No Templates Found for #{prov_category} tag: #{prov_tag}, Contact Administrator >"
-    end
-  else
-    #$evm.object['default_value'] = dialog_hash.first if dialog_hash.count == 1
-    dialog_hash[nil] = '< choose a template >'
-  end
-  $evm.object['values'] = dialog_hash
-  log(:info, "$evm.object['values']: #{$evm.object['values'].inspect}")
-
-  ###############
-  # Exit Method
-  ###############
-  log(:info, "CloudForms Automate Method Ended", true)
-  exit MIQ_OK
-
-  # Set Ruby rescue behavior
-rescue => err
-  log(:error, "[#{err}]\n#{err.backtrace.join("\n")}")
-  exit MIQ_ABORT
+  provider ? (return provider) : (return nil)
 end
+
+def get_provider_from_template(template_guid=nil)
+  $evm.root.attributes.detect { |k,v| template_guid = v if k.end_with?('_guid') } rescue nil
+  template = $evm.vmdb(:template_amazon).find_by_guid(template_guid)
+  return nil unless template
+  provider = $evm.vmdb(:ems_amazon).find_by_id(template.ems_id)
+  $evm.log(:info, "Found provider: #{provider.name} via template.ems_id: #{template.ems_id}") if provider
+  provider ? (return provider) : (return nil)
+end
+
+def query_catalogitem(option_key, option_value=nil)
+  # use this method to query a catalogitem
+  # note that this only works for items not bundles since we do not know which item within a bundle(s) to query from
+  service_template = $evm.root['service_template']
+  unless service_template.nil?
+    begin
+      if service_template.service_type == 'atomic'
+        $evm.log(:info, "Catalog item: #{service_template.name}")
+        service_template.service_resources.each do |catalog_item|
+          catalog_item_resource = catalog_item.resource
+          if catalog_item_resource.respond_to?('get_option')
+            option_value = catalog_item_resource.get_option(option_key)
+          else
+            option_value = catalog_item_resource[option_key] rescue nil
+          end
+          $evm.log(:info, "Found {#{option_key} => #{option_value}}") if option_value
+        end
+      else
+        $evm.log(:info, "Catalog bundle: #{service_template.name} found, skipping query")
+      end
+    rescue
+      return nil
+    end
+  end
+  option_value ? (return option_value) : (return nil)
+end
+
+def get_user
+  user_search = $evm.root['dialog_userid'] || $evm.root['dialog_evm_owner_id']
+  user = $evm.vmdb('user').find_by_id(user_search) ||
+    $evm.vmdb('user').find_by_userid(user_search) ||
+    $evm.root['user']
+  user
+end
+
+def get_current_group_rbac_array(user, rbac_array = [])
+  unless user.current_group.filters.blank?
+    user.current_group.filters['managed'].flatten.each do |filter|
+      next unless /(?<category>\w*)\/(?<tag>\w*)$/i =~ filter
+      rbac_array << {category=>tag}
+    end
+  end
+  $evm.log(:info, "rbac filters: #{rbac_array}")
+  rbac_array
+end
+
+def template_eligible?(rbac_array, template, provider_id=nil)
+  return false if template.archived || template.orphaned
+  if provider_id
+    return false unless template.ems_id == provider_id
+  end
+  rbac_array.each do |rbac_hash|
+    rbac_hash.each {|category, tag| return false unless template.tagged_with?(category, tag)}
+  end
+  true
+end
+
+
+$evm.root.attributes.sort.each { |k, v| $evm.log(:info, "\t Attribute: #{k} = #{v}")}
+user = get_user
+rbac_array = get_current_group_rbac_array(user)
+
+dialog_hash = {}
+
+provider = get_provider(query_catalogitem(:src_ems_id)) || get_provider_from_template()
+provider ? (provider_id = provider.id) : (provider_id = nil)
+
+$evm.vmdb(:template_amazon).all.each do |template|
+  if template_eligible?(rbac_array, template, provider_id)
+    dialog_hash[template[:guid]] = "#{template.name} on #{template.ext_management_system.name}"
+  end
+end
+
+if dialog_hash.blank?
+  dialog_hash[''] = "< No Templates found. Contact Administrator >"
+else
+  dialog_hash[''] = '< choose a template >'
+end
+
+$evm.object["values"]     = dialog_hash
+$evm.log(:info, "$evm.object['values']: #{$evm.object['values'].inspect}")

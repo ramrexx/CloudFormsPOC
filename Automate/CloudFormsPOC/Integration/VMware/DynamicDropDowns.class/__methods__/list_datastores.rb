@@ -1,4 +1,4 @@
-# List_Datastores.rb
+# list_datastores.rb
 #
 # Description: List the datastores associated with a provider
 #

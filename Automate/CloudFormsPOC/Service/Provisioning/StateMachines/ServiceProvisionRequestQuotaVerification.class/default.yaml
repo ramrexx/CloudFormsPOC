@@ -10,3 +10,5 @@ object:
   fields:
   - manage_quotas_by_group:
       value: 'true'
+  - ValidateQuotas:
+      on_exit: service_request_create_quota_tags

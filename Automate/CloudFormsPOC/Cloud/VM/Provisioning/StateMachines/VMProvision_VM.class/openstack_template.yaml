@@ -19,4 +19,4 @@ object:
   - PostProvision:
       value: "/Integration/RedHat/OpenStack/Cinder/Attach_Openstack_Volumes"
   - AddVMToService:
-      value: "/Cloud/VM/Provisioning/StateMachines/Methods/Add_VM_To_Service"
+      value: "/System/CommonMethods/StateMachineMethods/Add_VM_to_Service"

@@ -3,53 +3,29 @@
 # Author: Kevin Morey <kmorey@redhat.com>
 # License: GPL v3
 #
-# Description: This method will build a list of vms attached to a service
+# Description: This method will build a list of vm ids attached to a service
 #
-begin
-  def log(level, msg, update_message=false)
-    $evm.log(level,"#{msg}")
-  end
+service  = $evm.root['service']
+$evm.log(:info, "Service: #{service.name} id: #{service.id} guid: #{service.guid} vms: #{service.vms.count}")
 
-  def dump_root()
-    log(:info, "Begin $evm.root.attributes")
-    $evm.root.attributes.sort.each { |k, v| log(:info, "\t Attribute: #{k} = #{v}")}
-    log(:info, "End $evm.root.attributes")
-    log(:info, "")
-  end
+dialog_hash = {}
 
-  ###############
-  # Start Method
-  ###############
-  log(:info, "CloudForms Automate Method Started", true)
-  dump_root()
-
-  service  = $evm.root['service']
-  log(:info, "Service: #{service.name} id: #{service.id} guid: #{service.guid} vms: #{service.vms.count}")
-
-  dialog_hash = {}
-
-  service.vms.each do |vm|
+service.vms.each do |vm|
+  if vm.archived?
+    dialog_hash[vm.id] = "#{vm.name} [ARCHIVED] on #{service.name}"
+  elsif vm.orphaned?
+    dialog_hash[vm.id] = "#{vm.name} [ORPHANED] on #{service.name}"
+  else
     dialog_hash[vm.id] = "#{vm.name} on #{service.name}"
   end
-
-  if dialog_hash.blank?
-    log(:info, "No VMs found")
-    dialog_hash[nil] = "< No VMs found >"
-  else
-    dialog_hash[nil] = '< choose a VM >'
-  end
-
-  $evm.object["values"]     = dialog_hash
-  log(:info, "$evm.object['values']: #{$evm.object['values'].inspect}")
-
-  ###############
-  # Exit Method
-  ###############
-  log(:info, "CloudForms Automate Method Ended", true)
-  exit MIQ_OK
-
-  # Set Ruby rescue behavior
-rescue => err
-  log(:error, "[(#{err.class})#{err}]\n#{err.backtrace.join("\n")}")
-  exit MIQ_ABORT
 end
+
+if dialog_hash.blank?
+  $evm.log(:info, "No VMs found")
+  dialog_hash[''] = "< No VMs found >"
+else
+  dialog_hash[''] = '< choose a VM >'
+end
+
+$evm.object["values"]     = dialog_hash
+$evm.log(:info, "$evm.object['values']: #{$evm.object['values'].inspect}")

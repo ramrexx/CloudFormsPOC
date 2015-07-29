@@ -37,9 +37,9 @@ begin
   def get_mgt_system()
     aws_mgt = nil
     if @task
-      if @task.get_option(:mid)
-        aws_mgt = $evm.vmdb(:ems_amazon).find_by_id(@task.get_option(:mid))
-        log(:info, "Got AWS Mgt System from @task.get_option(:mid)")
+      if @task.get_option(:provider_id)
+        aws_mgt = $evm.vmdb(:ems_amazon).find_by_id(@task.get_option(:provider_id))
+        log(:info, "Got AWS Mgt System from @task.get_option(:provider_id)")
       end
     elsif $evm.root['vm']
       vm = $evm.root['vm']
@@ -105,7 +105,7 @@ begin
 
   count = 1
   count = @task.get_option(:student_count).to_i if @task.get_option(:student_count)
-
+  
   instances = ec2.instances.create({
     :image_id => ami,
     :instance_type => @task.get_option(:instance_flavor),

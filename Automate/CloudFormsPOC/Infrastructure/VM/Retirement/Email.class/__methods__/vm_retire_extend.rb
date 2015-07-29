@@ -1,54 +1,60 @@
 # vm_retire_extend.rb
-# Kevin Morey
-# 2014.10.21
-# Description: This method is used to add 14 days to retirement date when target VM has a retires_on value and is not already retired
 #
+# Author: Kevin Morey <kmorey@redhat.com>
+# License: GPL v3
+#
+# Description: This method is used to add X days to retirement date when target VM has a retires_on value and is not already retired
+#
+def dump_vm_retirement_attributes
+  @vm.attributes.each {|key,val| $evm.log(:info, "VM: #{@vm.name} {#{key}=>#{val.inspect}}") if key.starts_with?('retire')}
+end
 
-# Number of days to automatically extend retirement
-vm_retire_extend_days = nil
-vm_retire_extend_days ||= $evm.root['dialog_retire_extend_days'] || $evm.object['vm_retire_extend_days']
-raise "ERROR - vm_retire_extend_days not found!" if vm_retire_extend_days.nil?
+def from_email_address
+  $evm.object['from_email_address']
+end
 
-$evm.log(:info, "Number of days to extend: #{vm_retire_extend_days}")
+def to_email_address
+  owner = @vm.owner || $evm.vmdb(:user).find_by_id(@vm.evm_owner_id) || $evm.root['user']
+  owner_email = owner.email || $evm.object['to_email_address']
+  owner_email
+end
 
-vm = $evm.root['vm']
+def signature
+  $evm.object['signature']
+end
 
-vm.attributes.each {|key,val| $evm.log(:info, "VM: #{vm.name} {#{key} => #{val.inspect}}") if key.starts_with?('retire')}
+def subject
+  "VM: #{@vm.name} retirement extended #{vm_retire_extend_days} days"
+end
 
-unless vm.retires_on.blank? || vm_retire_extend_days.to_i.zero?
-  $evm.log(:info, "Extending retirement #{vm_retire_extend_days} days for VM: #{vm.name}")
-
-  # Set new retirement date here
-  vm.retires_on += vm_retire_extend_days.to_i
-
-  vm.attributes.each {|key,val| $evm.log(:info, "VM: #{vm.name} {#{key} => #{val.inspect}}") if key.starts_with?('retire')}
-
-  # Get VM Owner Name and Email
-  owner_id = vm.evm_owner_id
-  owner = $evm.vmdb('user', owner_id) unless owner_id.nil?
-
-  # to_email_address from owner.email then from model if nil
-  to = owner.email unless owner.nil?  
-  to ||= $evm.object['to_email_address']
-
-  # Get from_email_address from model unless specified below
-  from = nil
-  from ||= $evm.object['from_email_address']
-
-  # Get signature from model unless specified below
-  signature = nil
-  signature ||= $evm.object['signature']
-
-  # email subject
-  subject = "VM Retirement Extended for #{vm.name}"
-
-  # Build email body
+def body
   body = "Hello, "
-  body += "<br><br>The retirement date for your virtual machine: #{vm.name} has been extended to: #{vm.retires_on}."
+  body += "<br><br>The retirement date for your virtual machine: #{@vm.name} has been extended to: #{@vm.retires_on}."
   body += "<br><br> Thank you,"
   body += "<br> #{signature}"
+  body
+end
+
+begin
+  @vm = $evm.root['vm']
+  dump_vm_retirement_attributes
+
+  vm_retire_extend_days = ( nil || $evm.root['dialog_retire_extend_days'] || $evm.object['vm_retire_extend_days'] ).to_i
+  exit MIQ_STOP if vm_retire_extend_days.zero?
+
+  exit MIQ_STOP if @vm.retires_on.nil?
+
+  $evm.log(:info, "Extending retirement #{vm_retire_extend_days} days for VM: #{@vm.name}")
+
+  # Set new retirement date here
+  @vm.retires_on += vm_retire_extend_days
+  dump_vm_retirement_attributes
 
   # Send email
   $evm.log(:info, "Sending email to #{to} from #{from} subject: #{subject}")
-  $evm.execute('send_email', to, from, subject, body)
+  $evm.execute('send_email', to_email_address, from_email_address, subject, body)
+
+rescue => err
+  $evm.log(:error, "[(#{err.class})#{err}]\n#{err.backtrace.join("\n")}")
+  exit MIQ_STOP
 end

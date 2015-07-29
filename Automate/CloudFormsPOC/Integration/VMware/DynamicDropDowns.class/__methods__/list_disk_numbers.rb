@@ -1,4 +1,4 @@
-# List_Disk_Numbers.rb
+# list_disk_numbers.rb
 #
 # Description: List the disk numbers on a VM
 #

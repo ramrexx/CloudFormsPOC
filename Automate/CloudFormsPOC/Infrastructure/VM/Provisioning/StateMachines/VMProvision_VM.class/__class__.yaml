@@ -338,7 +338,7 @@ object:
       datatype: string
       priority: 17
       owner: 
-      default_value: 
+      default_value: "/System/CommonMethods/StateMachineMethods/Add_VM_to_Service"
       substitute: true
       message: create
       visibility: 

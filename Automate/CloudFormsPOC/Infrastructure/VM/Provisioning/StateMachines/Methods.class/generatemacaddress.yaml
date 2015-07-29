@@ -9,6 +9,6 @@ object:
     description: 
   fields:
   - vmware_meth1:
-      value: vmware_GenerateMACAddress
+      value: vmware_generate_mac_address
   - redhat_meth1:
-      value: redhat_GenerateMACAddress
+      value: redhat_generate_mac_address

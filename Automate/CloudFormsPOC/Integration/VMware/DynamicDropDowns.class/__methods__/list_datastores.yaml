@@ -3,7 +3,7 @@ object_type: method
 version: 1.0
 object:
   attributes:
-    name: List_Datastores
+    name: list_datastores
     display_name: 
     description: 
     scope: instance

@@ -3,54 +3,57 @@
 # Author: Kevin Morey <kmorey@redhat.com>
 # License: GPL v3
 #
-# Description: list cloud-init customization template ids
+# Description: list cloud-init customization template ids that reside in the Amazon System Image Type or
+#  that contain the word 'Amazon'
 #
-begin
-  def log(level, msg, update_message=false)
-    $evm.log(level,"#{msg}")
-    @task.message = msg if @task && update_message
+def search_customization_templates_by_name(search_string, customization_templates = [])
+  customization_templates = $evm.vmdb(:customization_template_cloud_init).all.select do |ct|
+    ct.name.downcase.include?(search_string)
   end
-
-  def dump_root()
-    $evm.log(:info, "Begin $evm.root.attributes")
-    $evm.root.attributes.sort.each { |k, v| log(:info, "\t Attribute: #{k} = #{v}")}
-    $evm.log(:info, "End $evm.root.attributes")
-    $evm.log(:info, "")
+  if customization_templates
+    $evm.log(:info, "Found #{customization_templates.count} customization_templates via name: #{search_string}")
   end
-
-  ###############
-  # Start Method
-  ###############
-  log(:info, "CloudForms Automate Method Started", true)
-  dump_root()
-
-  dialog_hash = {}
-  $evm.vmdb(:customization_template_cloud_init).all.each do |ct|
-    next if ct.name.nil?
-    if ct.name.downcase.start_with?("amazon")
-      dialog_hash[ct.id] = ct.description
-    end
-  end
-
-  if dialog_hash.blank?
-    log(:info, "No customization templates found")
-    dialog_hash[nil] = "< No customization templates found, Contact Administrator >"
-  else
-    #$evm.object['default_value'] = dialog_hash.first
-    dialog_hash[nil] = '< choose a customization template >'
-  end
-
-  $evm.object["values"]     = dialog_hash
-  log(:info, "$evm.object['values']: #{$evm.object['values'].inspect}")
-
-  ###############
-  # Exit Method
-  ###############
-  log(:info, "CloudForms Automate Method Ended", true)
-  exit MIQ_OK
-
-  # Set Ruby rescue behavior
-rescue => err
-  log(:error, "[#{err}]\n#{err.backtrace.join("\n")}")
-  exit MIQ_ABORT
+  customization_templates
 end
+
+def search_customization_templates_by_image_type(search_string, customization_templates = [])
+  image_type = $evm.vmdb(:pxe_image_type).all.detect do |pit|
+    next unless pit.name
+    pit.name.downcase.include?(search_string)
+  end
+  if image_type
+    customization_templates = image_type.customization_templates rescue []
+    $evm.log(:info, "Found #{customization_templates.count} customization_templates via image_type: #{search_string}")
+  end
+  customization_templates
+end
+
+def customization_template_eligible?(customization_template)
+  return false unless customization_template.type == "CustomizationTemplateCloudInit"
+  return false if customization_template.name.nil?
+  true
+end
+
+dialog_hash = {}
+customization_templates = search_customization_templates_by_image_type('amazon') ||
+  search_customization_templates_by_name('amazon') || []
+
+if customization_templates.blank?
+  $evm.vmdb(:customization_template_cloud_init).all.each do |ct|
+    dialog_hash[ct.id] = ct.description if customization_template_eligible?(ct)
+  end
+else
+  customization_templates.each do |ct|
+    dialog_hash[ct.id] = ct.description if customization_template_eligible?(ct)
+  end
+end
+
+if dialog_hash.blank?
+  dialog_hash[''] = "< No customization templates found, Contact Administrator >"
+else
+  #$evm.object['default_value'] = dialog_hash.first
+  dialog_hash[''] = '< choose a customization template >'
+end
+
+$evm.object["values"]     = dialog_hash
+$evm.log(:info, "$evm.object['values']: #{$evm.object['values'].inspect}")
