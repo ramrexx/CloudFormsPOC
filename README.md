@@ -1,10 +1,10 @@
 Welcome to the CloudFormsPOC Project
 ====================================
-Current Appliance Version: 5.4.x
+Current Appliance Version: 5.4
 
 Previous Versions
 ====================================
-  - 5.3.x - https://github.com/ramrexx/CloudFormsPOC/tree/cf3.1
+  - 5.3 - https://github.com/ramrexx/CloudFormsPOC/tree/5.3
 
 Official Documentation
 ====================================
