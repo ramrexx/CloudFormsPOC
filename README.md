@@ -1,5 +1,12 @@
 Welcome to the CloudFormsPOC Project
 ====================================
+
+Current Appliance Version: 5.3
+
+Previous Versions
+====================================
+  - 5.2 - N/A
+
 More information can be found at: https://access.redhat.com/documentation/en-US/CloudForms/
 
 For installation instructions visit the wiki: 
