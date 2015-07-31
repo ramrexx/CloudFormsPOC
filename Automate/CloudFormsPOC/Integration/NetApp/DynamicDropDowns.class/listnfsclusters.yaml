@@ -1,0 +1,20 @@
+---
+object_type: instance
+version: 1.0
+object:
+  attributes:
+    display_name: 
+    name: ListNFSClusters
+    inherits: 
+    description: 
+  fields:
+  - servername:
+      value: netappwfa.example.com
+  - username:
+      value: wfa_user
+  - password:
+      value: v2:{fnH9INgt0vQuvpyLAEnsqQ==}
+  - workflow_guid:
+      value: 11111111-2222-3333-4444-555555555555
+  - method1:
+      value: list_nfs_clusters
