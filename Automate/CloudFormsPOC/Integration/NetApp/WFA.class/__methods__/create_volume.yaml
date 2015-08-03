@@ -3,7 +3,7 @@ object_type: method
 version: 1.0
 object:
   attributes:
-    name: CreateStorage
+    name: create_volume
     display_name: 
     description: 
     scope: instance
