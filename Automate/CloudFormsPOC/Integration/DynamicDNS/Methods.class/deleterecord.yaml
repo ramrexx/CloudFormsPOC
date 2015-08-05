@@ -1,0 +1,18 @@
+---
+object_type: instance
+version: 1.0
+object:
+  attributes:
+    display_name: 
+    name: DeleteRecord
+    inherits: 
+    description: 
+  fields:
+  - servername:
+      value: ns1.example.com
+  - keyname:
+      value: cloudforms-key
+  - keyvalue:
+      value: v2:{lKcL8HFI0UrW281m+5VNRjGiDTNeAmZEKfoWtg5NntM=}
+  - method1:
+      value: delete_record
