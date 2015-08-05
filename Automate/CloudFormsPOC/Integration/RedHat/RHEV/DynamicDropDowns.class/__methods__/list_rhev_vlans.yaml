@@ -3,7 +3,7 @@ object_type: method
 version: 1.0
 object:
   attributes:
-    name: Dialog_List_VLANS
+    name: list_rhev_vlans
     display_name: 
     description: 
     scope: instance
