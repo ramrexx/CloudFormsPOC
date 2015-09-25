@@ -15,6 +15,6 @@ for ct in list
   end
 end
 
-my_hash[nil] = nil
+my_hash[''] = nil
 $evm.object['values'] = my_hash
 $evm.log(:info, "Dynamic drop down values: #{$evm.object['values']}")
