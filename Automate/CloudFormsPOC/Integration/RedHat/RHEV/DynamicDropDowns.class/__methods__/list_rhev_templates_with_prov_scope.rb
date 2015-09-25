@@ -35,9 +35,9 @@ begin
 
   if dialog_hash.blank?
     log(:info, "No Templates found - likely due to missing tag #{category}")
-    dialog_hash[nil] = "< No Templates found >"
+    dialog_hash[''] = "< No Templates found >"
   else
-    dialog_hash[nil] = '< choose a template >'
+    dialog_hash[''] = '< choose a template >'
   end
 
   $evm.object["values"]     = dialog_hash

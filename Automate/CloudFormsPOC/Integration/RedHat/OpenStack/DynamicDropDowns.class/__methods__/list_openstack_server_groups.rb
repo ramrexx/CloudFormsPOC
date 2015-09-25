@@ -101,7 +101,7 @@ groups = list_groups(nova_url, token)
 log(:info, "All Groups: #{groups.inspect}")
 dialog_hash = {}
 groups.each { |group| dialog_hash[group["id"]] = "#{group["name"]} on #{provider.name}" }
-dialog_hash[nil] = "< Choose >"
+dialog_hash[''] = "< Choose >"
 $evm.object['values'] = dialog_hash
 log(:info, "Set Dialog Hash to #{dialog_hash.inspect}")
 log(:info, "Automate Method Ended")

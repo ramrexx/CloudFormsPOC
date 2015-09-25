@@ -85,7 +85,7 @@ begin
       first = chef_role unless first
       dialog_hash[chef_role] = chef_role
     }
-    dialog_hash[nil] = "< choose one >"
+    dialog_hash[''] = "< choose one >"
     log(:info, "Inspecting Values: #{build_dialog(dialog_hash).inspect}")
   else
     $evm.object['values'] = { nil => "< ERROR: contact administrator >"}
