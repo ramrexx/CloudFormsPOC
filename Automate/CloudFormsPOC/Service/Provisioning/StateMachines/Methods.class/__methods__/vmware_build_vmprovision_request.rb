@@ -199,7 +199,7 @@ def get_vm_name(build, merged_options_hash, merged_tags_hash)
   if new_vm_name.blank?
     merged_options_hash[:vm_name] = 'changeme'
   else
-    unless $evm.vmdb(:vm_or_template).find_by_name(matching_options_hash[:vm_name]).blank?
+    unless $evm.vmdb(:vm_or_template).find_by_name(merged_options_hash[:vm_name]).blank?
       # Loop through 0-999 and look to see if the vm_name already exists in the vmdb to avoid collisions
       for i in (1..999)
         proposed_vm_name = "#{merged_options_hash[:vm_name]}#{i}"
