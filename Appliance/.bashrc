@@ -10,6 +10,7 @@
 alias rm='rm -i'
 alias cp='cp -i'
 alias mv='mv -i'
+alias grep='grep --color'
 
 # Directory aliases
 alias vmdb='cd /var/www/miq/vmdb'
@@ -19,6 +20,9 @@ alias log='cd /var/www/miq/vmdb/log'
 # Tail aliases
 alias auto='tail -f /var/www/miq/vmdb/log/automation.log'
 alias evm='tail -f /var/www/miq/vmdb/log/evm.log'
+alias aws='tail -f /var/www/miq/vmdb/log/aws.log'
+alias foglog='tail -f /var/www/miq/vmdb/log/fog.log'
+alias rhevm='tail -f /var/www/miq/vmdb/log/rhevm.log'
 alias prod='tail -f /var/www/miq/vmdb/log/production.log'
 alias policy='tail -f /var/www/miq/vmdb/log/policy.log'
 alias pglog='tail -f /opt/rh/postgresql92/root/var/lib/pgsql/data/pg_log/postgresql.log'
@@ -39,6 +43,14 @@ alias black_console="LOCK_CONSOLE=false /bin/appliance_console"
 
 # Rails Console
 alias railsc="cd /var/www/miq/vmdb;echo '\$evm = MiqAeMethodService::MiqAeService.new(MiqAeEngine::MiqAeWorkspaceRuntime.new)'; script/rails c"
+
+# kill provision job.
+function kill_prov {
+  vmdb
+  script/rails r tools/kill_provision.rb $1
+  cd - > /dev/null 2>&1
+}
+
 
 # Application Status
 alias status='echo "EVM Status:";service evmserverd status;echo " ";echo "HTTP Status:";service httpd status'
