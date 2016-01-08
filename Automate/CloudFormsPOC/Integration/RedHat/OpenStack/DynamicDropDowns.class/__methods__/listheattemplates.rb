@@ -17,7 +17,7 @@ begin
     end
   end
 
-  my_hash[nil] = nil
+  my_hash[''] = nil
 
   $evm.object["sort_by"] = "description"
   $evm.object["sort_order"] = "ascending"

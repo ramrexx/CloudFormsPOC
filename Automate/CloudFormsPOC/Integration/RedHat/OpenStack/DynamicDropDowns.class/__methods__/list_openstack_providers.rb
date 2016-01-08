@@ -62,10 +62,10 @@ begin
 
   if dialog_hash.blank?
     log(:info, "User: #{$evm.root['user'].name} has no access to Providers")
-    dialog_hash[nil] = "< No Providers Found for Tenant: #{tenant.name rescue 'unknown'}, Contact Administrator >"
+    dialog_hash[''] = "< No Providers Found for Tenant: #{tenant.name rescue 'unknown'}, Contact Administrator >"
   else
     #$evm.object['default_value'] = dialog_hash.first
-    dialog_hash[nil] = '< choose a provider >'
+    dialog_hash[''] = '< choose a provider >'
   end
 
   $evm.object['values'] = dialog_hash

@@ -32,7 +32,7 @@ begin
     log(:info, "Looking at flavor: #{fl.name} id: #{fl.id} cpus: #{fl.cpus} memory: #{fl.memory} ems_ref: #{fl.ems_ref}")
     next unless fl.ext_management_system || fl.enabled
     if fl.id == vm_flavor_id
-      dialog_hash[nil] = "<Current - #{fl.name}>"
+      dialog_hash[''] = "<Current - #{fl.name}>"
     else
       dialog_hash[fl.id] = "#{fl.name}"
     end

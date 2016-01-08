@@ -92,9 +92,9 @@ begin
 
   if dialog_hash.blank?
     log(:info, "User has no access to tenants")
-    dialog_hash[nil] = "< No Tenant Access, Contact Administrator >"
+    dialog_hash[''] = "< No Tenant Access, Contact Administrator >"
   else
-      dialog_hash[nil] = '< choose a tenant >'
+      dialog_hash[''] = '< choose a tenant >'
   end
 
   $evm.object['values'] = dialog_hash

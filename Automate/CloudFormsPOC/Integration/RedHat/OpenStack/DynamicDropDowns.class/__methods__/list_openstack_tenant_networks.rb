@@ -92,10 +92,10 @@ begin
 
   if dialog_hash.blank?
     log(:info, "User: #{$evm.root['user'].name} has no access to Tenant Networks")
-    dialog_hash[nil] = "< No Tenant Networks Found for Tenant: #{tenant_name}, Contact Administrator >"
+    dialog_hash[''] = "< No Tenant Networks Found for Tenant: #{tenant_name}, Contact Administrator >"
   else
     #$evm.object['default_value'] = dialog_hash.first
-    dialog_hash[nil] = '< choose a network >'
+    dialog_hash[''] = '< choose a network >'
   end
 
   $evm.object["values"]     = dialog_hash
