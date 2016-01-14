@@ -54,7 +54,7 @@ begin
     log(:info, "Volume still exists, sleeping")
     $evm.root['ae_result'] = 'retry'
     $evm.root['ae_retry_interval'] = "10.seconds"
-    log(:inf, "Exit Automate Method (Retry)")
+    log(:info, "Exit Automate Method (Retry)")
     exit MIQ_OK
   rescue Fog::Compute::OpenStack::NotFound => gooderr
     log(:info, "Caught a NotFound erro #{gooderr}, volume is deleted")
