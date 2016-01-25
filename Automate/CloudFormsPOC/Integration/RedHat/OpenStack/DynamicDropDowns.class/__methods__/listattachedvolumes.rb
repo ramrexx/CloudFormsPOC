@@ -46,7 +46,7 @@ begin
   num = 0
   for attachment in attachments
     details = cinderconn.get_volume_details(attachment['id']).body['volume']
-    volume_hash["#{details['display_name']}:#{details['attachments'][0]['device']}"] = attachment['id']
+    volume_hash[attachment['id']] = "#{details['display_name']}:#{details['attachments'][0]['device']}"
     vm.custom_set("CINDER_volume_#{num}", attachment['id'])
     log(:info, "Details for volume #{attachment['id']}: #{details.inspect}")
     num += 1
