@@ -1,5 +1,7 @@
 Welcome to the CloudFormsPOC Project
 ====================================
+This project is being deprecated in favor of https://github.com/ramrexx/CloudForms_Essentials.
+
 Current Appliance Version: 5.4
 
 Previous Versions
