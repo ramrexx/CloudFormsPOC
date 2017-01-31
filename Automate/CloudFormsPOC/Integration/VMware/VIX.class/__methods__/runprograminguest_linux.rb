@@ -14,6 +14,7 @@
 # Provisioning Inputs: prov.options.ws_values[:guest_program], prov.options.ws_values[:guest_program]
 #
 ###################################
+
 begin
   # Method for logging
   def log(level, message, update_message=false)
@@ -45,7 +46,8 @@ begin
 
   # execute_vmrun
   def execute_vmrun(vmrun_command_parameter, guest_program=nil, guest_program_arguments=nil)
-    require 'linux_admin'
+    require 'awesome_spawn'
+    require 'uri'
 
     # Set vmrun below or get from model
     vmrun_path = nil
@@ -54,24 +56,28 @@ begin
 
     # setup credentials
     #guest_username = ".\\Administrator"
-    guest_username = nil || $evm.object['guest_username']
-    guest_password ||= $evm.object.decrypt('guest_password')
-    authentication_flags = " -h https://#{@vm.ext_management_system.ipaddress}:443/sdk "
-    authentication_flags += " -u \'#{@vm.ext_management_system.authentication_userid}\' "
-    authentication_flags += " -p \'#{@vm.ext_management_system.authentication_password}\' "
-    authentication_flags += " -gu \'#{guest_username}\' "
-    authentication_flags += " -gp \'#{guest_password}\' "
+    guest_username = $evm.object['guest_username']
+    guest_password = $evm.object.decrypt('guest_password')
 
-    build_command = "#{vmrun_command_parameter}"
-    build_command += " \'[#{@vm.storage_name}]#{@vm.location}\' "
-    build_command += " \'#{guest_program}\' " unless guest_program.blank?
-    if vmrun_command_parameter == 'runProgramInGuest'
-      build_command += " \'#{guest_program_arguments} \'" unless guest_program_arguments.blank?
+    vmrun_args = [
+      {
+        :h    => URI::HTTPS.build(:host => @vm.ext_management_system.ipaddress, :port => 443, :path => '/sdk').to_s,
+        :u    => @vm.ext_management_system.authentication_userid,
+        :p    => @vm.ext_management_system.authentication_password,
+        "-gu" => guest_username,
+        "-gp" => guest_password
+      },
+      vmrun_command_parameter,
+      "[#{@vm.storage_name}]#{@vm.location}",
+    ]
+    vmrun_args << guest_program unless guest_program.blank?
+    if vmrun_command_parameter == 'runProgramInGuest' && guest_program_arguments.present?
+      vmrun_args << guest_program_arguments
     end
-    execute_command = vmrun_path + authentication_flags + build_command
-    log(:info, "Executing #{vmrun_path} #{vmrun_command_parameter} with arguments #{build_command}", true)
 
-    result = LinuxAdmin.run!(execute_command)
+    log(:info, "Executing #{AwesomeSpawn.build_command_line(vmrun_path, vmrun_args)}", true)
+
+    result = AwesomeSpawn.run!(vmrun_path, :params => vmrun_args)
     log(:info, "result output: #{result.output.inspect} error: #{result.error.inspect} exit_status: #{result.exit_status.inspect}")
     return result
   end
